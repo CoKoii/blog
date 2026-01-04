@@ -1,0 +1,33 @@
+.Layout {
+  --topBar-height: 58px;
+  --sideBar-width: 200px;
+  display: flex;
+  flex-direction: column;
+  .topBar {
+    position: fixed;
+    height: var(--topBar-height);
+    width: 100%;
+  }
+  .content {
+    margin-top: var(--topBar-height);
+    display: flex;
+    flex: 1;
+    .sideBar {
+      position: fixed;
+      width: var(--sideBar-width);
+      height: calc(100vh - var(--topBar-height));
+      background-color: #f4f4f4;
+    }
+    .main {
+      margin-left: var(--sideBar-width);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      .footer {
+        height: 40px;
+        background-color: #e2e2e2;
+        margin-top: auto;
+      }
+    }
+  }
+}
