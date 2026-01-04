@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
+
 import Search from '@/components/Search/Search.vue'
+import { Dropdown } from 'ant-design-vue'
 </script>
 
 <template>
@@ -12,7 +15,21 @@ import Search from '@/components/Search/Search.vue'
     <div class="search">
       <Search />
     </div>
-    <div class="avatar">avatar</div>
+    <Dropdown :placement="'bottomRight'">
+      <div class="avatar">
+        <Icon icon="la:user" />
+      </div>
+      <template #overlay>
+        <div class="avatar_dropdown">
+          <div class="profile">profile</div>
+          <div class="line"></div>
+          <div class="tools">
+            <div class="lang">lang</div>
+            <div class="theme">theme</div>
+          </div>
+        </div>
+      </template>
+    </Dropdown>
   </div>
 </template>
 

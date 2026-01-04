@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@vueuse/head": "^2.0.0",
+    "ant-design-vue": "~4.2.6",
     "pinia": "^3.0.4",
     "vite-ssg": "^28.2.2",
     "vue": "^3.5.26",
