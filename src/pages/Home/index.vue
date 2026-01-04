@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
 useHead({
-  title: 'Caoo - 技术博客',
+  title: 'CaoKai - 技术博客',
   meta: [
     {
       name: 'description',
@@ -13,6 +13,7 @@ useHead({
 
 <template>
   <div class="index">
+    <input type="text" />
     <h1 v-for="item in 50" :key="item">home{{ item }}</h1>
   </div>
 </template>

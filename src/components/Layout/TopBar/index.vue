@@ -4,7 +4,11 @@ import Search from '@/components/Search/Search.vue'
 
 <template>
   <div class="TopBar">
-    <div class="title">Title</div>
+    <div class="title">
+      <router-link to="/">
+        <h4>CaoKai</h4>
+      </router-link>
+    </div>
     <div class="search">
       <Search />
     </div>
