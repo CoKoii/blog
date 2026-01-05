@@ -6,10 +6,6 @@ import './styles/reset.scss'
 
 const base = import.meta.env.BASE_URL
 
-export const createApp = ViteSSG(
-  App,
-  { routes, base },
-  ({ app }) => {
-    app.use(createPinia())
-  }
-)
+export const createApp = ViteSSG(App, { routes, base }, ({ app }) => {
+  app.use(createPinia())
+})
