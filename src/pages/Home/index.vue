@@ -13,8 +13,7 @@ useHead({
 
 <template>
   <div class="index">
-    <input type="text" />
-    <h1 v-for="item in 50" :key="item">home{{ item }}</h1>
+    <h1 style="text-align: center; line-height: 500px">Hello World</h1>
   </div>
 </template>
 
