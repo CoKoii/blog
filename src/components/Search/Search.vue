@@ -5,7 +5,7 @@ import { Icon } from '@iconify/vue'
 <template>
   <div class="Search">
     <div class="text">
-      <Icon icon="fe:search" style="font-size: 18px" />
+      <Icon icon="fe:search" />
       <p>Search</p>
     </div>
     <div class="icon">

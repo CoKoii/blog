@@ -27,3 +27,20 @@
     justify-content: center;
   }
 }
+@media (max-width: 768px) {
+  .Search {
+    max-width: none;
+    width: auto;
+    padding: 8px;
+    border-radius: 9999px;
+    .icon {
+      display: none;
+    }
+    .text {
+      color: #000;
+      p {
+        display: none;
+      }
+    }
+  }
+}

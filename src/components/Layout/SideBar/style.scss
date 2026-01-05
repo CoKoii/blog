@@ -1,0 +1,49 @@
+.sideBar {
+  padding: 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  .box {
+    display: flex;
+    flex-direction: column;
+    .title {
+      font-weight: bold;
+      margin-bottom: 18px;
+      font-size: 14px;
+      color: #727272;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      li {
+        a {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          text-decoration: none;
+          color: inherit;
+          &:hover {
+            text-decoration: underline;
+          }
+          .text {
+            font-size: 15px;
+          }
+          svg {
+            font-size: 21px;
+            color: #51515192;
+          }
+          .color {
+            margin: 0 6px;
+            width: 8px;
+            height: 8px;
+            border-radius: 4px;
+          }
+        }
+      }
+    }
+  }
+}

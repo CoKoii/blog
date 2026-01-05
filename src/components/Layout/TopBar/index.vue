@@ -15,21 +15,23 @@ import { Dropdown } from 'ant-design-vue'
     <div class="search">
       <Search />
     </div>
-    <Dropdown :placement="'bottomRight'">
-      <div class="avatar">
-        <Icon icon="la:user" />
-      </div>
-      <template #overlay>
-        <div class="avatar_dropdown">
-          <div class="profile">profile</div>
-          <div class="line"></div>
-          <div class="tools">
-            <div class="lang">lang</div>
-            <div class="theme">theme</div>
-          </div>
+    <div class="user">
+      <Dropdown :placement="'bottomRight'">
+        <div class="avatar">
+          <Icon icon="la:user" />
         </div>
-      </template>
-    </Dropdown>
+        <template #overlay>
+          <div class="avatar_dropdown">
+            <div class="profile">profile</div>
+            <div class="line"></div>
+            <div class="tools">
+              <div class="lang">lang</div>
+              <div class="theme">theme</div>
+            </div>
+          </div>
+        </template>
+      </Dropdown>
+    </div>
   </div>
 </template>
 
