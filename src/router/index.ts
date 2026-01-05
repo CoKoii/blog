@@ -12,6 +12,11 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: () => import('../pages/NotFound/index.vue'),
+  },
 ]
 
 export default routes
