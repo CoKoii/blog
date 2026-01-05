@@ -9,7 +9,7 @@ import { Icon } from '@iconify/vue'
       <div class="title" v-if="item.title">{{ item.title }}</div>
       <ul>
         <li v-for="child in item.children" :key="child.title">
-          <router-link :to="child.path">
+          <router-link :to="child.path" active-class="active">
             <Icon :icon="child.icon" v-if="child.icon" />
             <div class="color" v-else :style="{ backgroundColor: child.color }"></div>
             <div class="text">{{ child.title }}</div>

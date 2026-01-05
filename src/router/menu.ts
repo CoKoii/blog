@@ -22,32 +22,32 @@ const menus: MenuType[] = [
       {
         title: '技术总结',
         color: '#53AD8D',
-        path: '/',
+        path: '/jszj',
       },
       {
         title: 'Indiehacker',
         color: '#B766D1',
-        path: '/',
+        path: '/indiehacker',
       },
       {
         title: 'Dokploy',
         color: '#234CDB',
-        path: '/',
+        path: '/dokploy',
       },
       {
         title: 'SEO',
         color: '#8DD844',
-        path: '/',
+        path: '/seo',
       },
       {
         title: 'Payment',
         color: '#65DADF',
-        path: '/',
+        path: '/payment',
       },
       {
         title: 'Nodejs',
         color: '#5B8225',
-        path: '/',
+        path: '/nodejs',
       },
     ],
   },
