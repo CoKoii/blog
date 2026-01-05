@@ -2,10 +2,12 @@
 import TopBar from './TopBar/index.vue'
 import SideBar from './SideBar/index.vue'
 import Footer from './Footer/index.vue'
+import { useLayoutStore } from '@/stores/layout'
+const layoutStore = useLayoutStore()
 </script>
 
 <template>
-  <div class="Layout">
+  <div class="Layout" :class="{ collapse: !layoutStore.isSideBarOpen }">
     <!-- 顶部栏 -->
     <div class="topBar">
       <TopBar />

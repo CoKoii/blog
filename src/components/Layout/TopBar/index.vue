@@ -3,11 +3,16 @@ import { Icon } from '@iconify/vue'
 
 import Search from '@/components/Search/Search.vue'
 import { Dropdown } from 'ant-design-vue'
+import { useLayoutStore } from '@/stores/layout'
+const layoutStore = useLayoutStore()
 </script>
 
 <template>
   <div class="TopBar">
     <div class="title">
+      <div class="icon" @click="layoutStore.toggleSideBar">
+        <Icon icon="simple-line-icons:menu" />
+      </div>
       <router-link to="/">
         <h4>CaoKai</h4>
       </router-link>

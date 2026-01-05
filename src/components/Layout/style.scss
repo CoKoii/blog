@@ -31,6 +31,9 @@
     }
   }
 }
+.collapse {
+  --sideBar-width: 67px;
+}
 @media (max-width: 768px) {
   .Layout {
     --sideBar-width: 0;

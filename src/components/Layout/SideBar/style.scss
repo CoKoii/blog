@@ -51,7 +51,29 @@
             margin: 0 6px;
             width: 8px;
             height: 8px;
-            border-radius: 4px;
+            border-radius: 9999px;
+          }
+        }
+      }
+    }
+  }
+}
+.collapse {
+  .box {
+    .title {
+      display: none;
+    }
+    ul {
+      li {
+        a {
+          justify-content: center;
+          .text {
+            display: none;
+          }
+          .color {
+            margin: 0;
+            width: 12px;
+            height: 12px;
           }
         }
       }
