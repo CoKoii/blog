@@ -1,9 +1,23 @@
 <script setup lang="ts">
+import { onBeforeUnmount, onMounted } from 'vue'
 import TopBar from './TopBar/index.vue'
 import SideBar from './SideBar/index.vue'
 import Footer from './Footer/index.vue'
 import { useLayoutStore } from '@/stores/layout'
 const layoutStore = useLayoutStore()
+
+const handleResize = () => {
+  layoutStore.syncSideBarByWidth()
+}
+
+onMounted(() => {
+  layoutStore.syncSideBarByWidth()
+  window.addEventListener('resize', handleResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <template>
