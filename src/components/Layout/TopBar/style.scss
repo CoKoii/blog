@@ -24,3 +24,16 @@
   border-radius: 12px;
   padding: 24px;
 }
+@media (max-width: 768px) {
+  .TopBar {
+    padding: 0 16px;
+    .avatar {
+      padding: 6px;
+      font-size: 16px;
+    }
+  }
+  .avatar_dropdown {
+    width: 100%;
+    padding: 16px;
+  }
+}
