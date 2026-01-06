@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
+import TopCard from './TopCard/TopCard.vue'
 useHead({
   title: 'CaoKai - 技术博客',
   meta: [
@@ -12,7 +13,9 @@ useHead({
 </script>
 
 <template>
-  <div class="index"></div>
+  <div class="index">
+    <TopCard />
+  </div>
 </template>
 
 <style scoped lang="scss"></style>
