@@ -12,9 +12,7 @@ useHead({
 </script>
 
 <template>
-  <div class="index">
-    <h1 style="text-align: center; line-height: 5000px">Hello World</h1>
-  </div>
+  <div class="index"></div>
 </template>
 
 <style scoped lang="scss"></style>
