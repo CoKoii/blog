@@ -4,6 +4,7 @@ import TopBar from './TopBar/index.vue'
 import SideBar from './SideBar/index.vue'
 import Footer from './Footer/index.vue'
 import { useLayoutStore } from '@/stores/layout'
+import Mask from '../Mask/Mask.vue'
 const layoutStore = useLayoutStore()
 
 const handleResize = () => {
@@ -22,6 +23,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="Layout" :class="{ collapse: !layoutStore.isSideBarOpen }">
+    <Mask :show="layoutStore.isMobileSideBarOpen"></Mask>
     <!-- 顶部栏 -->
     <div class="topBar">
       <TopBar />

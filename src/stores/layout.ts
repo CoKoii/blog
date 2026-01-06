@@ -44,7 +44,7 @@ export const useLayoutStore = defineStore('layout', () => {
     const screenWidth = window.innerWidth
     // 移动端尺寸
     if (screenWidth <= 768) {
-      console.log('小屏幕侧边栏隐藏')
+      isMobileSideBarOpen.value = !isMobileSideBarOpen.value
       return
       // 平板尺寸
     } else if (screenWidth > 768 && screenWidth <= 1024) {
