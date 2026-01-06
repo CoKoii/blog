@@ -15,7 +15,11 @@ const layoutStore = useLayoutStore()
           <Tooltip :title="!layoutStore.isSideBarOpen ? child.title : ''" placement="right">
             <router-link :to="child.path" active-class="active">
               <Icon :icon="child.icon" v-if="child.icon" />
-              <div class="color" v-else :style="{ backgroundColor: child.color }"></div>
+              <div
+                class="color"
+                v-else
+                :style="{ backgroundColor: child.color, boxShadow: `0 0 4px ${child.color}` }"
+              ></div>
               <div class="text">{{ child.title }}</div>
             </router-link>
           </Tooltip>

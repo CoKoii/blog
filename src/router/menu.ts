@@ -21,32 +21,32 @@ const menus: MenuType[] = [
     children: [
       {
         title: '技术总结',
-        color: '#53AD8D',
+        color: '#00C2FF', // 亮青蓝
         path: '/jszj',
       },
       {
         title: 'Indiehacker',
-        color: '#B766D1',
+        color: '#FF5C8A', // 活力粉红
         path: '/indiehacker',
       },
       {
         title: 'Dokploy',
-        color: '#234CDB',
+        color: '#5B6CFF', // 电光蓝紫
         path: '/dokploy',
       },
       {
         title: 'SEO',
-        color: '#8DD844',
+        color: '#2BD96B', // 荧光绿
         path: '/seo',
       },
       {
         title: 'Payment',
-        color: '#65DADF',
+        color: '#FFB703', // 明亮橙黄
         path: '/payment',
       },
       {
         title: 'Nodejs',
-        color: '#5B8225',
+        color: '#4ADE80', // 鲜绿（偏技术感）
         path: '/nodejs',
       },
     ],

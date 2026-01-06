@@ -22,7 +22,8 @@
       gap: 4px;
       li {
         .active {
-          background-color: #ededed;
+          background-color: #f1f2f5;
+          color: inherit;
           svg {
             color: #000000;
           }
@@ -33,12 +34,12 @@
           align-items: center;
           gap: 16px;
           text-decoration: none;
-          color: inherit;
+          color: #6b7280;
           transition: all 0.3s ease;
           padding: 9px 10px;
           border-radius: 10px;
           &:hover {
-            background-color: #ededed;
+            background-color: #f1f2f5;
           }
           .text {
             font-size: 15px;

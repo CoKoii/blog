@@ -13,7 +13,7 @@ useHead({
 
 <template>
   <div class="index">
-    <h1 style="text-align: center; line-height: 50px">Hello World</h1>
+    <h1 style="text-align: center; line-height: 5000px">Hello World</h1>
   </div>
 </template>
 
