@@ -36,9 +36,7 @@ const handleAction = (message: string) => {
             </div>
 
             <div>
-              <h1 class="title">
-                Hi, I'm CaoKai <span aria-hidden="true">👋</span>
-              </h1>
+              <h1 class="title">Hi, I'm CaoKai <span aria-hidden="true">👋</span></h1>
 
               <p class="subtitle">Frontend Engineer & UI Designer</p>
 
@@ -52,9 +50,7 @@ const handleAction = (message: string) => {
                   View Projects
                 </button>
                 <button class="btn" @click="handleAction('TODO: 跳转到 About')">About Me</button>
-                <button class="btn" @click="handleAction('TODO: 下载简历/打开 PDF')">
-                  Resume
-                </button>
+                <button class="btn" @click="handleAction('TODO: 下载简历/打开 PDF')">Resume</button>
               </div>
 
               <ul class="chips" aria-label="skills">
@@ -69,23 +65,23 @@ const handleAction = (message: string) => {
 
           <div class="quote">我见青山多妩媚，料青山见我应如是</div>
 
-        <div class="social" aria-label="social links">
-          <a class="icon-btn" href="#" title="GitHub" aria-label="GitHub">
-            <Icon class="icon" icon="lucide:github" />
-          </a>
+          <div class="social" aria-label="social links">
+            <a class="icon-btn" href="#" title="GitHub" aria-label="GitHub">
+              <Icon class="icon" icon="lucide:github" />
+            </a>
 
-          <a class="icon-btn" href="#" title="Twitter / X" aria-label="Twitter">
-            <Icon class="icon" icon="lucide:twitter" />
-          </a>
+            <a class="icon-btn" href="#" title="Twitter / X" aria-label="Twitter">
+              <Icon class="icon" icon="lucide:twitter" />
+            </a>
 
-          <a class="icon-btn" href="#" title="Dribbble" aria-label="Dribbble">
-            <Icon class="icon" icon="lucide:dribbble" />
-          </a>
-        </div>
+            <a class="icon-btn" href="#" title="Dribbble" aria-label="Dribbble">
+              <Icon class="icon" icon="lucide:dribbble" />
+            </a>
+          </div>
         </section>
       </div>
 
-      <a class="bento-item status-box os-card" href="/open-source.html" aria-label="Open Source Projects">
+      <router-link to="" class="bento-item status-box os-card" aria-label="Open Source Projects">
         <div class="top">
           <div class="badge">
             <span class="dot" aria-hidden="true"></span>
@@ -119,7 +115,7 @@ const handleAction = (message: string) => {
 
           <div class="meta" aria-label="time meta">更新于 2 天前</div>
         </div>
-      </a>
+      </router-link>
 
       <div class="bento-item stack-box">
         <div class="box-label"><Icon icon="lucide:cpu" /> Tech Stack</div>
