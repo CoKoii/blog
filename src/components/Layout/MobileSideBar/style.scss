@@ -1,9 +1,10 @@
 .MobileSideBar {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 50vw;
   height: 100vh;
   background-color: #f8f9fa81;
   z-index: 1000;
+  overflow-y: auto;
 }
