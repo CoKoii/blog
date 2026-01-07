@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import { watch, onUnmounted } from 'vue'
-
-const props = defineProps({ show: { type: Boolean, default: false } })
-
+import { useLayoutStore } from '@/stores/layout'
+const layoutStore = useLayoutStore()
 const preventDefault = (e: Event) => {
   e.preventDefault()
 }
 
 watch(
-  () => props.show,
+  () => layoutStore.isMobileSideBarOpen,
   (newVal) => {
     if (newVal) {
       document.body.style.overflow = 'hidden'
@@ -29,7 +28,11 @@ onUnmounted(() => {
 
 <template>
   <Transition name="fade">
-    <div class="Mask" v-if="props.show"></div>
+    <div
+      class="Mask"
+      v-if="layoutStore.isMobileSideBarOpen"
+      @click="layoutStore.toggleSideBar()"
+    ></div>
   </Transition>
 </template>
 

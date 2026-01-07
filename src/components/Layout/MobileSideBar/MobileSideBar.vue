@@ -18,7 +18,7 @@ defineOptions({
 @use './style.scss';
 .fade-enter-active,
 .fade-leave-active {
-  transition: transform 0.3s 100ms;
+  transition: transform 0.1s linear 100ms;
 }
 .fade-enter-from,
 .fade-leave-to {

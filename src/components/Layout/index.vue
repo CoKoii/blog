@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
     <Teleport to="body">
       <MobileSideBar />
     </Teleport>
-    <Mask :show="layoutStore.isMobileSideBarOpen"></Mask>
+    <Mask></Mask>
     <!-- 顶部栏 -->
     <div class="topBar">
       <TopBar />
