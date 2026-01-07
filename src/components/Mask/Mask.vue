@@ -3,7 +3,6 @@ import { watch, onUnmounted } from 'vue'
 
 const props = defineProps({ show: { type: Boolean, default: false } })
 
-// 阻止触摸移动事件（移动端滚动）
 const preventDefault = (e: Event) => {
   e.preventDefault()
 }
