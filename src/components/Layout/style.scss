@@ -7,6 +7,7 @@
     position: fixed;
     height: var(--topBar-height);
     width: 100%;
+    z-index: 10;
   }
   .content {
     margin-top: var(--topBar-height);
@@ -16,6 +17,7 @@
       position: fixed;
       width: var(--sideBar-width);
       height: calc(100vh - var(--topBar-height));
+      z-index: 10;
     }
     .main {
       padding: 12px 24px;
