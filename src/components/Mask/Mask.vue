@@ -1,18 +1,31 @@
 <script setup lang="ts">
-import { watch } from 'vue'
+import { watch, onUnmounted } from 'vue'
 
 const props = defineProps({ show: { type: Boolean, default: false } })
+
+// 阻止触摸移动事件（移动端滚动）
+const preventDefault = (e: Event) => {
+  e.preventDefault()
+}
+
 watch(
   () => props.show,
   (newVal) => {
     if (newVal) {
       document.body.style.overflow = 'hidden'
+      document.addEventListener('touchmove', preventDefault, { passive: false })
     } else {
       document.body.style.overflow = ''
+      document.removeEventListener('touchmove', preventDefault)
     }
   },
   { immediate: true },
 )
+
+onUnmounted(() => {
+  document.body.style.overflow = ''
+  document.removeEventListener('touchmove', preventDefault)
+})
 </script>
 
 <template>
