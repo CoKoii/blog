@@ -13,9 +13,15 @@ useHead({
 </script>
 
 <template>
-  <div class="index">
+  <div class="Home">
     <TopCard />
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.Home {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+</style>
