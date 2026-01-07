@@ -6,16 +6,7 @@ defineOptions({
   name: 'TopCard',
 })
 
-const techStack = [
-  'logos:vue',
-  'logos:typescript-icon',
-  'logos:vitejs',
-  'logos:react',
-  'logos:tailwindcss-icon',
-  'logos:nodejs-icon',
-  'logos:rust',
-  'logos:figma',
-]
+const techStack = ['logos:vue', 'logos:typescript-icon']
 
 const handleAction = (message: string) => {
   alert(message)
@@ -209,26 +200,7 @@ onBeforeUnmount(() => {
         <div class="top">
           <div class="left">
             <div class="icon-wrap" aria-hidden="true">
-              <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M7 7.5c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3-3-1.3-3-3Z"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                />
-                <path
-                  d="M14 16.5c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3-3-1.3-3-3Z"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  opacity=".9"
-                />
-                <path
-                  d="M10 10.5c2.2 0 3.4 1 4.2 2.1.8 1.1 1.8 2.4 4.8 2.4"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  opacity=".65"
-                />
-              </svg>
+              <Icon class="icon" icon="lucide:waypoints" />
             </div>
             <div>
               <p class="title">人生足迹</p>
@@ -236,9 +208,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
 
-          <svg class="arrow" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M13 5 20 12l-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6L13 5Z" />
-          </svg>
+          <Icon class="arrow" icon="lucide:arrow-right" aria-hidden="true" />
         </div>
 
         <div class="barrage" aria-hidden="true">
@@ -262,9 +232,37 @@ onBeforeUnmount(() => {
         </div>
       </router-link>
 
-      <div class="bento-item stats-box">
-        <div class="stat-num">142</div>
-        <div class="stat-label">Articles</div>
+      <div class="bento-item wechat-box">
+        <button class="wx-card" type="button" aria-label="微信公众号卡片：悬停翻转显示二维码">
+          <div class="wx-inner">
+            <Icon class="wx-bg" icon="simple-icons:wechat" aria-hidden="true" />
+
+            <div class="flip">
+              <div class="flip-inner">
+                <div class="face front">
+                  <div class="left">
+                    <div class="title">公众号 <span class="tag">微信</span></div>
+                    <div class="sub">快人一步获取最新文章</div>
+                  </div>
+                  <Icon class="arrow" icon="lucide:arrow-right" aria-hidden="true" />
+                </div>
+
+                <div class="face back">
+                  <div class="left">
+                    <div class="title">扫一扫</div>
+                    <div class="sub">不错过精彩文章</div>
+                  </div>
+                  <div class="qr" aria-hidden="true">
+                    <img
+                      src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://weixin.qq.com/"
+                      alt=""
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </button>
       </div>
     </div>
   </div>
