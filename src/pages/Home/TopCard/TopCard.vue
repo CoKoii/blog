@@ -6,7 +6,22 @@ defineOptions({
   name: 'TopCard',
 })
 
-const techStack = ['logos:vue', 'logos:typescript-icon']
+const statsConfig = {
+  startDate: '2026-01-04',
+  articles: 142,
+  words: 238400,
+  name: '安知鱼',
+  motto: '生活明朗，万物可爱',
+}
+
+const statsDays = ref('—')
+
+const formatK = (value: number) => {
+  if (!Number.isFinite(value)) return '—'
+  const kValue = value / 1000
+  const decimals = kValue >= 100 ? 0 : 1
+  return `${kValue.toFixed(decimals)}k`
+}
 
 const handleAction = (message: string) => {
   alert(message)
@@ -66,6 +81,13 @@ onMounted(() => {
     spawnBarrage()
   }
   barrageInterval = window.setInterval(spawnBarrage, 1000)
+
+  const start = new Date(`${statsConfig.startDate}T00:00:00`)
+  const now = new Date()
+  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+  const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const diff = Math.max(0, Math.round((nowDay.getTime() - startDay.getTime()) / 86400000))
+  statsDays.value = String(diff)
 })
 
 onBeforeUnmount(() => {
@@ -174,22 +196,35 @@ onBeforeUnmount(() => {
       </router-link>
 
       <div class="bento-item stack-box">
-        <div class="box-label"><Icon icon="lucide:cpu" /> Tech Stack</div>
-        <div class="marquee-track">
-          <div class="marquee-content">
-            <div class="marquee-group">
-              <Icon v-for="icon in techStack" :key="icon" :icon="icon" class="stack-icon" />
+        <section class="stats-card" aria-label="网站统计">
+          <div class="stats-metrics">
+            <div class="stats-metric">
+              <div class="stats-v">{{ statsDays }}</div>
+              <div class="stats-k">建站天数</div>
             </div>
-            <div class="marquee-group" aria-hidden="true">
-              <Icon
-                v-for="icon in techStack"
-                :key="icon + '_dup'"
-                :icon="icon"
-                class="stack-icon"
-              />
+            <div class="stats-metric">
+              <div class="stats-v">{{ statsConfig.articles }}</div>
+              <div class="stats-k">文章总数</div>
+            </div>
+            <div class="stats-metric">
+              <div class="stats-v">{{ formatK(statsConfig.words) }}</div>
+              <div class="stats-k">全站字数</div>
             </div>
           </div>
-        </div>
+
+          <div class="stats-actions" aria-label="RSS 订阅">
+            <a class="stats-action" href="/feed.xml" aria-label="RSS" title="RSS">
+              <svg class="stats-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M6 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-2-7v3c5 0 9 4 9 9h3c0-6.6-5.4-12-12-12Zm0-7v3c9.4 0 17 7.6 17 17h3C24 12.4 13.6 2 4 2Z" />
+              </svg>
+            </a>
+            <a class="stats-action" href="/atom.xml" aria-label="Atom" title="Atom">
+              <svg class="stats-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2Zm0 2a8 8 0 1 1-8 8 8.01 8.01 0 0 1 8-8Zm0 3.2a4.8 4.8 0 1 0 4.8 4.8A4.81 4.81 0 0 0 12 7.2Zm0 2a2.8 2.8 0 1 1-2.8 2.8A2.8 2.8 0 0 1 12 9.2Z" />
+              </svg>
+            </a>
+          </div>
+        </section>
       </div>
 
       <router-link
