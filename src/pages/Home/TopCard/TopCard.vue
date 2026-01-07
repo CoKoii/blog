@@ -121,8 +121,17 @@ const handleAction = (message: string) => {
         <div class="box-label"><Icon icon="lucide:cpu" /> Tech Stack</div>
         <div class="marquee-track">
           <div class="marquee-content">
-            <Icon v-for="icon in techStack" :key="icon" :icon="icon" class="stack-icon" />
-            <Icon v-for="icon in techStack" :key="icon + '_dup'" :icon="icon" class="stack-icon" />
+            <div class="marquee-group">
+              <Icon v-for="icon in techStack" :key="icon" :icon="icon" class="stack-icon" />
+            </div>
+            <div class="marquee-group" aria-hidden="true">
+              <Icon
+                v-for="icon in techStack"
+                :key="icon + '_dup'"
+                :icon="icon"
+                class="stack-icon"
+              />
+            </div>
           </div>
         </div>
       </div>
