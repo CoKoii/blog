@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { ref } from 'vue'
 
 defineOptions({
   name: 'TopCard',
@@ -17,56 +16,110 @@ const techStack = [
   'logos:figma',
 ]
 
-const status = ref({
-  emoji: '⚡️',
-  text: 'Building something cool',
-  time: '14:23',
-  weather: '24°C Sunny',
-})
+const handleAction = (message: string) => {
+  alert(message)
+}
 </script>
 
 <template>
   <div class="top-card">
     <div class="bento-grid">
       <div class="bento-item profile-box">
-        <div class="profile-header">
-          <div class="avatar">
-            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=CaoKai" alt="avatar" />
-            <div class="online-dot"></div>
-          </div>
-          <div class="intro-text">
-            <div class="greeting">
-              Hi, I'm <span class="highlight">CaoKai</span> <span class="wave">👋</span>
+        <section class="card">
+          <div class="grid">
+            <div class="avatar" aria-label="avatar">
+              <img
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=faces"
+                alt="Avatar"
+              />
+              <span class="status-dot" aria-label="online"></span>
             </div>
-            <p class="role">
-              Frontend Engineer & <br />
-              UI Designer
-            </p>
+
+            <div>
+              <h1 class="title">
+                Hi, I'm CaoKai <span aria-hidden="true">👋</span>
+              </h1>
+
+              <p class="subtitle">Frontend Engineer & UI Designer</p>
+
+              <p class="value">
+                I design and build thoughtful web products
+                <span>— with a focus on clarity, performance, and tiny details.</span>
+              </p>
+
+              <div class="actions">
+                <button class="btn primary" @click="handleAction('TODO: 跳转到 Projects')">
+                  View Projects
+                </button>
+                <button class="btn" @click="handleAction('TODO: 跳转到 About')">About Me</button>
+                <button class="btn" @click="handleAction('TODO: 下载简历/打开 PDF')">
+                  Resume
+                </button>
+              </div>
+
+              <ul class="chips" aria-label="skills">
+                <li class="chip">React</li>
+                <li class="chip">TypeScript</li>
+                <li class="chip">Next.js</li>
+                <li class="chip">Figma</li>
+                <li class="chip">Design Systems</li>
+              </ul>
+            </div>
           </div>
+
+          <div class="quote">我见青山多妩媚，料青山见我应如是</div>
+
+        <div class="social" aria-label="social links">
+          <a class="icon-btn" href="#" title="GitHub" aria-label="GitHub">
+            <Icon class="icon" icon="lucide:github" />
+          </a>
+
+          <a class="icon-btn" href="#" title="Twitter / X" aria-label="Twitter">
+            <Icon class="icon" icon="lucide:twitter" />
+          </a>
+
+          <a class="icon-btn" href="#" title="Dribbble" aria-label="Dribbble">
+            <Icon class="icon" icon="lucide:dribbble" />
+          </a>
         </div>
-        <div class="bio-footer">
-          <p>热衷于用代码构建美观、流畅的交互体验。</p>
-          <div class="social-dock">
-            <a href="#"><Icon icon="lucide:github" /></a>
-            <a href="#"><Icon icon="lucide:twitter" /></a>
-            <a href="#"><Icon icon="lucide:dribbble" /></a>
-          </div>
-        </div>
+        </section>
       </div>
 
-      <div class="bento-item status-box">
-        <div class="status-row">
-          <span class="emoji">{{ status.emoji }}</span>
-          <div class="status-info">
-            <span class="label">Current Focus</span>
-            <span class="value">{{ status.text }}</span>
+      <a class="bento-item status-box os-card" href="/open-source.html" aria-label="Open Source Projects">
+        <div class="top">
+          <div class="badge">
+            <span class="dot" aria-hidden="true"></span>
+            <span>开源作品集</span>
+          </div>
+
+          <div class="pill" title="Open Source">
+            <Icon class="icon" icon="lucide:github" />
+            <span>Open Source</span>
           </div>
         </div>
-        <div class="weather-row">
-          <div class="loc"><Icon icon="lucide:map-pin" /> Shanghai, CN</div>
-          <div class="time">{{ status.time }}</div>
+
+        <p class="desc">可复用组件、工具与实验性项目的精选集合。</p>
+
+        <div class="stats" aria-label="Open source stats">
+          <div class="stat">
+            <div class="k">Projects</div>
+            <div class="v">12</div>
+          </div>
+          <div class="stat">
+            <div class="k">Stars</div>
+            <div class="v">1.4k</div>
+          </div>
         </div>
-      </div>
+
+        <div class="bottom">
+          <div class="cta">
+            查看开源作品
+            <Icon class="arrow" icon="lucide:arrow-right" />
+          </div>
+
+          <div class="meta" aria-label="time meta">更新于 2 天前</div>
+        </div>
+      </a>
 
       <div class="bento-item stack-box">
         <div class="box-label"><Icon icon="lucide:cpu" /> Tech Stack</div>
