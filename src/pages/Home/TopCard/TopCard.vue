@@ -49,7 +49,7 @@ defineOptions({
     @media (max-width: 1000px) {
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows:
-        minmax(350px, auto) minmax(180px, auto) minmax(180px, auto) minmax(180px, auto)
+        minmax(420px, auto) minmax(180px, auto) minmax(180px, auto) minmax(180px, auto)
         minmax(180px, auto);
       grid-template-areas:
         'profile'

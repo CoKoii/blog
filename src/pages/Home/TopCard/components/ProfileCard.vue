@@ -133,6 +133,13 @@ const handleAction = (message: string) => {
   align-items: start;
   position: relative;
   z-index: 1;
+
+  @media (max-width: 1000px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    text-align: center;
+    justify-items: center;
+  }
 }
 
 .avatar {
@@ -173,6 +180,11 @@ const handleAction = (message: string) => {
   font-size: clamp(22px, 2.4vw, 30px);
   font-weight: 750;
   letter-spacing: -0.02em;
+
+  @media (max-width: 1000px) {
+    justify-content: center;
+    font-size: clamp(20px, 5vw, 26px);
+  }
 }
 
 .subtitle {
@@ -192,6 +204,12 @@ const handleAction = (message: string) => {
   span {
     color: var(--muted);
   }
+
+  @media (max-width: 1000px) {
+    font-size: 14px;
+    margin: 0 0 16px;
+    max-width: 100%;
+  }
 }
 
 .actions {
@@ -199,6 +217,11 @@ const handleAction = (message: string) => {
   flex-wrap: wrap;
   gap: 10px;
   margin: 0 0 16px;
+
+  @media (max-width: 1000px) {
+    justify-content: center;
+    gap: 8px;
+  }
 }
 
 .btn {
@@ -242,6 +265,11 @@ const handleAction = (message: string) => {
   list-style: none;
   color: var(--muted);
   font-size: 13px;
+
+  @media (max-width: 1000px) {
+    justify-content: center;
+    font-size: 12px;
+  }
 }
 
 .chip {
@@ -264,6 +292,13 @@ const handleAction = (message: string) => {
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(8px);
   z-index: 1;
+
+  @media (max-width: 1000px) {
+    top: 16px;
+    bottom: auto;
+    padding: 8px 10px;
+    gap: 8px;
+  }
 }
 
 .icon-btn {
@@ -302,5 +337,13 @@ const handleAction = (message: string) => {
   overflow: hidden;
   text-overflow: ellipsis;
   z-index: 1;
+
+  @media (max-width: 1000px) {
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 16px;
+    font-size: 11.5px;
+    max-width: 90%;
+  }
 }
 </style>
