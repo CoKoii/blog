@@ -85,8 +85,6 @@ onMounted(() => {
   min-height: 180px;
   border-radius: var(--radius);
   background: linear-gradient(135deg, #2b4df0 0%, #3a6bf3 55%, #4e8cff 100%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: var(--shadow);
   position: relative;
   overflow: hidden;
   padding: 18px;

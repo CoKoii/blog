@@ -140,17 +140,14 @@ onBeforeUnmount(() => {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
   overflow: hidden;
   transition:
     transform 0.14s ease,
     border-color 0.14s ease,
     box-shadow 0.14s ease;
   outline: none;
-
   &:hover {
     border-color: #dedede;
-    box-shadow: 0 22px 60px rgba(17, 24, 39, 0.1);
   }
 
   &:focus-visible {

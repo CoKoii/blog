@@ -57,8 +57,6 @@ defineOptions({
   position: relative;
   border-radius: var(--radius);
   background: linear-gradient(145deg, var(--card), var(--card2));
-  border: 1px solid var(--border);
-  box-shadow: 0 18px 50px rgba(17, 24, 39, 0.08);
   overflow: hidden;
   text-decoration: none;
   color: var(--text);

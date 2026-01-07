@@ -94,9 +94,7 @@ const handleAction = (message: string) => {
 .card {
   position: relative;
   background: var(--card);
-  border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
   overflow: hidden;
   padding: clamp(18px, 3.2vw, 34px);
   height: 100%;

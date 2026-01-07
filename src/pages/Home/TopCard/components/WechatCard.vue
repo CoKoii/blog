@@ -76,7 +76,6 @@ defineOptions({
   position: relative;
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: var(--shadow);
   background: linear-gradient(135deg, var(--wx), var(--wx-dark));
   transform-style: preserve-3d;
   outline: none;

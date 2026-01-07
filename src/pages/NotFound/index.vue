@@ -8,14 +8,6 @@ useHead({
   meta: [{ name: 'description', content: 'Developer, Creator, Explorer' }],
 })
 
-// Data: Bento Grid Items
-const quickLinks = [
-  { name: 'Projects', icon: 'lucide:folder-heart', color: '#ff6b6b' },
-  { name: 'Articles', icon: 'lucide:file-text', color: '#4ecdc4' },
-  { name: 'Snippets', icon: 'lucide:code-2', color: '#ffe66d' },
-  { name: 'Gallery', icon: 'lucide:image', color: '#1a535c' },
-]
-
 const projects = ref([
   {
     name: 'Hero-Admin',
@@ -89,8 +81,7 @@ const groupedResources = [
 <template>
   <div class="dashboard-page">
     <!-- Area 1: Bento Header (High Density Info) -->
-    <header class="bento-grid">
-    </header>
+    <header class="bento-grid"></header>
 
     <!-- Area 2: Main Content Split -->
     <main class="main-content">
@@ -247,7 +238,7 @@ $radius: 16px;
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
-    border-color: rgba(0, 0, 0, 0.08); // Slight dark border on hover
+    border-color: rgba(0, 0, 0, 0.08);
   }
 }
 
@@ -553,5 +544,4 @@ $radius: 16px;
     opacity: 0.6;
   }
 }
-
 </style>
