@@ -1,17 +1,17 @@
 .sideBar {
-  padding: 12px 14px;
+  padding: var(--space-3) var(--space-sidebar-padding-x);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-5);
   .box {
     display: flex;
     flex-direction: column;
     .title {
       font-weight: bold;
-      margin-bottom: 12px;
-      margin-left: 9px;
-      font-size: 14px;
-      color: #727272;
+      margin-bottom: var(--space-3);
+      margin-left: var(--space-title-indent);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
     }
     ul {
       list-style: none;
@@ -19,40 +19,40 @@
       margin: 0;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: var(--space-1);
       li {
         .active {
-          background-color: #f1f2f5;
+          background-color: var(--color-bg-hover);
           color: inherit;
           svg {
-            color: #000000;
+            color: var(--color-text-primary);
           }
         }
         a {
           width: 100%;
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: var(--space-4);
           text-decoration: none;
-          color: #6b7280;
-          transition: all 0.3s ease;
-          padding: 9px 10px;
-          border-radius: 10px;
+          color: var(--color-text-secondary);
+          transition: var(--transition-base);
+          padding: var(--space-control-y) var(--space-control-x);
+          border-radius: var(--radius-sm);
           &:hover {
-            background-color: #f1f2f5;
+            background-color: var(--color-bg-hover);
           }
           .text {
-            font-size: 15px;
+            font-size: var(--font-size-sm);
           }
           svg {
-            font-size: 21px;
-            color: #51515192;
+            font-size: var(--size-icon-md);
+            color: var(--color-text-tertiary);
           }
           .color {
-            margin: 0 6px;
-            width: 8px;
-            height: 8px;
-            border-radius: 9999px;
+            margin: 0 var(--space-dot-gap);
+            width: var(--size-dot);
+            height: var(--size-dot);
+            border-radius: var(--radius-full);
           }
         }
       }
@@ -73,8 +73,8 @@
           }
           .color {
             margin: 0;
-            width: 12px;
-            height: 12px;
+            width: var(--size-dot-collapsed);
+            height: var(--size-dot-collapsed);
           }
         }
       }

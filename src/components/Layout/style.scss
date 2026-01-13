@@ -1,6 +1,6 @@
 .Layout {
-  --topBar-height: 58px;
-  --sideBar-width: 245px;
+  --topBar-height: var(--layout-topbar-height);
+  --sideBar-width: var(--layout-sidebar-width);
   display: flex;
   flex-direction: column;
   .topBar {
@@ -20,22 +20,22 @@
       z-index: 10;
     }
     .main {
-      padding: 12px 24px;
+      padding: var(--space-3) var(--space-5);
       margin-left: var(--sideBar-width);
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: var(--space-5);
       .footer {
-        height: 40px;
-        background-color: #e2e2e2;
+        height: var(--layout-footer-height);
+        background-color: var(--color-bg-footer);
         margin-top: auto;
       }
     }
   }
 }
 .collapse {
-  --sideBar-width: 67px;
+  --sideBar-width: var(--layout-sidebar-width-collapsed);
 }
 @media (max-width: 768px) {
   .Layout {
@@ -46,7 +46,7 @@
       }
       .main {
         margin-left: 0;
-        padding: 12px 12px;
+        padding: var(--space-3) var(--space-3);
       }
     }
   }

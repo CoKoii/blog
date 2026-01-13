@@ -2,9 +2,9 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 50vw;
+  width: var(--layout-sidebar-width-mobile);
   height: 100vh;
-  background-color: #f8f9fa81;
+  background-color: var(--color-bg-mobile-sidebar);
   z-index: 1000;
   overflow-y: auto;
 }

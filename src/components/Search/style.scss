@@ -1,8 +1,8 @@
 .Search {
-  padding: 12px 16px;
-  background-color: #f9f9fa;
-  color: #727272;
-  border-radius: 10px;
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-soft);
+  color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
   width: 80vw;
   max-width: 500px;
   display: flex;
@@ -12,17 +12,17 @@
   .text {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
     p {
-      font-size: 14px;
+      font-size: var(--font-size-xs);
     }
   }
   .icon {
-    width: 16px;
-    height: 16px;
-    background-color: #fcfbfd;
-    border: 1px solid #d0d0d061;
-    border-radius: 3px;
+    width: var(--size-icon-sm);
+    height: var(--size-icon-sm);
+    background-color: var(--color-bg-softer);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-xs);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,13 +32,13 @@
   .Search {
     max-width: none;
     width: auto;
-    padding: 8px;
-    border-radius: 9999px;
+    padding: var(--space-2);
+    border-radius: var(--radius-full);
     .icon {
       display: none;
     }
     .text {
-      color: #000;
+      color: var(--color-text-primary);
       p {
         display: none;
       }

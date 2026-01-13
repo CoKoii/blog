@@ -1,5 +1,6 @@
 @use './font/regular/regular.css';
 @use './font/medium/medium.css';
+@use './tokens.scss';
 * {
   margin: 0;
   padding: 0;
