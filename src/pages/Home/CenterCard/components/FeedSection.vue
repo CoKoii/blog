@@ -44,9 +44,7 @@ const setTab = (tab: string) => {
 <template>
   <section class="feed-section">
     <div class="feed-header">
-      <h2 class="section-title">
-        <Icon icon="lucide:sparkles" class="title-icon" /> Latest Updates
-      </h2>
+      <h2 class="section-title"><Icon icon="lucide:sparkles" class="title-icon" /> 最新文章</h2>
       <div class="tabs" :style="tabsStyle">
         <span class="tab-indicator" aria-hidden="true">
           <span :key="props.activeTab" class="tab-indicator-inner"></span>
