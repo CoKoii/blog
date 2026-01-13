@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
 import TopCard from './TopCard/TopCard.vue'
+import CenterCard from './CenterCard/CenterCard.vue'
 useHead({
   title: 'CaoKai - 技术博客',
   meta: [
@@ -15,6 +16,7 @@ useHead({
 <template>
   <div class="Home">
     <TopCard />
+    <CenterCard />
   </div>
 </template>
 
