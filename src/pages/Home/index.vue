@@ -24,6 +24,6 @@ useHead({
 .Home {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 48px;
 }
 </style>
