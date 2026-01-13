@@ -41,11 +41,11 @@ const handleAction = (message: string) => {
           </div>
 
           <ul class="chips" aria-label="skills">
-            <li class="chip">React</li>
-            <li class="chip">TypeScript</li>
-            <li class="chip">Next.js</li>
-            <li class="chip">Figma</li>
-            <li class="chip">Design Systems</li>
+            <li class="chip">大三在读</li>
+            <li class="chip">实习ing</li>
+            <li class="chip">开发博客</li>
+            <li class="chip">上班摸鱼中</li>
+            <li class="chip">学习理财</li>
           </ul>
         </div>
       </div>
@@ -271,7 +271,7 @@ const handleAction = (message: string) => {
 }
 
 .chip {
-  border: 1px solid var(--border);
+  border: none;
   padding: 6px 10px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.6);
