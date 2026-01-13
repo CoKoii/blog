@@ -35,6 +35,8 @@ const latestPosts = ref([
     time: '2 hrs ago',
     readTime: '5 min',
     hot: true,
+    cover:
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=900&q=80',
   },
   {
     id: 2,
@@ -43,6 +45,8 @@ const latestPosts = ref([
     time: '1 day ago',
     readTime: '8 min',
     hot: true,
+    cover:
+      'https://images.unsplash.com/photo-1487014679447-9f8336841d58?auto=format&fit=crop&w=900&q=80',
   },
   {
     id: 3,
@@ -51,6 +55,8 @@ const latestPosts = ref([
     time: '3 days ago',
     readTime: '12 min',
     hot: false,
+    cover:
+      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=900&q=80',
   },
   {
     id: 4,
@@ -59,6 +65,8 @@ const latestPosts = ref([
     time: '1 week ago',
     readTime: '10 min',
     hot: false,
+    cover:
+      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
   },
   {
     id: 5,
@@ -67,6 +75,8 @@ const latestPosts = ref([
     time: '2 weeks ago',
     readTime: '6 min',
     hot: false,
+    cover:
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80',
   },
 ])
 

@@ -13,6 +13,7 @@ type Post = {
   time: string
   readTime: string
   hot: boolean
+  cover: string
 }
 
 const props = defineProps<{
@@ -63,7 +64,10 @@ const setTab = (tab: string) => {
 
     <div class="post-list">
       <div v-for="post in props.latestPosts" :key="post.id" class="post-row">
-        <div class="post-marker" :class="{ hot: post.hot }"></div>
+        <div class="post-cover">
+          <img :src="post.cover" :alt="post.title" loading="lazy" />
+          <div class="post-marker" :class="{ hot: post.hot }"></div>
+        </div>
         <div class="post-main">
           <h3 class="post-title">{{ post.title }}</h3>
           <div class="post-meta">
@@ -172,39 +176,73 @@ const setTab = (tab: string) => {
 .post-list {
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
 .post-row {
   display: flex;
   align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid #eee;
-  transition: background 0.2s;
+  gap: 16px;
+  padding: 12px 14px;
+  border: 1px solid #f0f0f0;
+  border-radius: 18px;
+  background: #fff;
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.35s ease;
   cursor: pointer;
   position: relative;
+  overflow: hidden;
 
-  &:first-child {
-    padding-top: 0;
-  }
-  &:hover {
+  &:hover,
+  &:focus-within {
+    transform: translateY(-2px);
+    border-color: rgba(59, 130, 246, 0.22);
+    box-shadow:
+      0 14px 30px rgba(15, 23, 42, 0.08),
+      0 0 0 2px rgba(59, 130, 246, 1);
     .post-title {
       color: var(--primary-hover-color);
     }
     .read-btn {
       opacity: 1;
-      transform: translateX(0);
+      transform: translateX(0) translateY(0);
+    }
+    .post-cover img {
+      transform: scale(1.05);
     }
   }
 
-  .post-marker {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #ddd;
-    margin-right: 16px;
-    &.hot {
-      background: #ff4757;
-      box-shadow: 0 0 8px rgba(255, 71, 87, 0.4);
+  .post-cover {
+    position: relative;
+    width: 140px;
+    height: 88px;
+    border-radius: 14px;
+    overflow: hidden;
+    flex: 0 0 auto;
+    background: #eef0f4;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1);
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .post-marker {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      &.hot {
+        background: #ff4757;
+        box-shadow: 0 0 10px rgba(255, 71, 87, 0.6);
+      }
     }
   }
 
@@ -240,8 +278,10 @@ const setTab = (tab: string) => {
 
   .read-btn {
     opacity: 0;
-    transform: translateX(10px);
-    transition: all 0.2s;
+    transform: translateX(10px) translateY(2px);
+    transition:
+      opacity 0.25s ease,
+      transform 0.35s ease;
     background: #111;
     color: #fff;
     border: none;
@@ -249,6 +289,30 @@ const setTab = (tab: string) => {
     border-radius: 6px;
     font-size: 0.8rem;
     font-weight: 500;
+  }
+}
+
+@media (max-width: 720px) {
+  .post-row {
+    flex-direction: column;
+    align-items: stretch;
+    .post-cover {
+      width: 100%;
+      height: 160px;
+    }
+    .read-btn {
+      align-self: flex-end;
+    }
+  }
+}
+
+@media (hover: none) {
+  .post-row {
+    transform: none;
+    .read-btn {
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 
