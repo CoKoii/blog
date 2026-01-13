@@ -15,21 +15,18 @@ const handleAction = (message: string) => {
     <section class="card">
       <div class="grid">
         <div class="avatar" aria-label="avatar">
-          <img
-            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop&crop=faces"
-            alt="Avatar"
-          />
+          <img src="https://q1.qlogo.cn/g?b=qq&nk=2655257336&s=640" alt="Avatar" />
           <span class="status-dot" aria-label="online"></span>
         </div>
 
         <div>
           <h1 class="title">Hi, I'm CaoKai <span aria-hidden="true">👋</span></h1>
 
-          <p class="subtitle">Frontend Engineer & UI Designer</p>
+          <p class="subtitle">Full-Stack Developer</p>
 
           <p class="value">
-            I design and build thoughtful web products
-            <span>— with a focus on clarity, performance, and tiny details.</span>
+            欢迎来到我的博客 😝，这里是我记笔记的地方 🙌，目前在杭州实习
+            <span>— 致力于成为一个前端小姥.</span>
           </p>
 
           <div class="actions">
@@ -45,7 +42,7 @@ const handleAction = (message: string) => {
             <li class="chip">实习ing</li>
             <li class="chip">开发博客</li>
             <li class="chip">上班摸鱼中</li>
-            <li class="chip">学习理财</li>
+            <li class="chip">理财小白</li>
           </ul>
         </div>
       </div>

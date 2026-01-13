@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import { computed } from 'vue'
 
 defineOptions({
   name: 'CenterCardFeedSection',
@@ -24,6 +25,16 @@ const emit = defineEmits<{
   'update:activeTab': [value: string]
 }>()
 
+const activeIndex = computed(() => {
+  const index = props.tabs.indexOf(props.activeTab)
+  return index === -1 ? 0 : index
+})
+
+const tabsStyle = computed(() => ({
+  '--active-index': String(activeIndex.value),
+  '--tab-count': String(props.tabs.length),
+}))
+
 const setTab = (tab: string) => {
   emit('update:activeTab', tab)
 }
@@ -35,7 +46,10 @@ const setTab = (tab: string) => {
       <h2 class="section-title">
         <Icon icon="lucide:sparkles" class="title-icon" /> Latest Updates
       </h2>
-      <div class="tabs">
+      <div class="tabs" :style="tabsStyle">
+        <span class="tab-indicator" aria-hidden="true">
+          <span :key="props.activeTab" class="tab-indicator-inner"></span>
+        </span>
         <button
           v-for="tab in props.tabs"
           :key="tab"
@@ -86,28 +100,72 @@ const setTab = (tab: string) => {
       gap: 8px;
     }
     .tabs {
-      display: flex;
-      gap: 8px;
+      display: grid;
+      grid-template-columns: repeat(var(--tab-count), minmax(0, 1fr));
+      gap: var(--tabs-gap);
       background: #eaecf0;
-      padding: 4px;
-      border-radius: 12px;
+      padding: var(--tabs-padding);
+      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      --tabs-gap: 6px;
+      --tabs-padding: 3px;
+      .tab-indicator {
+        position: absolute;
+        top: var(--tabs-padding);
+        bottom: var(--tabs-padding);
+        left: var(--tabs-padding);
+        width: calc(
+          (100% - (var(--tabs-padding) * 2) - (var(--tabs-gap) * (var(--tab-count) - 1))) /
+            var(--tab-count)
+        );
+        transform: translateX(calc(var(--active-index) * (100% + var(--tabs-gap))));
+        transition: transform 0.55s cubic-bezier(0.16, 1.35, 0.3, 1);
+        will-change: transform;
+        z-index: 0;
+      }
+      .tab-indicator-inner {
+        position: absolute;
+        inset: 0;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 6px 14px rgba(17, 24, 39, 0.12);
+        animation: jelly 0.55s ease-out;
+      }
       .tab-btn {
         background: transparent;
         border: none;
-        padding: 6px 16px;
+        padding: 6px 12px;
         font-size: 0.85rem;
         font-weight: 600;
         color: #666;
         cursor: pointer;
-        border-radius: 8px;
-        transition: all 0.2s;
+        border-radius: 10px;
+        transition: color 0.2s ease;
+        position: relative;
+        z-index: 1;
+        width: 100%;
       }
       .tab-btn.active {
-        background: #fff;
         color: #000;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       }
     }
+  }
+}
+
+@keyframes jelly {
+  0% {
+    transform: scaleX(0.9) scaleY(0.9);
+  }
+  45% {
+    transform: scaleX(1.08) scaleY(0.92);
+  }
+  70% {
+    transform: scaleX(0.98) scaleY(1.04);
+  }
+  100% {
+    transform: scaleX(1) scaleY(1);
   }
 }
 
