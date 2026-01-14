@@ -39,7 +39,12 @@
           padding: var(--space-control-y) var(--space-control-x);
           border-radius: var(--radius-sm);
           &:hover {
-            background-color: var(--color-bg-hover);
+            box-shadow:
+              0 8px 20px rgba(15, 23, 42, 0.08),
+              0 0 0 2px rgba(59, 130, 246, 1);
+            transform: translateY(-2px);
+            background: #fff;
+            border-color: rgba(59, 130, 246, 0.22);
           }
           .text {
             font-size: var(--font-size-sm);

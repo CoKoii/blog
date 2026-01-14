@@ -39,6 +39,7 @@
 }
 @media (max-width: 768px) {
   .Layout {
+    --layout-topbar-height: 48px;
     --sideBar-width: 0;
     .content {
       .sideBar {
