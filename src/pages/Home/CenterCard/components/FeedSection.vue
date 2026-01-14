@@ -230,7 +230,7 @@ watch(() => props.activeTab, centerActiveTab)
 
 .post-row {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 16px;
   padding: 16px 18px;
   border: 1px solid #f0f0f0;
@@ -301,13 +301,14 @@ watch(() => props.activeTab, centerActiveTab)
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    min-height: 108px;
 
     .post-title {
       font-size: 1.15rem;
       font-weight: 600;
       color: #333;
-      margin-bottom: 6px;
       transition: color 0.2s;
+      line-height: 1.4;
     }
 
     .post-meta {
@@ -347,6 +348,7 @@ watch(() => props.activeTab, centerActiveTab)
     font-size: 0.8rem;
     font-weight: 500;
     cursor: pointer;
+    align-self: center;
   }
 }
 
