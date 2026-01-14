@@ -20,7 +20,10 @@ defineProps<{
 
 <template>
   <div class="sidebar-block">
-    <h3 class="side-title">Pinned Projects</h3>
+    <h3 class="side-title">
+      <Icon icon="lucide:pin" />
+      置顶项目
+    </h3>
     <div class="mini-grid">
       <div v-for="p in projects" :key="p.name" class="mini-card">
         <div class="card-icon" :class="p.color">
@@ -47,6 +50,13 @@ defineProps<{
     font-weight: 700;
     margin-bottom: 16px;
     color: #111;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .iconify {
+      transform: rotate(45deg);
+    }
   }
 }
 
@@ -64,13 +74,25 @@ defineProps<{
   border-radius: 10px;
   background: #f9fafb;
   border: 1px solid transparent;
-  transition: 0.2s;
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.35s ease,
+    background 0.2s ease;
   cursor: pointer;
 
-  &:hover {
+  &:hover,
+  &:focus-within {
+    transform: translateY(-2px);
     background: #fff;
-    border-color: #ddd;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    border-color: rgba(59, 130, 246, 0.22);
+    box-shadow:
+      0 8px 20px rgba(15, 23, 42, 0.08),
+      0 0 0 2px rgba(59, 130, 246, 1);
+
+    .card-name {
+      color: var(--primary-hover-color, #3b82f6);
+    }
   }
 
   .card-icon {
@@ -95,6 +117,7 @@ defineProps<{
       font-weight: 600;
       font-size: 0.9rem;
       color: #333;
+      transition: color 0.2s;
     }
     .card-desc {
       font-size: 0.75rem;
