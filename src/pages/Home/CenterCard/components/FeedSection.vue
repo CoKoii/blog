@@ -179,9 +179,9 @@ const setTab = (tab: string) => {
 
 .post-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
-  padding: 12px 14px;
+  padding: 16px 18px;
   border: 1px solid #f0f0f0;
   border-radius: 18px;
   background: #fff;
@@ -214,8 +214,8 @@ const setTab = (tab: string) => {
 
   .post-cover {
     position: relative;
-    width: 140px;
-    height: 88px;
+    width: 170px;
+    height: 108px;
     border-radius: 14px;
     overflow: hidden;
     flex: 0 0 auto;
@@ -246,6 +246,11 @@ const setTab = (tab: string) => {
 
   .post-main {
     flex: 1;
+    text-align: left;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     .post-title {
       font-size: 1.15rem;
       font-weight: 600;
@@ -296,7 +301,7 @@ const setTab = (tab: string) => {
     align-items: stretch;
     .post-cover {
       width: 100%;
-      height: 160px;
+      height: 190px;
     }
     .read-btn {
       align-self: flex-end;
