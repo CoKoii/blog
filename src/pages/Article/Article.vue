@@ -77,10 +77,9 @@ const article = ref({
   .cover_info {
     position: relative;
     width: 100%;
-    height: 460px;
+    height: 500px;
     overflow: hidden;
     border-radius: 24px;
-    box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
