@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { getAllPosts, getAllCategories } from '@/utils/posts'
+import { usePostListFormat } from '@/composables/usePost'
 import FeedSection from './components/FeedSection.vue'
 import SidebarSection from './components/SidebarSection.vue'
 
@@ -25,60 +27,23 @@ const projects = ref([
 ])
 
 const activeTab = ref('All')
-const tabs = ['All', 'Dev', 'Life', 'Design', 'Tech', 'Tutorials']
 
-const latestPosts = ref([
-  {
-    id: 1,
-    title: '重构思维：如何写出像艺术品一样的代码',
-    category: 'Architecture',
-    time: '2 hrs ago',
-    readTime: '5 min',
-    hot: true,
-    cover:
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 2,
-    title: 'CSS Grid 布局指南：打造 Bento 风格',
-    category: 'Design',
-    time: '1 day ago',
-    readTime: '8 min',
-    hot: true,
-    cover:
-      'https://images.unsplash.com/photo-1487014679447-9f8336841d58?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 3,
-    title: 'Rust 初体验：与 TypeScript 的爱恨纠葛',
-    category: 'Backend',
-    time: '3 days ago',
-    readTime: '12 min',
-    hot: false,
-    cover:
-      'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 4,
-    title: '2025 年度总结：在不确定性中寻找支点',
-    category: 'Life',
-    time: '1 week ago',
-    readTime: '10 min',
-    hot: false,
-    cover:
-      'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80',
-  },
-  {
-    id: 5,
-    title: 'Vite 5.0 迁移踩坑记录',
-    category: 'DevOps',
-    time: '2 weeks ago',
-    readTime: '6 min',
-    hot: false,
-    cover:
-      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80',
-  },
-])
+// 从 posts 目录动态获取分类
+const categories = getAllCategories()
+const tabs = computed(() => ['All', ...categories])
+
+// 从 Markdown 文件读取文章数据并格式化
+const allPosts = getAllPosts()
+
+// 根据 activeTab 过滤文章
+const filteredPosts = computed(() => {
+  if (activeTab.value === 'All') {
+    return allPosts
+  }
+  return allPosts.filter((post) => post.category === activeTab.value)
+})
+
+const latestPosts = computed(() => usePostListFormat(filteredPosts.value, 2))
 
 const groupedResources = [
   { title: 'Weekly Reads', count: 12, icon: 'lucide:book-open' },

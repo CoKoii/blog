@@ -9,6 +9,7 @@ const preventDefault = (e: Event) => {
 watch(
   () => layoutStore.isMobileSideBarOpen,
   (newVal) => {
+    if (typeof document === 'undefined') return
     if (newVal) {
       document.body.style.overflow = 'hidden'
       document.addEventListener('touchmove', preventDefault, { passive: false })
@@ -21,6 +22,7 @@ watch(
 )
 
 onUnmounted(() => {
+  if (typeof document === 'undefined') return
   document.body.style.overflow = ''
   document.removeEventListener('touchmove', preventDefault)
 })

@@ -3,6 +3,12 @@ title: 'SEO Markdown Playground'
 description: 'A single file that exercises common Markdown (GFM) syntax.'
 tags: [seo, markdown, demo]
 date: 2025-01-14
+coverImage: https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=1600
+wordCount: 1800
+readTime: 8
+views: 125
+location: 深圳
+comments: 3
 ---
 
 # SEO Markdown Playground
@@ -64,7 +70,7 @@ Autolink: <https://www.example.com/seo>.
 
 ## 4. Images
 
-![SEO diagram](./images/seo-diagram.png 'Alt text helps accessibility')
+![SEO diagram](https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800 'Alt text helps accessibility')
 
 ## 5. Tables
 

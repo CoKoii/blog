@@ -2,13 +2,14 @@
 import { Icon } from '@iconify/vue'
 import { computed, nextTick, onBeforeUpdate, onMounted, ref, watch } from 'vue'
 import type { ComponentPublicInstance } from 'vue'
+import { useRouter } from 'vue-router'
 
 defineOptions({
   name: 'CenterCardFeedSection',
 })
 
 interface Post {
-  id: number
+  id: string | number
   title: string
   category: string
   time: string
@@ -26,6 +27,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:activeTab': [value: string]
 }>()
+
+const router = useRouter()
 
 // Computed properties
 const activeIndex = computed(() => {
@@ -71,6 +74,10 @@ const setTab = (tab: string) => {
   emit('update:activeTab', tab)
 }
 
+const goToArticle = (postId: string | number) => {
+  router.push(`/article/${postId}`)
+}
+
 // Lifecycle hooks
 onBeforeUpdate(() => {
   tabButtons.value = []
@@ -106,7 +113,12 @@ watch(() => props.activeTab, centerActiveTab)
     </div>
 
     <div class="post-list">
-      <article v-for="post in latestPosts" :key="post.id" class="post-row">
+      <article
+        v-for="post in latestPosts"
+        :key="post.id"
+        class="post-row"
+        @click="goToArticle(post.id)"
+      >
         <div class="post-cover">
           <img :src="post.cover" :alt="post.title" loading="lazy" />
           <div v-if="post.hot" class="post-marker hot" />
@@ -121,7 +133,9 @@ watch(() => props.activeTab, centerActiveTab)
             <span class="read">{{ post.readTime }} read</span>
           </div>
         </div>
-        <button class="read-btn" aria-label="阅读文章">Read</button>
+        <button class="read-btn" aria-label="阅读文章" @click.stop="goToArticle(post.id)">
+          Read
+        </button>
       </article>
     </div>
 

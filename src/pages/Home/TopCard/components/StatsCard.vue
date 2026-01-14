@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import { getAllPosts } from '@/utils/posts'
+import { usePostStats } from '@/composables/usePost'
 
 defineOptions({
   name: 'StatsCard',
@@ -8,17 +10,22 @@ defineOptions({
 
 const statsConfig = {
   startDate: '2026-01-04',
-  articles: 142,
-  words: 238400,
 }
 
 const statsDays = ref('—')
 
-const formatK = (value: number) => {
+// 获取文章统计数据
+const allPosts = getAllPosts()
+const stats = usePostStats(allPosts)
+
+const totalArticles = computed(() => stats.totalPosts)
+const totalWords = computed(() => stats.totalWords)
+
+const formatWords = (value: number) => {
   if (!Number.isFinite(value)) return '—'
-  const kValue = value / 1000
-  const decimals = kValue >= 100 ? 0 : 1
-  return `${kValue.toFixed(decimals)}k`
+  const wanValue = value / 10000
+  const decimals = wanValue >= 10 ? 1 : 2
+  return `${wanValue.toFixed(decimals)}w`
 }
 
 onMounted(() => {
@@ -40,11 +47,11 @@ onMounted(() => {
           <div class="stats-k">建站天数</div>
         </div>
         <div class="stats-metric">
-          <div class="stats-v">{{ statsConfig.articles }}</div>
+          <div class="stats-v">{{ totalArticles }}</div>
           <div class="stats-k">文章总数</div>
         </div>
         <div class="stats-metric">
-          <div class="stats-v">{{ formatK(statsConfig.words) }}</div>
+          <div class="stats-v">{{ formatWords(totalWords) }}</div>
           <div class="stats-k">全站字数</div>
         </div>
       </div>
