@@ -25,7 +25,7 @@ const projects = ref([
 ])
 
 const activeTab = ref('All')
-const tabs = ['All', 'Dev', 'Life', 'Design']
+const tabs = ['All', 'Dev', 'Life', 'Design', 'Tech', 'Tutorials']
 
 const latestPosts = ref([
   {
