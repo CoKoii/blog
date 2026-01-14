@@ -421,7 +421,7 @@ watch(() => props.activeTab, centerActiveTab)
     }
 
     .post-main {
-      justify-content: center;
+      justify-content: space-between;
     }
 
     .read {
