@@ -16,7 +16,7 @@ const handleAction = (message: string) => {
       <div class="grid">
         <div class="avatar" aria-label="avatar">
           <img src="https://q1.qlogo.cn/g?b=qq&nk=2655257336&s=640" alt="Avatar" />
-          <span class="status-dot" aria-label="online"></span>
+          <span class="status-dot"></span>
         </div>
 
         <div>
