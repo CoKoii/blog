@@ -5,7 +5,7 @@ defineOptions({
 </script>
 
 <template>
-  <div class="index"></div>
+  <div class="index">404 error page</div>
 </template>
 
 <style scoped lang="scss"></style>

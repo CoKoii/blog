@@ -424,8 +424,15 @@ watch(() => props.activeTab, centerActiveTab)
       justify-content: space-between;
     }
 
-    .read {
-      display: none;
+    .post-meta {
+      .dot + .read,
+      .read {
+        display: none;
+      }
+
+      .dot:has(+ .read) {
+        display: none;
+      }
     }
 
     .read-btn {
