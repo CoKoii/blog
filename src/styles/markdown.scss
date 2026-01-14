@@ -1,0 +1,427 @@
+/* Markdown 样式 */
+.markdown-content {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--color-text-primary);
+
+  /* 标题样式 */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 700;
+    line-height: 1.4;
+    margin-top: 2em;
+    margin-bottom: 0.8em;
+    position: relative;
+    color: var(--color-text-primary);
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    /* 标题前的装饰点 */
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 1em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 2px;
+      margin-right: 12px;
+      vertical-align: middle;
+    }
+  }
+
+  h1 {
+    font-size: 2.2em;
+    padding-bottom: 0.3em;
+    border-bottom: 2px solid var(--color-border-subtle);
+  }
+
+  h2 {
+    font-size: 1.8em;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  h3 {
+    font-size: 1.5em;
+  }
+
+  h4 {
+    font-size: 1.3em;
+  }
+
+  h5 {
+    font-size: 1.1em;
+  }
+
+  h6 {
+    font-size: 1em;
+    color: var(--color-text-secondary);
+  }
+
+  /* 段落和文本 */
+  p {
+    margin: 1.2em 0;
+    text-align: justify;
+  }
+
+  /* 强调和粗体 */
+  strong,
+  b {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  em,
+  i {
+    font-style: italic;
+    color: var(--color-text-secondary);
+  }
+
+  /* 删除线 */
+  del,
+  s {
+    text-decoration: line-through;
+    color: var(--color-text-tertiary);
+  }
+
+  /* 行内代码 */
+  code {
+    font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+    font-size: 0.9em;
+    padding: 3px 8px;
+    background-color: rgba(103, 126, 234, 0.08);
+    border: 1px solid rgba(103, 126, 234, 0.15);
+    border-radius: 4px;
+    color: #667eea;
+    font-weight: 500;
+  }
+
+  /* 代码块 */
+  pre {
+    background-color: #282c34;
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    margin: 1.5em 0;
+    overflow-x: auto;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.05), transparent);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    code {
+      font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      color: #abb2bf;
+      display: block;
+    }
+  }
+
+  /* 引用块 */
+  blockquote {
+    margin: 1.5em 0;
+    padding: 16px 20px 16px 48px;
+    background: linear-gradient(
+      135deg,
+      rgba(103, 126, 234, 0.05) 0%,
+      rgba(118, 75, 162, 0.05) 100%
+    );
+    border-left: 4px solid #667eea;
+    border-radius: var(--radius-sm);
+    position: relative;
+    font-style: italic;
+    color: var(--color-text-secondary);
+
+    /* 引号装饰 */
+    &::before {
+      content: '"';
+      position: absolute;
+      left: 16px;
+      top: 12px;
+      font-size: 32px;
+      color: #667eea;
+      opacity: 0.3;
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+
+    p {
+      margin: 0.5em 0;
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    code {
+      background-color: rgba(103, 126, 234, 0.1);
+    }
+  }
+
+  /* 链接 */
+  a {
+    color: #667eea;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+    font-weight: 500;
+
+    &:hover {
+      color: #764ba2;
+      border-bottom-color: #764ba2;
+    }
+
+    code {
+      color: inherit;
+    }
+  }
+
+  /* 列表 */
+  ul,
+  ol {
+    margin: 1.2em 0;
+    padding-left: 2em;
+  }
+
+  ul {
+    list-style: none;
+
+    li {
+      position: relative;
+      margin: 0.8em 0;
+      padding-left: 1.2em;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.7em;
+        width: 6px;
+        height: 6px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+      }
+    }
+  }
+
+  ol {
+    list-style: none;
+    counter-reset: list-counter;
+
+    li {
+      position: relative;
+      margin: 0.8em 0;
+      padding-left: 2em;
+      counter-increment: list-counter;
+
+      &::before {
+        content: counter(list-counter) '.';
+        position: absolute;
+        left: 0;
+        font-weight: 600;
+        color: #667eea;
+      }
+    }
+  }
+
+  li {
+    p {
+      margin: 0.5em 0;
+    }
+
+    ul,
+    ol {
+      margin: 0.5em 0;
+    }
+  }
+
+  /* 表格 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+
+      th {
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 15px;
+      }
+    }
+
+    tbody {
+      tr {
+        transition: background-color 0.2s ease;
+
+        &:nth-child(even) {
+          background-color: var(--color-bg-soft);
+        }
+
+        &:hover {
+          background-color: var(--color-bg-hover);
+        }
+      }
+
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--color-border-subtle);
+      }
+    }
+  }
+
+  /* 分隔线 */
+  hr {
+    margin: 2.5em 0;
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--color-border-subtle), transparent);
+  }
+
+  /* 图片 */
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm);
+    margin: 1.5em 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  /* 任务列表 */
+  input[type='checkbox'] {
+    margin-right: 8px;
+    accent-color: #667eea;
+  }
+
+  /* 脚注 */
+  sup {
+    font-size: 0.75em;
+    vertical-align: super;
+
+    a {
+      padding: 2px 4px;
+      border-radius: 3px;
+      background-color: rgba(103, 126, 234, 0.1);
+    }
+  }
+
+  /* 键盘按键 */
+  kbd {
+    font-family: 'Monaco', 'Consolas', 'Courier New', monospace;
+    font-size: 0.9em;
+    padding: 3px 8px;
+    background: linear-gradient(to bottom, #f5f5f5, #e8e8e8);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.1);
+    color: #333;
+  }
+
+  /* Mark 高亮 */
+  mark {
+    background: linear-gradient(120deg, rgba(255, 235, 59, 0.3) 0%, rgba(255, 193, 7, 0.3) 100%);
+    padding: 2px 4px;
+    border-radius: 3px;
+    color: inherit;
+  }
+
+  /* 详情折叠 */
+  details {
+    margin: 1.5em 0;
+    padding: 16px;
+    background-color: var(--color-bg-soft);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-subtle);
+
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #667eea;
+      padding: 8px;
+      margin: -8px;
+      border-radius: var(--radius-xs);
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: var(--color-bg-hover);
+      }
+
+      &::marker {
+        color: #667eea;
+      }
+    }
+
+    &[open] summary {
+      margin-bottom: 12px;
+    }
+  }
+
+  /* 响应式调整 */
+  @media (max-width: 768px) {
+    font-size: 15px;
+
+    h1 {
+      font-size: 1.8em;
+    }
+
+    h2 {
+      font-size: 1.5em;
+    }
+
+    h3 {
+      font-size: 1.3em;
+    }
+
+    pre {
+      padding: var(--space-3);
+      margin: 1em -12px;
+      border-radius: var(--radius-xs);
+
+      code {
+        font-size: 13px;
+      }
+    }
+
+    table {
+      font-size: 14px;
+
+      thead th,
+      tbody td {
+        padding: 8px 12px;
+      }
+    }
+  }
+}
