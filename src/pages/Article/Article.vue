@@ -80,6 +80,8 @@ useHead(() => ({
 
 // 生成目录
 const generateToc = () => {
+  if (typeof document === 'undefined') return
+
   const headings = document.querySelectorAll(
     '.markdown-content h1, .markdown-content h2, .markdown-content h3',
   )
@@ -104,6 +106,8 @@ const generateToc = () => {
 
 // 滚动监听
 const handleScroll = () => {
+  if (typeof document === 'undefined') return
+
   const headings = document.querySelectorAll(
     '.markdown-content h1, .markdown-content h2, .markdown-content h3',
   )
@@ -123,6 +127,8 @@ const handleScroll = () => {
 
 // 跳转到指定章节
 const scrollToHeading = (id: string) => {
+  if (typeof document === 'undefined') return
+
   const element = document.getElementById(id)
   if (element) {
     const offsetTop = element.offsetTop - 80
@@ -134,11 +140,15 @@ const scrollToHeading = (id: string) => {
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
+  if (typeof window !== 'undefined') {
+    window.addEventListener('scroll', handleScroll)
+  }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('scroll', handleScroll)
+  }
 })
 
 watchEffect(async () => {
@@ -154,12 +164,14 @@ watchEffect(async () => {
       ContentComponent.value = module.default
       frontmatter.value = { ...frontmatter.value, ...module.frontmatter }
 
-      // 等待DOM更新后生成目录
-      await nextTick()
-      setTimeout(() => {
-        generateToc()
-        handleScroll()
-      }, 100)
+      // 等待DOM更新后生成目录（仅在客户端）
+      if (typeof document !== 'undefined') {
+        await nextTick()
+        setTimeout(() => {
+          generateToc()
+          handleScroll()
+        }, 100)
+      }
     }
   } catch (error) {
     console.error('Failed to load article:', error)
