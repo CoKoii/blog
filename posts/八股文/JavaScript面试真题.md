@@ -3,7 +3,7 @@ title: 'JavaScript面试真题'
 description: '一个用于演练常见 Markdown（GFM）语法的单文件示例。'
 tags: [seo, markdown, demo]
 date: 2025-01-14
-coverImage: https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=1600
+coverImage: https://read.learnyard.com/content/images/size/w800/2024/07/logo.png
 wordCount: 1800
 readTime: 8
 views: 125
