@@ -12,7 +12,8 @@ const idToPathMap = new Map<string, string>()
 for (const path of Object.keys(postComponents)) {
   const parts = path.split('/')
   const fileName = parts.pop() || ''
-  const id = fileName.replace(/\.md$/, '')
+  const category = parts.pop() || ''
+  const id = category ? `${category}/${fileName.replace(/\.md$/, '')}` : fileName.replace(/\.md$/, '')
   pathToIdMap.set(path, id)
   idToPathMap.set(id, path)
 }
@@ -42,7 +43,7 @@ export function getPostsByCategory(category: string): PostMeta[] {
 
 /**
  * 根据 ID 获取文章内容
- * @param id 文章 ID（文件名，不含 .md）
+ * @param id 文章 ID（文件夹/文件名，不含 .md）
  * @returns 文章模块或 null
  */
 export async function getPostContent(id: string): Promise<PostModule | null> {

@@ -24,7 +24,7 @@ function getPostRoutes() {
         files.forEach((file) => {
           if (file.endsWith('.md')) {
             const name = file.replace(/\.md$/, '')
-            routes.push(`/article/${name}`)
+            routes.push(`/article/${cat}/${name}`)
           }
         })
       }
@@ -66,7 +66,7 @@ function postsMetaPlugin() {
                   const filePath = path.join(catPath, file)
                   const content = fs.readFileSync(filePath, 'utf-8')
                   const { data: frontmatter } = matter(content)
-                  const id = file.replace(/\.md$/, '')
+                  const id = `${cat}/${file.replace(/\.md$/, '')}`
 
                   postsData.push({
                     id,
@@ -119,7 +119,7 @@ export default defineConfig({
   ssgOptions: {
     includedRoutes(paths: string[]) {
       return paths.flatMap((path) => {
-        return path === '/article/:id' ? getPostRoutes() : path
+        return path === '/article/:category/:id' ? getPostRoutes() : path
       })
     },
   },

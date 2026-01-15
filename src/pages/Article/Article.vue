@@ -157,8 +157,10 @@ onUnmounted(() => {
 })
 
 watchEffect(async () => {
-  const id = route.params.id as string
-  if (!id) return
+  const category = route.params.category as string
+  const slug = route.params.id as string
+  if (!category || !slug) return
+  const id = `${category}/${slug}`
 
   ContentComponent.value = null
 
