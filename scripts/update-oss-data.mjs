@@ -1,10 +1,6 @@
-import { writeFile } from 'node:fs/promises'
+import { writeFile, readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { resolve, dirname } from 'node:path'
-
-const username = 'CoKoii'
-const profileUrl = `https://github.com/${username}`
-const apiUrl = `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`
 
 const color = {
   cyan: '\x1b[36m',
@@ -19,10 +15,45 @@ const success = (message) => console.log(`${color.green}${message}${color.reset}
 const warn = (message) => console.log(`${color.yellow}${message}${color.reset}`)
 const error = (message) => console.log(`${color.red}${message}${color.reset}`)
 
+const envPath = resolve(process.cwd(), '.env')
+const loadEnv = async () => {
+  try {
+    const content = await readFile(envPath, 'utf8')
+    content.split('\n').forEach((line) => {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#')) return
+      const separatorIndex = trimmed.indexOf('=')
+      if (separatorIndex === -1) return
+      const key = trimmed.slice(0, separatorIndex).trim()
+      const value = trimmed.slice(separatorIndex + 1).trim()
+      if (key && !(key in process.env)) {
+        process.env[key] = value
+      }
+    })
+  } catch (err) {
+    if (err?.code !== 'ENOENT') {
+      warn(`读取 .env 失败：${err?.message ?? err}`)
+    }
+  }
+}
+
+await loadEnv()
+
+const username = 'CoKoii'
+const profileUrl = `https://github.com/${username}`
+const apiUrl = `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`
+const token = process.env.GITHUB_TOKEN
+
 const startedAt = Date.now()
 info(`开始获取 GitHub 数据... 用户：${username}`)
 info(`请求地址：${apiUrl}`)
-const response = await fetch(apiUrl)
+if (!token) {
+  warn('未检测到 GITHUB_TOKEN，将使用匿名请求（可能触发限流）。')
+}
+
+const response = await fetch(apiUrl, {
+  headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+})
 if (!response.ok) {
   error(`请求失败：${response.status} ${response.statusText}`)
   if (response.status === 403) {
