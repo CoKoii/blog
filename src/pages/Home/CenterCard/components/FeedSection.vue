@@ -139,7 +139,7 @@ watch(() => props.activeTab, centerActiveTab)
         @click="goToArticle(post.id)"
       >
         <div class="post-cover">
-          <img :src="post.cover" :alt="post.title" loading="lazy" />
+          <img v-lazy="post.cover" :alt="post.title" />
         </div>
         <div class="post-main">
           <h3 class="post-title">{{ post.title }}</h3>

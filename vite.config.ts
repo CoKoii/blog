@@ -116,8 +116,22 @@ export default defineConfig({
         linkify: true,
         typographer: true,
       },
-      markdownItSetup() {
-        // 可以在这里添加 markdown-it 插件
+      markdownItSetup(md) {
+        const defaultImage =
+          md.renderer.rules.image ||
+          ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options))
+
+        md.renderer.rules.image = (tokens, idx, options, env, self) => {
+          const token = tokens[idx]
+          const attrs = token.attrs ? [...token.attrs] : []
+          const srcIndex = attrs.findIndex(([name]) => name === 'src')
+          const src = srcIndex >= 0 ? attrs[srcIndex][1] : ''
+          if (srcIndex >= 0) attrs.splice(srcIndex, 1)
+          if (src) attrs.push(['data-src', src])
+          attrs.push(['v-lazy', ''])
+          token.attrs = attrs
+          return defaultImage(tokens, idx, options, env, self)
+        }
       },
     }),
     postsMetaPlugin(),

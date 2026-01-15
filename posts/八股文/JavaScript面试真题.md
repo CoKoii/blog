@@ -24,3 +24,19 @@ comments: 3
 - `Symbol`
 
 **复杂类型**有：`Function`、`Object`、`Array`。
+
+# 6
+
+# 6
+
+# 6
+
+# 6
+
+# 6
+
+# 6
+
+# 6
+
+![Vue 封面](https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/vuejs.svg)

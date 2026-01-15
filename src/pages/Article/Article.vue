@@ -3,6 +3,7 @@ import { ref, shallowRef, watchEffect, computed, onMounted, nextTick, onUnmounte
 import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
+import { Skeleton, SkeletonImage } from 'ant-design-vue'
 import { getPostContent } from '@/utils/posts'
 import { formatDate } from '@/utils/date'
 import type { PostFrontmatter } from '@/types/post'
@@ -196,12 +197,12 @@ watchEffect(async () => {
     <template v-if="ContentComponent">
       <div class="cover_info">
         <!-- 背景图层 -->
-        <div
+        <img
+          v-if="article.coverImage"
           class="cover_background"
-          :style="{
-            backgroundImage: article.coverImage ? `url(${article.coverImage})` : 'none',
-          }"
-        ></div>
+          v-lazy="article.coverImage"
+          :alt="article.title"
+        />
         <!-- 模糊遮罩 -->
         <div class="cover_overlay"></div>
         <!-- 文章信息 -->
@@ -266,6 +267,29 @@ watchEffect(async () => {
         </aside>
       </div>
     </template>
+    <template v-else>
+      <div class="cover_info is_skeleton">
+        <SkeletonImage class="cover_skeleton_image" />
+        <div class="cover_overlay"></div>
+        <div class="article_header">
+          <Skeleton
+            active
+            :title="{ width: '60%' }"
+            :paragraph="{ rows: 2, width: ['90%', '70%'] }"
+          />
+        </div>
+      </div>
+      <div class="content is_skeleton">
+        <article class="article markdown-content">
+          <Skeleton active :paragraph="{ rows: 14 }" />
+        </article>
+        <aside class="menus">
+          <div class="toc">
+            <Skeleton active :title="{ width: '40%' }" :paragraph="{ rows: 6 }" />
+          </div>
+        </aside>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -287,15 +311,11 @@ watchEffect(async () => {
       left: 0;
       width: 100%;
       height: 100%;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+      object-fit: cover;
+      object-position: center;
       transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       z-index: 0;
-    }
-
-    &:hover .cover_background {
-      transform: scale(1.05);
+      display: block;
     }
 
     .cover_overlay {
@@ -379,6 +399,22 @@ watchEffect(async () => {
           }
         }
       }
+    }
+  }
+
+  .cover_info.is_skeleton {
+    background: #ffffff;
+  }
+
+  .cover_skeleton_image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+
+    :deep(.ant-skeleton-image) {
+      width: 100%;
+      height: 100%;
     }
   }
 
@@ -519,6 +555,16 @@ watchEffect(async () => {
           }
         }
       }
+    }
+  }
+
+  .content.is_skeleton {
+    .article {
+      background: #ffffff;
+    }
+
+    .toc {
+      background-color: #ffffff;
     }
   }
 }

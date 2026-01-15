@@ -6,6 +6,7 @@ import Footer from './Footer/index.vue'
 import { useLayoutStore } from '@/stores/layout'
 import Mask from '../Mask/Mask.vue'
 import MobileSideBar from './MobileSideBar/MobileSideBar.vue'
+import { consumeScroll } from '@/router/scroll'
 const layoutStore = useLayoutStore()
 
 const handleResize = () => {
@@ -20,6 +21,15 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
 })
+
+const handleBeforeEnter = () => {
+  const position = consumeScroll()
+  window.scrollTo({
+    left: position.left ?? 0,
+    top: position.top ?? 0,
+    behavior: 'auto',
+  })
+}
 </script>
 
 <template>
@@ -27,7 +37,7 @@ onBeforeUnmount(() => {
     <Teleport to="body">
       <MobileSideBar />
     </Teleport>
-    <Mask></Mask>
+    <Mask />
     <!-- 顶部栏 -->
     <div class="topBar">
       <TopBar />
@@ -41,7 +51,7 @@ onBeforeUnmount(() => {
       <!-- 内容区 -->
       <div class="main">
         <router-view v-slot="{ Component }">
-          <transition name="zoomBlur" mode="out-in">
+          <transition name="zoomBlur" mode="out-in" @before-enter="handleBeforeEnter">
             <component :is="Component" />
           </transition>
         </router-view>
