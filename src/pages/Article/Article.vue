@@ -3,7 +3,6 @@ import { ref, shallowRef, watchEffect, computed, onMounted, nextTick, onUnmounte
 import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
-import { Skeleton, SkeletonImage } from 'ant-design-vue'
 import { getPostContent } from '@/utils/posts'
 import { formatDate } from '@/utils/date'
 import type { PostFrontmatter } from '@/types/post'
@@ -269,24 +268,12 @@ watchEffect(async () => {
     </template>
     <template v-else>
       <div class="cover_info is_skeleton">
-        <SkeletonImage class="cover_skeleton_image" />
         <div class="cover_overlay"></div>
-        <div class="article_header">
-          <Skeleton
-            active
-            :title="{ width: '60%' }"
-            :paragraph="{ rows: 2, width: ['90%', '70%'] }"
-          />
-        </div>
       </div>
       <div class="content is_skeleton">
-        <article class="article markdown-content">
-          <Skeleton active :paragraph="{ rows: 14 }" />
-        </article>
+        <article class="article markdown-content"></article>
         <aside class="menus">
-          <div class="toc">
-            <Skeleton active :title="{ width: '40%' }" :paragraph="{ rows: 6 }" />
-          </div>
+          <div class="toc"></div>
         </aside>
       </div>
     </template>
@@ -354,11 +341,10 @@ watchEffect(async () => {
           font-size: 14px;
           font-weight: 500;
           letter-spacing: 0.5px;
-          backdrop-filter: blur(12px);
-          transition: all 0.3s ease;
+          transition: transform 0.3s ease, background-color 0.3s ease;
 
           &.hash {
-            background-color: rgba(0, 0, 0, 0.3);
+            background-color: rgba(0, 0, 0, 0.45);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: rgba(255, 255, 255, 0.9);
           }
@@ -406,17 +392,6 @@ watchEffect(async () => {
     background: #ffffff;
   }
 
-  .cover_skeleton_image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-
-    :deep(.ant-skeleton-image) {
-      width: 100%;
-      height: 100%;
-    }
-  }
 
   .content {
     display: flex;

@@ -15,7 +15,10 @@ const handleAction = (message: string) => {
     <section class="card">
       <div class="grid">
         <div class="avatar" aria-label="avatar">
-          <img src="https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/avatar.webp" alt="Avatar" />
+          <img
+            v-lazy="'https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/avatar.webp'"
+            alt="Avatar"
+          />
           <span class="status-dot"></span>
         </div>
 
