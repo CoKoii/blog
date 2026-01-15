@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { computed, nextTick, onBeforeUpdate, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onBeforeUpdate, onMounted, ref, watch } from 'vue'
 import type { ComponentPublicInstance } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -38,12 +38,12 @@ const activeIndex = computed(() => {
 
 const tabsStyle = computed(() => ({
   '--active-index': activeIndex.value,
-  '--tab-count': props.tabs.length,
 }))
 
 // Refs
 const tabsRef = ref<HTMLDivElement>()
 const tabButtons = ref<HTMLButtonElement[]>([])
+const tabsResizeObserver = ref<ResizeObserver | null>(null)
 
 // Methods
 const setTabButtonRef = (el: Element | ComponentPublicInstance | null) => {
@@ -61,6 +61,13 @@ const centerActiveTab = async () => {
 
   const containerRect = container.getBoundingClientRect()
   const buttonRect = button.getBoundingClientRect()
+  const containerStyles = getComputedStyle(container)
+  const paddingLeft = Number.parseFloat(containerStyles.paddingLeft) || 0
+  const indicatorX = buttonRect.left - containerRect.left - paddingLeft
+  const indicatorWidth = buttonRect.width
+
+  container.style.setProperty('--indicator-x', `${Math.max(0, indicatorX)}px`)
+  container.style.setProperty('--indicator-width', `${indicatorWidth}px`)
   const offset =
     buttonRect.left + buttonRect.width / 2 - containerRect.left - containerRect.width / 2
 
@@ -83,7 +90,19 @@ onBeforeUpdate(() => {
   tabButtons.value = []
 })
 
-onMounted(centerActiveTab)
+onMounted(() => {
+  centerActiveTab()
+  if (!tabsRef.value) return
+  tabsResizeObserver.value = new ResizeObserver(() => {
+    centerActiveTab()
+  })
+  tabsResizeObserver.value.observe(tabsRef.value)
+})
+
+onBeforeUnmount(() => {
+  tabsResizeObserver.value?.disconnect()
+  tabsResizeObserver.value = null
+})
 
 watch(() => props.activeTab, centerActiveTab)
 </script>
@@ -166,8 +185,8 @@ watch(() => props.activeTab, centerActiveTab)
   .tabs {
     --tabs-gap: 6px;
     --tabs-padding: 3px;
-    display: grid;
-    grid-template-columns: repeat(var(--tab-count), minmax(0, 1fr));
+    display: flex;
+    align-items: center;
     gap: var(--tabs-gap);
     background: #eaecf0;
     padding: var(--tabs-padding);
@@ -178,12 +197,11 @@ watch(() => props.activeTab, centerActiveTab)
 
     .tab-indicator {
       position: absolute;
-      inset: var(--tabs-padding);
-      width: calc(
-        (100% - var(--tabs-padding) * 2 - var(--tabs-gap) * (var(--tab-count) - 1)) /
-          var(--tab-count)
-      );
-      transform: translateX(calc(var(--active-index) * (100% + var(--tabs-gap))));
+      top: var(--tabs-padding);
+      bottom: var(--tabs-padding);
+      left: var(--tabs-padding);
+      width: var(--indicator-width, 0px);
+      transform: translateX(var(--indicator-x, 0px));
       transition: transform 0.55s cubic-bezier(0.16, 1.35, 0.3, 1);
       will-change: transform;
       z-index: 0;
@@ -201,7 +219,7 @@ watch(() => props.activeTab, centerActiveTab)
     .tab-btn {
       background: transparent;
       border: none;
-      padding: 6px 12px;
+      padding: 6px 14px;
       font-size: 0.85rem;
       font-weight: 600;
       color: #666;
@@ -210,7 +228,7 @@ watch(() => props.activeTab, centerActiveTab)
       transition: color 0.2s ease;
       position: relative;
       z-index: 1;
-      width: 100%;
+      white-space: nowrap;
 
       &.active {
         color: #000;
@@ -400,7 +418,8 @@ watch(() => props.activeTab, centerActiveTab)
       }
 
       .tab-btn {
-        flex: 0 0 calc((100% - var(--tabs-gap) * 3) / 4);
+        flex: 0 0 auto;
+        padding: 6px 14px;
         scroll-snap-align: center;
 
         &.active {

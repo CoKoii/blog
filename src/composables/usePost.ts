@@ -15,10 +15,19 @@ export interface PostListItem {
   tags?: string[]
 }
 
+const getTitleFromSlug = (slug: string): string => {
+  if (!slug) return 'Untitled'
+  try {
+    return decodeURIComponent(slug)
+  } catch {
+    return slug
+  }
+}
+
 export function usePostListFormat(posts: PostMeta[], markHotCount = 2): PostListItem[] {
   return posts.map((post, index) => ({
     id: post.id,
-    title: post.frontmatter.title ?? 'Untitled',
+    title: post.frontmatter.title ?? getTitleFromSlug(post.id.split('/').pop() || ''),
     category: post.category,
     time: getRelativeTime(post.frontmatter.date || post.frontmatter.publishDate),
     readTime: post.frontmatter.readTime ? `${post.frontmatter.readTime} min` : '5 min',

@@ -35,9 +35,20 @@ const DEFAULT_FRONTMATTER: PostFrontmatter = {
 }
 const frontmatter = ref<PostFrontmatter>({ ...DEFAULT_FRONTMATTER })
 
+const getTitleFromSlug = (slug?: string): string => {
+  if (!slug) return 'Untitled'
+  try {
+    return decodeURIComponent(slug)
+  } catch {
+    return slug
+  }
+}
+
+const fallbackTitle = computed(() => getTitleFromSlug(route.params.id as string | undefined))
+
 // 计算显示数据
 const article = computed(() => ({
-  title: frontmatter.value.title || 'Untitled',
+  title: frontmatter.value.title || fallbackTitle.value,
   coverImage: frontmatter.value.coverImage || '',
   tags: frontmatter.value.tags || [],
   wordCount: frontmatter.value.wordCount || 0,
