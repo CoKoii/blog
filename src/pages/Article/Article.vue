@@ -386,7 +386,7 @@ watchEffect(async () => {
     gap: var(--space-5);
 
     .article {
-      flex: 3;
+      flex: 4;
       min-height: 400px;
       border-radius: var(--radius-md);
       padding: 48px 24px;
@@ -447,7 +447,6 @@ watchEffect(async () => {
           gap: 2px;
           position: relative;
 
-          /* Remove previous timeline rails */
           &::before {
             display: none;
           }
@@ -464,12 +463,9 @@ watchEffect(async () => {
             position: relative;
             border-radius: 8px;
             border-left: none;
-
-            /* Default: clear blur for active, blurred for others (unless hovered) */
-            filter: blur(1.5px);
+            filter: blur(1px);
             opacity: 0.6;
 
-            /* Active Indicator Bar - Hidden by default */
             &::before {
               content: '';
               position: absolute;
@@ -485,8 +481,8 @@ watchEffect(async () => {
             }
 
             &:hover {
-              color: rgb(59, 130, 246);
-              background-color: rgba(59, 130, 246, 0.04);
+              color: #3661df;
+              background-color: #f5f6fd;
               transform: translateY(-1px);
               opacity: 1;
               filter: blur(0);
@@ -495,22 +491,22 @@ watchEffect(async () => {
             &.toc_level_1 {
               font-weight: 500;
               margin-top: 4px;
-              font-size: 16px;
-            }
-
-            &.toc_level_2 {
-              padding-left: 32px;
               font-size: 15px;
             }
 
-            &.toc_level_3 {
-              padding-left: 48px;
+            &.toc_level_2 {
+              padding-left: 28px;
               font-size: 14px;
             }
 
+            &.toc_level_3 {
+              padding-left: 40px;
+              font-size: 13px;
+            }
+
             &.active {
-              color: rgb(59, 130, 246);
-              background-color: rgba(59, 130, 246, 0.08);
+              color: #3661df;
+              background-color: #f5f6fd;
               font-weight: 700;
               opacity: 1;
               filter: blur(0);
