@@ -50,15 +50,13 @@ export interface PostListItem {
 export function usePostListFormat(posts: PostMeta[], markHotCount = 2): PostListItem[] {
   return posts.map((post, index) => ({
     id: post.id,
-    title: post.frontmatter?.title || 'Untitled',
+    title: post.frontmatter.title ?? 'Untitled',
     category: post.category,
-    time: useRelativeTime(post.frontmatter?.date || post.frontmatter?.publishDate),
-    readTime: post.frontmatter?.readTime ? `${post.frontmatter.readTime} min` : '5 min',
+    time: useRelativeTime(post.frontmatter.date || post.frontmatter.publishDate),
+    readTime: post.frontmatter.readTime ? `${post.frontmatter.readTime} min` : '5 min',
     hot: index < markHotCount,
-    cover:
-      post.frontmatter?.coverImage ||
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=900&q=80',
-    tags: post.frontmatter?.tags,
+    cover: post.frontmatter.coverImage ?? '',
+    tags: post.frontmatter.tags,
   }))
 }
 
