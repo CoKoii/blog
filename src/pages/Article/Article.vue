@@ -400,13 +400,6 @@ watchEffect(async () => {
       position: sticky;
       top: calc(var(--layout-topbar-height) + var(--space-5) - 48px);
       align-self: flex-start;
-      max-height: calc(100vh - var(--layout-topbar-height) - var(--space-5) * 2);
-      overflow-y: auto;
-
-      scrollbar-width: none; /* Firefox */
-      &::-webkit-scrollbar {
-        display: none; /* Chrome, Safari, Opera */
-      }
 
       .toc {
         background-color: #ffffff;

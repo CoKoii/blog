@@ -1,17 +1,42 @@
 <template>
   <router-view v-slot="{ Component }">
-    <transition name="fade" mode="out-in">
+    <transition name="zoomBlur" mode="out-in">
       <component :is="Component" />
     </transition>
   </router-view>
 </template>
+
 <style scoped lang="scss">
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s;
+.zoomBlur-enter-active {
+  transition: opacity 0.18s ease;
+  will-change: opacity;
 }
-.fade-enter-from,
-.fade-leave-to {
+
+.zoomBlur-enter-from {
   opacity: 0;
+}
+
+.zoomBlur-enter-to {
+  opacity: 1;
+}
+
+.zoomBlur-leave-active {
+  transition:
+    transform 0.24s ease,
+    opacity 0.24s ease,
+    filter 0.24s ease;
+  will-change: transform, opacity, filter;
+}
+
+.zoomBlur-leave-from {
+  transform: scale(1);
+  opacity: 1;
+  filter: blur(0);
+}
+
+.zoomBlur-leave-to {
+  transform: scale(1.05);
+  opacity: 0;
+  filter: blur(10px);
 }
 </style>
