@@ -383,6 +383,7 @@ watchEffect(async () => {
       border-radius: var(--radius-md);
       padding: 48px 24px;
       transition: var(--transition-base);
+      font-family: LXGWWenKai-Regular;
     }
 
     .menus {

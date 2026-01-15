@@ -14,14 +14,14 @@ comments: 3
 
 ### 前言
 
-在 JavaScript 中，我们可以将数据分为两种类型：基本类型和复杂类型。  
-基本类型主要有以下 6 类：
+在 JavaScript 中，我们可以将数据分为两种类型：**基本类型**和**复杂类型**。  
+**基本类型**主要有以下 6 类：
 
-- Boolean
-- String
-- Number
-- Undefined
-- Null
-- Symbol
+- `Boolean`
+- `String`
+- `Number`
+- `Undefined`
+- `Null`
+- `Symbol`
 
-复杂类型有：Function、Object、Array。
+**复杂类型**有：`Function`、`Object`、`Array`。
