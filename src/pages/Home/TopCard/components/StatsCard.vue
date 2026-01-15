@@ -108,10 +108,12 @@ onMounted(() => {
   position: relative;
   z-index: 1;
   margin-top: 0;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: center;
   justify-content: center;
-  gap: 42px;
+  width: 100%;
+  gap: 0;
 }
 
 .stats-metric {
@@ -120,21 +122,7 @@ onMounted(() => {
   align-items: center;
   gap: 10px;
   position: relative;
-
-  &:not(:last-child) {
-    padding-right: 14px;
-
-    &::after {
-      content: '';
-      position: absolute;
-      right: -22px;
-      top: 50%;
-      width: 1px;
-      height: 36px;
-      background: rgba(255, 255, 255, 0.32);
-      transform: translateY(-50%);
-    }
-  }
+  padding: 4px 10px;
 }
 
 .stats-k {
