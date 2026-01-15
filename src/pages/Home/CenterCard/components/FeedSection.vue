@@ -121,7 +121,6 @@ watch(() => props.activeTab, centerActiveTab)
       >
         <div class="post-cover">
           <img :src="post.cover" :alt="post.title" loading="lazy" />
-          <div v-if="post.hot" class="post-marker hot" />
         </div>
         <div class="post-main">
           <h3 class="post-title">{{ post.title }}</h3>
@@ -297,16 +296,6 @@ watch(() => props.activeTab, centerActiveTab)
       transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .post-marker {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #ff4757;
-      box-shadow: 0 0 10px rgba(255, 71, 87, 0.6);
-    }
   }
 
   .post-main {

@@ -1,4 +1,12 @@
 import type { MenuType } from '@/types/menus'
+import { getAllCategories } from '@/utils/posts'
+import { defaultTagColor, tagColorMap } from '@/config/tagColors'
+
+const tagMenus = getAllCategories().map((category) => ({
+  title: category,
+  color: tagColorMap[category] ?? defaultTagColor,
+  path: `/${category}`,
+}))
 
 const menus: MenuType[] = [
   {
@@ -18,38 +26,7 @@ const menus: MenuType[] = [
   },
   {
     title: 'Tags',
-    children: [
-      {
-        title: '技术总结',
-        color: '#00C2FF', // 亮青蓝
-        path: '/jszj',
-      },
-      {
-        title: 'Indiehacker',
-        color: '#FF5C8A', // 活力粉红
-        path: '/indiehacker',
-      },
-      {
-        title: 'Dokploy',
-        color: '#5B6CFF', // 电光蓝紫
-        path: '/dokploy',
-      },
-      {
-        title: 'SEO',
-        color: '#2BD96B', // 荧光绿
-        path: '/seo',
-      },
-      {
-        title: 'Payment',
-        color: '#FFB703', // 明亮橙黄
-        path: '/payment',
-      },
-      {
-        title: 'Nodejs',
-        color: '#4ADE80', // 鲜绿（偏技术感）
-        path: '/nodejs',
-      },
-    ],
+    children: tagMenus,
   },
 ]
 export default menus

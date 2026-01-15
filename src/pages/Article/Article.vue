@@ -113,8 +113,11 @@ const handleScroll = () => {
     }
   })
 
-  if (!activeId && headings.length > 0) {
-    activeId = headings[0].id
+  if (!activeId) {
+    const firstHeading = headings[0]
+    if (firstHeading) {
+      activeId = firstHeading.id
+    }
   }
 
   activeHeadingId.value = activeId
