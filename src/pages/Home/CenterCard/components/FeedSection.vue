@@ -299,8 +299,8 @@ watch(() => props.activeTab, centerActiveTab)
 
   .post-cover {
     position: relative;
-    width: 170px;
-    height: 108px;
+    width: 200px;
+    height: 120px;
     border-radius: 14px;
     overflow: hidden;
     flex-shrink: 0;
@@ -311,9 +311,11 @@ watch(() => props.activeTab, centerActiveTab)
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
   }
 
   .post-main {

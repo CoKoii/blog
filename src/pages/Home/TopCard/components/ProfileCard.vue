@@ -15,7 +15,7 @@ const handleAction = (message: string) => {
     <section class="card">
       <div class="grid">
         <div class="avatar" aria-label="avatar">
-          <img src="https://q1.qlogo.cn/g?b=qq&nk=2655257336&s=640" alt="Avatar" />
+          <img src="https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/avatar.webp" alt="Avatar" />
           <span class="status-dot"></span>
         </div>
 
