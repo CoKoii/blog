@@ -5,3 +5,8 @@ declare module 'virtual:posts-meta' {
   import type { PostMeta } from '@/types/post'
   export const postsMeta: PostMeta[]
 }
+
+declare module '*.json' {
+  const value: unknown
+  export default value
+}

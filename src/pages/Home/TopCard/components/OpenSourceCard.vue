@@ -1,13 +1,33 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import { computed } from 'vue'
+import { getRelativeTime } from '@/utils/date'
+import ossData from '@/data/opensource.json'
 
 defineOptions({
   name: 'OpenSourceCard',
 })
+
+const formatCount = (count: number) => {
+  if (count < 1000) return `${count}`
+  const value = count >= 10000 ? count / 1000 : Math.round((count / 1000) * 10) / 10
+  return `${value}k`
+}
+
+const metaText = computed(() => {
+  if (!ossData.updatedAt) return '更新于 Recently'
+  return `更新于 ${getRelativeTime(ossData.updatedAt)}`
+})
 </script>
 
 <template>
-  <router-link to="" class="os-card" aria-label="Open Source Projects">
+  <a
+    class="os-card"
+    aria-label="Open Source Projects"
+    :href="ossData.profileUrl"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
     <div class="top">
       <div class="badge">
         <span class="dot" aria-hidden="true"></span>
@@ -25,11 +45,11 @@ defineOptions({
     <div class="stats" aria-label="Open source stats">
       <div class="stat">
         <div class="k">Projects</div>
-        <div class="v">12</div>
+        <div class="v">{{ ossData.projects }}</div>
       </div>
       <div class="stat">
         <div class="k">Stars</div>
-        <div class="v">1.4k</div>
+        <div class="v">{{ formatCount(ossData.stars) }}</div>
       </div>
     </div>
 
@@ -39,9 +59,9 @@ defineOptions({
         <Icon class="arrow" icon="lucide:arrow-right" />
       </div>
 
-      <div class="meta" aria-label="time meta">更新于 2 天前</div>
+      <div class="meta" aria-label="time meta">{{ metaText }}</div>
     </div>
-  </router-link>
+  </a>
 </template>
 
 <style scoped lang="scss">
