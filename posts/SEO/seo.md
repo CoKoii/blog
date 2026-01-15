@@ -1,6 +1,6 @@
 ---
-title: 'SEO Markdown Playground'
-description: 'A single file that exercises common Markdown (GFM) syntax.'
+title: 'SEO Markdown 练习场'
+description: '一个用于演练常见 Markdown（GFM）语法的单文件示例。'
 tags: [seo, markdown, demo]
 date: 2025-01-14
 coverImage: https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=1600
@@ -13,82 +13,82 @@ comments: 3
 
 # 更好的SEO
 
-> A compact SEO note that intentionally uses _many_ Markdown features.
+> 一则精简的 SEO 笔记，刻意使用了 _许多_ Markdown 特性。
 >
-> Nested quote:
+> 嵌套引用：
 >
-> > Search is a dialogue, not a destination.
+> > 搜索是一场对话，而不是终点。
 
-## 1. Purpose
+## 1. 目的
 
-This document is **not** a full SEO guide; it is a _syntax showcase_ with SEO-flavored content.  
-Use it to validate renderers, themes, and exports.
+本文档**不是**完整的 SEO 指南；它是带有 SEO 语境的_语法展示_。  
+可用于验证渲染器、主题和导出效果。
 
-### 1.1 Emphasis Variations
+### 1.1 强调变体
 
 - _italic_
 - **bold**
 - **_bold italic_**
 - ~~strikethrough~~
 - Inline `code` sample
-- Escaped characters: \* \_ \# \[ \] \(
+- 转义字符：\* \_ \# \[ \] \(
 
-## 2. Lists
+## 2. 列表
 
-### 2.1 Unordered
+### 2.1 无序
 
-- Title tags
-- Meta descriptions
-  - Keep under ~160 chars
-  - Include a primary keyword
-- H1/H2 hierarchy
+- 标题标签
+- Meta 描述
+  - 控制在约 160 字以内
+  - 包含一个主关键词
+- H1/H2 层级
 
-### 2.2 Ordered
+### 2.2 有序
 
-1. Research topics
-2. Draft outline
-3. Publish
-   1. Submit sitemap
-   2. Request indexing
+1. 调研主题
+2. 拟定大纲
+3. 发布
+   1. 提交站点地图
+   2. 申请索引
 
-### 2.3 Task List
+### 2.3 任务清单
 
-- [x] Define target keywords
-- [x] Write the draft
-- [ ] Add internal links
-- [ ] Measure CTR
+- [x] 定义目标关键词
+- [x] 撰写草稿
+- [ ] 添加站内链接
+- [ ] 测量 CTR
 
-## 3. Links and References
+## 3. 链接与引用
 
-Inline link: [Google Search Central](https://developers.google.com/search).
+行内链接：[Google Search Central](https://developers.google.com/search)。
 
-Reference link: [SEO Guide][seo-guide].
+引用链接：[SEO 指南][seo-guide]。
 
-Autolink: <https://www.example.com/seo>.
+自动链接：<https://www.example.com/seo>。
 
-[seo-guide]: https://moz.com/learn/seo "Moz Beginner's Guide"
+[seo-guide]: https://moz.com/learn/seo "Moz 新手指南"
 
-## 4. Images
+## 4. 图片
 
-![SEO diagram](https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800 'Alt text helps accessibility')
+![SEO 示意图](https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800 '替代文本有助于无障碍')
 
-## 5. Tables
+## 5. 表格
 
-| Signal | Why it matters        | Example          |
+| 信号  | 重要原因              | 示例             |
 | ------ | --------------------- | ---------------- |
-| Title  | Ranking relevance     | "Local SEO Tips" |
-| Speed  | UX + crawl efficiency | LCP < 2.5s       |
-| Links  | Authority             | Internal hub     |
+| 标题  | 排名相关性            | "本地 SEO 技巧"  |
+| 速度  | 体验 + 抓取效率       | LCP < 2.5s       |
+| 链接  | 权威性                | 站内枢纽         |
 
-## 6. Code Blocks
+## 6. 代码块
 
-Fenced code (HTML):
+围栏代码（HTML）：
 
 ```html
 <meta name="description" content="Concise summary for SERP." />
 ```
 
-Fenced code (JSON):
+围栏代码（JSON）：
 
 ```json
 {
@@ -98,53 +98,53 @@ Fenced code (JSON):
 }
 ```
 
-Indented code block:
+缩进代码块：
 
     curl -I https://www.example.com
 
-## 7. Horizontal Rules
+## 7. 分隔线
 
 ---
 
-## 8. Blockquote + List Combo
+## 8. 引用 + 列表组合
 
-> Core checklist:
+> 核心清单：
 >
-> - One H1
-> - Logical headings
-> - Descriptive anchors
+> - 仅一个 H1
+> - 标题层级清晰
+> - 描述性锚文本
 
-## 9. Footnote
+## 9. 脚注
 
-Footnote example[^1].
+脚注示例[^1]。
 
-[^1]: A short note about E-E-A-T and trust.
+[^1]: 关于 E-E-A-T 与信任的简短说明。
 
-## 10. HTML Mix
+## 10. HTML 混用
 
 <details>
-  <summary>Click to expand</summary>
-  <p>Hidden copy can be useful, but avoid keyword stuffing.</p>
+  <summary>点击展开</summary>
+  <p>隐藏文本可能有用，但避免关键词堆砌。</p>
 </details>
 
-<kbd>⌘</kbd> + <kbd>K</kbd> for site search (if supported).
+<kbd>⌘</kbd> + <kbd>K</kbd> 用于站内搜索（如支持）。
 
-## 11. Definition List (extension)
+## 11. 定义列表（扩展）
 
 SEO
-: Search Engine Optimization.
+: 搜索引擎优化。
 
 SERP
-: Search Engine Results Page.
+: 搜索引擎结果页。
 
-## 12. Headings Depth
+## 12. 标题深度
 
-#### H4 Example
+#### H4 示例
 
-##### H5 Example
+##### H5 示例
 
-###### H6 Example
+###### H6 示例
 
-## 13. Final Note
+## 13. 最后说明
 
-Use this file to test rendering of Markdown features in your pipeline.
+使用此文件测试你的 Markdown 功能渲染流程。
