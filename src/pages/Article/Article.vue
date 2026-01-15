@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
 import { getPostContent } from '@/utils/posts'
+import { formatDate } from '@/utils/date'
 import type { PostFrontmatter } from '@/types/post'
 import type { Component } from 'vue'
 
@@ -17,9 +18,12 @@ const route = useRoute()
 const ContentComponent = shallowRef<Component | null>(null)
 const toc = ref<TocItem[]>([])
 const activeHeadingId = ref<string>('')
+const canUseDOM = typeof window !== 'undefined' && typeof document !== 'undefined'
+const HEADING_SELECTOR = '.markdown-content h1, .markdown-content h2, .markdown-content h3'
+const SCROLL_OFFSET = 400
 
 // 文章元数据（带默认值）
-const frontmatter = ref<PostFrontmatter>({
+const DEFAULT_FRONTMATTER: PostFrontmatter = {
   title: '',
   coverImage: '',
   tags: [],
@@ -29,7 +33,8 @@ const frontmatter = ref<PostFrontmatter>({
   views: 0,
   location: '',
   comments: 0,
-})
+}
+const frontmatter = ref<PostFrontmatter>({ ...DEFAULT_FRONTMATTER })
 
 // 计算显示数据
 const article = computed(() => ({
@@ -44,15 +49,9 @@ const article = computed(() => ({
   comments: frontmatter.value.comments || 0,
 }))
 
-// 格式化日期
-const formatDate = (dateString?: string) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+const getHeadings = (): HTMLElement[] => {
+  if (!canUseDOM) return []
+  return Array.from(document.querySelectorAll(HEADING_SELECTOR)) as HTMLElement[]
 }
 
 // 动态设置页面 head
@@ -80,15 +79,11 @@ useHead(() => ({
 
 // 生成目录
 const generateToc = () => {
-  if (typeof document === 'undefined') return
-
-  const headings = document.querySelectorAll(
-    '.markdown-content h1, .markdown-content h2, .markdown-content h3',
-  )
+  const headings = getHeadings()
   const tocItems: TocItem[] = []
 
   headings.forEach((heading, index) => {
-    const level = parseInt(heading.tagName.substring(1))
+    const level = parseInt(heading.tagName.substring(1), 10)
     let text = heading.textContent || ''
     text = text.replace(/^[\d\.]+\s+/, '')
     let id = heading.id
@@ -107,24 +102,19 @@ const generateToc = () => {
 
 // 滚动监听
 const handleScroll = () => {
-  if (typeof document === 'undefined') return
-
-  const headings = document.querySelectorAll(
-    '.markdown-content h1, .markdown-content h2, .markdown-content h3',
-  )
-  const scrollPosition = window.scrollY + 400
+  const headings = getHeadings()
+  const scrollPosition = window.scrollY + SCROLL_OFFSET
 
   let activeId = ''
 
   headings.forEach((heading) => {
-    const element = heading as HTMLElement
-    if (element.offsetTop <= scrollPosition) {
-      activeId = element.id
+    if (heading.offsetTop <= scrollPosition) {
+      activeId = heading.id
     }
   })
 
   if (!activeId && headings.length > 0) {
-    activeId = (headings[0] as HTMLElement).id
+    activeId = headings[0].id
   }
 
   activeHeadingId.value = activeId
@@ -132,7 +122,7 @@ const handleScroll = () => {
 
 // 跳转到指定章节
 const scrollToHeading = (id: string) => {
-  if (typeof document === 'undefined') return
+  if (!canUseDOM) return
 
   const element = document.getElementById(id)
   if (element) {
@@ -145,15 +135,13 @@ const scrollToHeading = (id: string) => {
 }
 
 onMounted(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('scroll', handleScroll)
-  }
+  if (!canUseDOM) return
+  window.addEventListener('scroll', handleScroll)
 })
 
 onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('scroll', handleScroll)
-  }
+  if (!canUseDOM) return
+  window.removeEventListener('scroll', handleScroll)
 })
 
 watchEffect(async () => {
@@ -163,22 +151,27 @@ watchEffect(async () => {
   const id = `${category}/${slug}`
 
   ContentComponent.value = null
+  frontmatter.value = { ...DEFAULT_FRONTMATTER }
+  toc.value = []
+  activeHeadingId.value = ''
 
   try {
     const module = await getPostContent(id)
 
-    if (module) {
-      ContentComponent.value = module.default
-      frontmatter.value = { ...frontmatter.value, ...module.frontmatter }
+    if (!module) return
 
-      if (typeof document !== 'undefined') {
-        await nextTick()
-        setTimeout(() => {
-          generateToc()
-          handleScroll()
-        }, 100)
-      }
-    }
+    ContentComponent.value = module.default
+    frontmatter.value = { ...DEFAULT_FRONTMATTER, ...module.frontmatter }
+
+    if (!canUseDOM) return
+    await nextTick()
+    const schedule =
+      window.requestAnimationFrame?.bind(window) ||
+      ((cb: FrameRequestCallback) => window.setTimeout(cb, 0))
+    schedule(() => {
+      generateToc()
+      handleScroll()
+    })
   } catch (error) {
     console.error('Failed to load article:', error)
   }

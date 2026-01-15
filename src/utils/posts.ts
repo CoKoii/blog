@@ -4,8 +4,6 @@ import { postsMeta } from 'virtual:posts-meta'
 // Lazy 加载文章内容（按需加载）
 const postComponents = import.meta.glob<MarkdownModule>('/posts/**/*.md')
 
-// 构建路径到 ID 的映射缓存
-const pathToIdMap = new Map<string, string>()
 const idToPathMap = new Map<string, string>()
 
 // 初始化映射
@@ -14,24 +12,23 @@ for (const path of Object.keys(postComponents)) {
   const fileName = parts.pop() || ''
   const category = parts.pop() || ''
   const id = category ? `${category}/${fileName.replace(/\.md$/, '')}` : fileName.replace(/\.md$/, '')
-  pathToIdMap.set(path, id)
   idToPathMap.set(id, path)
 }
+
+const sortedPosts = [...postsMeta].sort((a, b) => {
+  const dateA = new Date(a.frontmatter?.date || a.frontmatter?.publishDate || 0)
+  const dateB = new Date(b.frontmatter?.date || b.frontmatter?.publishDate || 0)
+  return dateB.getTime() - dateA.getTime()
+})
+
+const postsMetaById = new Map(sortedPosts.map((post) => [post.id, post]))
 
 /**
  * 获取所有文章元数据
  * @returns 文章元数据数组，按日期降序排列
  */
 export function getAllPosts(): PostMeta[] {
-  // 使用虚拟模块提供的元数据
-  const posts = [...postsMeta]
-
-  // 按日期排序（最新的在前）
-  return posts.sort((a, b) => {
-    const dateA = new Date(a.frontmatter?.date || a.frontmatter?.publishDate || 0)
-    const dateB = new Date(b.frontmatter?.date || b.frontmatter?.publishDate || 0)
-    return dateB.getTime() - dateA.getTime()
-  })
+  return [...sortedPosts]
 }
 
 /**
@@ -59,7 +56,7 @@ export async function getPostContent(id: string): Promise<PostModule | null> {
     const mod = await postComponents[path]()
 
     // 从虚拟模块中获取 frontmatter（预解析的）
-    const meta = postsMeta.find((post) => post.id === id)
+    const meta = postsMetaById.get(id)
     const frontmatter = meta?.frontmatter || {}
 
     return {

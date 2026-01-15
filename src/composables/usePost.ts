@@ -1,37 +1,5 @@
 import type { PostMeta } from '@/types/post'
-
-/**
- * 计算相对时间显示
- */
-export function useRelativeTime(dateString?: string): string {
-  if (!dateString) return 'Recently'
-
-  const date = new Date(dateString)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-
-  if (days === 0) return 'Today'
-  if (days === 1) return '1 day ago'
-  if (days < 7) return `${days} days ago`
-  if (days < 30) return `${Math.floor(days / 7)} weeks ago`
-  if (days < 365) return `${Math.floor(days / 30)} months ago`
-  return `${Math.floor(days / 365)} years ago`
-}
-
-/**
- * 格式化日期为友好显示
- */
-export function formatDate(dateString?: string): string {
-  if (!dateString) return ''
-
-  const date = new Date(dateString)
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
+import { getRelativeTime } from '@/utils/date'
 
 /**
  * 转换文章数据为列表显示格式
@@ -52,7 +20,7 @@ export function usePostListFormat(posts: PostMeta[], markHotCount = 2): PostList
     id: post.id,
     title: post.frontmatter.title ?? 'Untitled',
     category: post.category,
-    time: useRelativeTime(post.frontmatter.date || post.frontmatter.publishDate),
+    time: getRelativeTime(post.frontmatter.date || post.frontmatter.publishDate),
     readTime: post.frontmatter.readTime ? `${post.frontmatter.readTime} min` : '5 min',
     hot: index < markHotCount,
     cover: post.frontmatter.coverImage ?? '',
