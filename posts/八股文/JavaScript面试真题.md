@@ -1,13 +1,12 @@
 ---
 title: 'JavaScript面试真题'
-description: '一个用于演练常见 Markdown（GFM）语法的单文件示例。'
-tags: [seo, markdown, demo]
-date: 2025-01-14
+description: '精选 JavaScript 高频面试真题，涵盖作用域、闭包、原型链、异步机制、事件循环等核心知识点，配合清晰解析，帮助你系统复习 JS 面试重点，提升面试通过率。'
+tags: [JavaScript面试, 前端面试题, JS面试真题, 前端校招, 前端八股文]
+date: 2026-01-15
 coverImage: https://read.learnyard.com/content/images/size/w800/2024/07/logo.png
 wordCount: 1800
 readTime: 8
-views: 125
-location: 深圳
+location: 杭州
 comments: 3
 ---
 

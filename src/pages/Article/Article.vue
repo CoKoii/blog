@@ -30,7 +30,6 @@ const DEFAULT_FRONTMATTER: PostFrontmatter = {
   wordCount: 0,
   readTime: 0,
   publishDate: '',
-  views: 0,
   location: '',
   comments: 0,
 }
@@ -44,7 +43,6 @@ const article = computed(() => ({
   wordCount: frontmatter.value.wordCount || 0,
   readTime: frontmatter.value.readTime || 0,
   publishDate: formatDate(frontmatter.value.publishDate || frontmatter.value.date),
-  views: frontmatter.value.views || 0,
   location: frontmatter.value.location || '',
   comments: frontmatter.value.comments || 0,
 }))
@@ -215,10 +213,6 @@ watchEffect(async () => {
             <span class="meta_item" v-if="article.publishDate">
               <Icon class="icon" icon="lucide:calendar" />
               {{ article.publishDate }}
-            </span>
-            <span class="meta_item" v-if="article.views">
-              <Icon class="icon" icon="lucide:eye" />
-              {{ article.views }}
             </span>
             <span class="meta_item" v-if="article.location">
               <Icon class="icon" icon="lucide:map-pin" />
