@@ -101,7 +101,6 @@ function postsMetaPlugin() {
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/blog/',
   server: {
     open: true,
   },
