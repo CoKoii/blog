@@ -3,6 +3,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { defineConfig } from 'vite'
+import type { HmrContext, ViteDevServer } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import Markdown from 'unplugin-vue-markdown/vite'
@@ -37,6 +38,7 @@ function getPostRoutes() {
 function postsMetaPlugin() {
   const virtualModuleId = 'virtual:posts-meta'
   const resolvedVirtualModuleId = '\0' + virtualModuleId
+  const postsDir = path.resolve(__dirname, 'posts')
 
   return {
     name: 'posts-meta-plugin',
@@ -47,7 +49,6 @@ function postsMetaPlugin() {
     },
     load(id: string) {
       if (id === resolvedVirtualModuleId) {
-        const postsDir = path.resolve(__dirname, 'posts')
         const postsData: Array<{
           id: string
           category: string
@@ -82,6 +83,18 @@ function postsMetaPlugin() {
 
         return `export const postsMeta = ${JSON.stringify(postsData, null, 2)}`
       }
+    },
+    configureServer(server: ViteDevServer) {
+      server.watcher.add(postsDir)
+    },
+    handleHotUpdate(ctx: HmrContext) {
+      if (!ctx.file.startsWith(postsDir) || !ctx.file.endsWith('.md')) return
+      const mod = ctx.server.moduleGraph.getModuleById(resolvedVirtualModuleId)
+      if (mod) {
+        ctx.server.moduleGraph.invalidateModule(mod)
+      }
+      ctx.server.ws.send({ type: 'full-reload' })
+      return []
     },
   }
 }
