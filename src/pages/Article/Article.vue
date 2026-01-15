@@ -89,7 +89,8 @@ const generateToc = () => {
 
   headings.forEach((heading, index) => {
     const level = parseInt(heading.tagName.substring(1))
-    const text = heading.textContent || ''
+    let text = heading.textContent || ''
+    text = text.replace(/^[\d\.]+\s+/, '')
     let id = heading.id
 
     // 如果没有id，自动生成一个
@@ -111,7 +112,7 @@ const handleScroll = () => {
   const headings = document.querySelectorAll(
     '.markdown-content h1, .markdown-content h2, .markdown-content h3',
   )
-  const scrollPosition = window.scrollY + 100
+  const scrollPosition = window.scrollY + 400
 
   let activeId = ''
 
@@ -121,6 +122,10 @@ const handleScroll = () => {
       activeId = element.id
     }
   })
+
+  if (!activeId && headings.length > 0) {
+    activeId = (headings[0] as HTMLElement).id
+  }
 
   activeHeadingId.value = activeId
 }
@@ -164,7 +169,6 @@ watchEffect(async () => {
       ContentComponent.value = module.default
       frontmatter.value = { ...frontmatter.value, ...module.frontmatter }
 
-      // 等待DOM更新后生成目录（仅在客户端）
       if (typeof document !== 'undefined') {
         await nextTick()
         setTimeout(() => {
@@ -237,7 +241,7 @@ watchEffect(async () => {
         <aside class="menus">
           <div class="toc" v-if="toc.length > 0">
             <div class="toc_header">
-              <Icon icon="lucide:list" class="toc_icon" />
+              <Icon icon="lucide:align-justify" class="toc_icon" />
               <span class="toc_title">目录</span>
             </div>
             <nav class="toc_nav">
@@ -394,35 +398,46 @@ watchEffect(async () => {
       min-height: 400px;
       border-radius: var(--radius-md);
       position: sticky;
-      top: calc(var(--layout-topbar-height) + var(--space-5));
+      top: calc(var(--layout-topbar-height) + var(--space-5) - 48px);
       align-self: flex-start;
       max-height: calc(100vh - var(--layout-topbar-height) - var(--space-5) * 2);
       overflow-y: auto;
 
+      scrollbar-width: none; /* Firefox */
+      &::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+      }
+
       .toc {
-        background-color: var(--color-bg-softer);
-        border-radius: var(--radius-md);
-        padding: var(--space-4);
-        box-shadow: var(--shadow-panel);
+        background-color: #ffffff;
+        border-radius: 16px;
+        padding: 48px 0;
+        transition: all 0.3s ease;
+
+        &:hover .toc_nav .toc_item {
+          filter: blur(0);
+          opacity: 1;
+        }
 
         .toc_header {
           display: flex;
           align-items: center;
-          gap: var(--space-2);
-          margin-bottom: var(--space-3);
-          padding-bottom: var(--space-2);
-          border-bottom: 2px solid var(--color-border-subtle);
+          gap: 10px;
+          margin-bottom: 16px;
+          padding-left: 4px;
 
           .toc_icon {
-            width: 18px;
-            height: 18px;
-            color: #667eea;
+            display: block;
+            width: 20px;
+            height: 20px;
+            color: rgba(59, 130, 246, 1);
           }
 
           .toc_title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 700;
-            color: var(--color-text-primary);
+            color: #1a1a1a;
+            letter-spacing: 0.5px;
           }
         }
 
@@ -430,22 +445,31 @@ watchEffect(async () => {
           display: flex;
           flex-direction: column;
           gap: 2px;
+          position: relative;
+
+          /* Remove previous timeline rails */
+          &::before {
+            display: none;
+          }
 
           .toc_item {
             display: block;
-            padding: 6px var(--space-2);
-            font-size: 13px;
+            padding: 8px 12px;
+            font-size: 14px;
             line-height: 1.5;
-            color: var(--color-text-secondary);
+            color: #9ca3af;
             text-decoration: none;
-            border-radius: var(--radius-xs);
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             cursor: pointer;
             position: relative;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            border-radius: 8px;
+            border-left: none;
 
+            /* Default: clear blur for active, blurred for others (unless hovered) */
+            filter: blur(1.5px);
+            opacity: 0.6;
+
+            /* Active Indicator Bar - Hidden by default */
             &::before {
               content: '';
               position: absolute;
@@ -453,66 +477,52 @@ watchEffect(async () => {
               top: 50%;
               transform: translateY(-50%);
               width: 3px;
-              height: 0;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              border-radius: 2px;
-              transition: height 0.2s ease;
+              height: 14px;
+              background-color: rgba(59, 130, 246, 1);
+              border-radius: 0 4px 4px 0;
+              opacity: 0;
+              transition: all 0.2s ease;
             }
 
             &:hover {
-              color: #667eea;
-              background-color: var(--color-bg-hover);
-              padding-left: var(--space-3);
-
-              &::before {
-                height: 60%;
-              }
-            }
-
-            &.active {
-              color: #667eea;
-              background-color: rgba(103, 126, 234, 0.08);
-              font-weight: 600;
-              padding-left: var(--space-3);
-
-              &::before {
-                height: 70%;
-              }
+              color: rgb(59, 130, 246);
+              background-color: rgba(59, 130, 246, 0.04);
+              transform: translateY(-1px);
+              opacity: 1;
+              filter: blur(0);
             }
 
             &.toc_level_1 {
-              font-weight: 600;
-              font-size: 14px;
-              margin-top: 6px;
+              font-weight: 500;
+              margin-top: 4px;
+              font-size: 16px;
             }
 
             &.toc_level_2 {
-              padding-left: 20px;
+              padding-left: 32px;
+              font-size: 15px;
             }
 
             &.toc_level_3 {
-              padding-left: 32px;
-              font-size: 12px;
-              color: var(--color-text-tertiary);
+              padding-left: 48px;
+              font-size: 14px;
             }
-          }
-        }
 
-        /* 滚动条样式 */
-        &::-webkit-scrollbar {
-          width: 6px;
-        }
-
-        &::-webkit-scrollbar-track {
-          background: transparent;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background: var(--color-border-subtle);
-          border-radius: 3px;
-
-          &:hover {
-            background: var(--color-text-tertiary);
+            &.active {
+              color: rgb(59, 130, 246);
+              background-color: rgba(59, 130, 246, 0.08);
+              font-weight: 700;
+              opacity: 1;
+              filter: blur(0);
+              transform: scale(1.05);
+              transform-origin: left center;
+              font-size: 18px !important;
+              &::before {
+                opacity: 1;
+                left: 0;
+                height: 22px;
+              }
+            }
           }
         }
       }

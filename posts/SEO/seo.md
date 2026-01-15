@@ -11,7 +11,7 @@ location: 深圳
 comments: 3
 ---
 
-# SEO Markdown Playground
+# 更好的SEO
 
 > A compact SEO note that intentionally uses _many_ Markdown features.
 >
