@@ -18,7 +18,7 @@ const setLoadingStyles = (el: LazyImageEl) => {
   if (el.dataset.vLazyStyled === '1') return
   el.style.opacity = '0'
   el.style.filter = 'blur(20px)'
-  el.style.transition = 'opacity 0.6s ease, filter 0.6s ease'
+  el.style.transition = 'opacity 0.3s ease, filter 0.3s ease'
   el.dataset.vLazyStyled = '1'
 }
 
@@ -40,7 +40,7 @@ const createObserver = (el: LazyImageEl, loadImage: () => void) => {
         obs.disconnect()
       }
     },
-    { rootMargin: '0px 0px 200px 0px' }
+    { rootMargin: '0px 0px 200px 0px' },
   )
 
   observer.observe(el)
