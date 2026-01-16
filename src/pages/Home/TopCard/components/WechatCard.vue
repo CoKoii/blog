@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import { wechatConfig } from '@/config/profile'
 
 defineOptions({
   name: 'WechatCard',
@@ -28,10 +29,7 @@ defineOptions({
                 <div class="sub">不错过精彩文章</div>
               </div>
               <div class="qr" aria-hidden="true">
-                <img
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://weixin.qq.com/"
-                  alt=""
-                />
+                <img :src="wechatConfig.qrUrl" alt="" />
               </div>
             </div>
           </div>

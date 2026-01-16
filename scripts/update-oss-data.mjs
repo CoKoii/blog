@@ -2,6 +2,7 @@ import { writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { resolve, dirname } from 'node:path'
 import { loadEnv } from './utils/env.mjs'
+import fs from 'node:fs'
 
 const color = {
   cyan: '\x1b[36m',
@@ -17,8 +18,12 @@ const warn = (message) => console.log(`${color.yellow}${message}${color.reset}`)
 const error = (message) => console.log(`${color.red}${message}${color.reset}`)
 
 const env = loadEnv()
+const siteConfigPath = resolve(process.cwd(), 'site.config.json')
+const siteConfig = fs.existsSync(siteConfigPath)
+  ? JSON.parse(fs.readFileSync(siteConfigPath, 'utf-8'))
+  : {}
 
-const username = 'CoKoii'
+const username = siteConfig.owner?.githubUsername || 'CoKoii'
 const profileUrl = `https://github.com/${username}`
 const apiUrl = `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`
 const token = env.GITHUB_TOKEN

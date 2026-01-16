@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import { ownerProfile, socialLinks } from '@/config/profile'
 
 defineOptions({
   name: 'ProfileCard',
@@ -15,21 +16,20 @@ const handleAction = (message: string) => {
     <section class="card">
       <div class="grid">
         <div class="avatar" aria-label="avatar">
-          <img
-            v-lazy="'https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/avatar.webp'"
-            alt="Avatar"
-          />
+          <img v-lazy="ownerProfile.avatar" alt="Avatar" />
           <span class="status-dot"></span>
         </div>
 
         <div>
-          <h1 class="title">Hi, I'm CaoKai <span aria-hidden="true">👋</span></h1>
+          <h1 class="title">
+            {{ ownerProfile.greeting }} <span aria-hidden="true">{{ ownerProfile.greetingEmoji }}</span>
+          </h1>
 
-          <p class="subtitle">Full-Stack Developer</p>
+          <p class="subtitle">{{ ownerProfile.headline }}</p>
 
           <p class="value">
-            欢迎来到我的博客 😝，这里是我记笔记的地方 🙌，目前在杭州实习
-            <span>— 致力于成为一个前端小姥.</span>
+            {{ ownerProfile.bio }}
+            <span>{{ ownerProfile.bioEmphasis }}</span>
           </p>
 
           <div class="actions">
@@ -41,28 +41,25 @@ const handleAction = (message: string) => {
           </div>
 
           <ul class="chips" aria-label="skills">
-            <li class="chip">大三在读</li>
-            <li class="chip">实习ing</li>
-            <li class="chip">开发博客</li>
-            <li class="chip">上班摸鱼中</li>
-            <li class="chip">理财小白</li>
+            <li v-for="tag in ownerProfile.tags" :key="tag" class="chip">{{ tag }}</li>
           </ul>
         </div>
       </div>
 
-      <div class="quote">我见青山多妩媚，料青山见我应如是</div>
+      <div class="quote">{{ ownerProfile.quote }}</div>
 
       <div class="social" aria-label="social links">
-        <a class="icon-btn" href="#" title="GitHub" aria-label="GitHub">
-          <Icon class="icon" icon="lucide:github" />
-        </a>
-
-        <a class="icon-btn" href="#" title="Twitter / X" aria-label="Twitter">
-          <Icon class="icon" icon="lucide:twitter" />
-        </a>
-
-        <a class="icon-btn" href="#" title="Dribbble" aria-label="Dribbble">
-          <Icon class="icon" icon="lucide:dribbble" />
+        <a
+          v-for="social in socialLinks"
+          :key="social.label"
+          class="icon-btn"
+          :href="social.url"
+          :title="social.label"
+          :aria-label="social.label"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon class="icon" :icon="social.icon" />
         </a>
       </div>
     </section>

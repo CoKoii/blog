@@ -4,6 +4,7 @@ import { Icon } from '@iconify/vue'
 import Search from '@/components/Search/Search.vue'
 import { Dropdown } from 'ant-design-vue'
 import { useLayoutStore } from '@/stores/layout'
+import { brandName } from '@/config/profile'
 const layoutStore = useLayoutStore()
 </script>
 
@@ -14,7 +15,7 @@ const layoutStore = useLayoutStore()
         <Icon icon="simple-line-icons:menu" />
       </div>
       <router-link to="/">
-        <h4>CaoKai</h4>
+        <h4>{{ brandName }}</h4>
       </router-link>
     </div>
     <div class="search">

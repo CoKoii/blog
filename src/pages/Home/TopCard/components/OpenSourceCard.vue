@@ -24,7 +24,7 @@ const metaText = computed(() => {
   <a
     class="os-card"
     aria-label="Open Source Projects"
-    :href="ossData.profileUrl"
+    :href="ossData.profileUrl || '#'"
     target="_blank"
     rel="noopener noreferrer"
   >

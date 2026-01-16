@@ -3,14 +3,11 @@ import { Icon } from '@iconify/vue'
 import { onMounted, ref, computed } from 'vue'
 import { getAllPosts } from '@/utils/posts'
 import { usePostStats } from '@/composables/usePost'
+import { statsConfig } from '@/config/profile'
 
 defineOptions({
   name: 'StatsCard',
 })
-
-const statsConfig = {
-  startDate: '2026-01-04',
-}
 
 const statsDays = ref('—')
 
