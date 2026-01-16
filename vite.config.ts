@@ -10,6 +10,7 @@ import Markdown from 'unplugin-vue-markdown/vite'
 import matter from 'gray-matter'
 import { fromHighlighter } from '@shikijs/markdown-it'
 import { createHighlighter, bundledLanguages } from 'shiki'
+import { pinyin } from 'pinyin-pro'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const siteConfigPath = fileURLToPath(new URL('./site.config.json', import.meta.url))
@@ -43,6 +44,54 @@ const escapeHtml = (value: string): string =>
 
 const siteConfig = loadSiteConfig()
 
+// 辅助函数：将中文转换为 URL 友好的拼音格式（保留英文和数字）
+function toPinyinSlug(text: string): string {
+  // 分割文本，识别中文和非中文部分
+  const segments: string[] = []
+  let currentSegment = ''
+  let isChineseSegment = false
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i]
+    const isChinese = /[\u4e00-\u9fa5]/.test(char)
+
+    if (i === 0) {
+      currentSegment = char
+      isChineseSegment = isChinese
+    } else if (isChinese === isChineseSegment) {
+      currentSegment += char
+    } else {
+      if (currentSegment) segments.push({ text: currentSegment, isChinese: isChineseSegment })
+      currentSegment = char
+      isChineseSegment = isChinese
+    }
+  }
+  if (currentSegment) segments.push({ text: currentSegment, isChinese: isChineseSegment })
+
+  // 处理每个片段
+  const result = segments
+    .map((seg: any) => {
+      if (seg.isChinese) {
+        // 中文转拼音
+        return pinyin(seg.text, {
+          pattern: 'pinyin',
+          toneType: 'none',
+          type: 'array',
+        }).join('')
+      } else {
+        // 保留英文和数字，移除特殊字符
+        return seg.text.replace(/[^a-zA-Z0-9]/g, '')
+      }
+    })
+    .filter((s: string) => s.length > 0)
+    .join('-')
+    .toLowerCase()
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+
+  return result
+}
+
 // 辅助函数：扫描 posts 目录生成路由列表（给 SSG build 用）
 function getPostRoutes() {
   const postsDir = path.resolve(__dirname, 'posts')
@@ -57,7 +106,9 @@ function getPostRoutes() {
         files.forEach((file) => {
           if (file.endsWith('.md')) {
             const name = file.replace(/\.md$/, '')
-            routes.push(`/article/${cat}/${name}`)
+            const categorySlug = toPinyinSlug(cat)
+            const nameSlug = toPinyinSlug(name)
+            routes.push(`/article/${categorySlug}/${nameSlug}`)
           }
         })
       }
@@ -84,6 +135,8 @@ function postsMetaPlugin() {
         const postsData: Array<{
           id: string
           category: string
+          categorySlug: string
+          slug: string
           path: string
           frontmatter: Record<string, unknown>
         }> = []
@@ -99,11 +152,16 @@ function postsMetaPlugin() {
                   const filePath = path.join(catPath, file)
                   const content = fs.readFileSync(filePath, 'utf-8')
                   const { data: frontmatter } = matter(content)
-                  const id = `${cat}/${file.replace(/\.md$/, '')}`
+                  const name = file.replace(/\.md$/, '')
+                  const id = `${cat}/${name}`
+                  const categorySlug = toPinyinSlug(cat)
+                  const nameSlug = toPinyinSlug(name)
 
                   postsData.push({
                     id,
                     category: cat,
+                    categorySlug,
+                    slug: nameSlug,
                     path: `/posts/${cat}/${file}`,
                     frontmatter,
                   })

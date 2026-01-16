@@ -26,6 +26,8 @@ export interface PostFrontmatter {
 export interface PostMeta {
   id: string
   category: string
+  categorySlug: string
+  slug: string
   path: string
   frontmatter: PostFrontmatter
 }

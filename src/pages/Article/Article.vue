@@ -15,10 +15,10 @@ import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
 import { siteImage, siteUrl, siteOwner } from '@/config/site'
-import { getPostContent } from '@/utils/posts'
+import { getPostContent, getAllPosts } from '@/utils/posts'
 import { formatDate } from '@/utils/date'
 import { safeDecodeURIComponent } from '@/utils/strings'
-import { buildArticlePath } from '@/utils/paths'
+import { findPostBySlug } from '@/utils/url'
 import type { PostFrontmatter } from '@/types/post'
 import type { Component } from 'vue'
 
@@ -147,10 +147,12 @@ const enhanceCodeBlocks = () => {
 }
 
 const articlePath = computed(() => {
-  const category = String(route.params.category || '')
-  const slug = String(route.params.id || '')
-  if (!category || !slug) return ''
-  return buildArticlePath(category, slug)
+  const categorySlug = String(route.params.category || '')
+  const articleSlug = String(route.params.id || '')
+  if (!categorySlug || !articleSlug) return ''
+
+  // 使用当前 URL 路径
+  return `/article/${categorySlug}/${articleSlug}`
 })
 
 const canonicalUrl = computed(() => {
@@ -280,10 +282,20 @@ onUnmounted(() => {
 })
 
 watchEffect(async () => {
-  const category = route.params.category as string
-  const slug = route.params.id as string
-  if (!category || !slug) return
-  const id = `${category}/${slug}`
+  const categorySlug = route.params.category as string
+  const articleSlug = route.params.id as string
+  if (!categorySlug || !articleSlug) return
+
+  // 通过 slug 查找文章
+  const allPosts = getAllPosts()
+  const post = findPostBySlug(categorySlug, articleSlug, allPosts)
+
+  if (!post) {
+    console.warn(`Article not found: ${categorySlug}/${articleSlug}`)
+    return
+  }
+
+  const id = post.id // 使用原始 ID 加载文章
 
   ContentComponent.value = null
   frontmatter.value = { ...DEFAULT_FRONTMATTER }

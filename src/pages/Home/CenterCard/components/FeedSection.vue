@@ -4,7 +4,7 @@ import { computed, nextTick, onBeforeUnmount, onBeforeUpdate, onMounted, ref, wa
 import type { ComponentPublicInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import { buildArticlePath } from '@/utils/paths'
-import { parsePostId } from '@/utils/posts'
+import { getAllPosts } from '@/utils/posts'
 
 defineOptions({
   name: 'CenterCardFeedSection',
@@ -84,9 +84,10 @@ const setTab = (tab: string) => {
 }
 
 const goToArticle = (postId: string | number) => {
-  const parsed = parsePostId(String(postId))
-  if (!parsed) return
-  router.push(buildArticlePath(parsed.category, parsed.slug))
+  const allPosts = getAllPosts()
+  const post = allPosts.find((p) => p.id === String(postId))
+  if (!post) return
+  router.push(buildArticlePath(post))
 }
 
 // Lifecycle hooks
