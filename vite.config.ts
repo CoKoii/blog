@@ -139,81 +139,81 @@ export default defineConfig(async () => {
   })
 
   return {
-  server: {
-    open: true,
-  },
-  plugins: [
-    {
-      name: 'site-config-index-html',
-      transformIndexHtml(html) {
-        const title = escapeHtml(siteConfig.name || 'CaoKai - 技术博客')
-        const description = escapeHtml(
-          siteConfig.description || '专注前端、SSG、Vue、工程化实践等技术领域的分享',
-        )
-        const language = escapeHtml(siteConfig.language || 'zh-CN')
-
-        let nextHtml = html.replace(/<title>.*<\/title>/, `<title>${title}</title>`)
-        if (nextHtml.includes('name="description"')) {
-          nextHtml = nextHtml.replace(
-            /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/,
-            `<meta name="description" content="${description}" />`,
+    server: {
+      open: true,
+    },
+    plugins: [
+      {
+        name: 'site-config-index-html',
+        transformIndexHtml(html: string) {
+          const title = escapeHtml(siteConfig.name || 'CaoKai - 技术博客')
+          const description = escapeHtml(
+            siteConfig.description || '专注前端、SSG、Vue、工程化实践等技术领域的分享',
           )
-        } else {
-          nextHtml = nextHtml.replace(
-            /<meta charset="[^"]*"\s*\/?>/,
-            (match) => `${match}\n    <meta name="description" content="${description}" />`,
-          )
-        }
+          const language = escapeHtml(siteConfig.language || 'zh-CN')
 
-        nextHtml = nextHtml.replace(/<html[^>]*>/, `<html lang="${language}">`)
+          let nextHtml = html.replace(/<title>.*<\/title>/, `<title>${title}</title>`)
+          if (nextHtml.includes('name="description"')) {
+            nextHtml = nextHtml.replace(
+              /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/,
+              `<meta name="description" content="${description}" />`,
+            )
+          } else {
+            nextHtml = nextHtml.replace(
+              /<meta charset="[^"]*"\s*\/?>/,
+              (match: string) =>
+                `${match}\n    <meta name="description" content="${description}" />`,
+            )
+          }
 
-        return nextHtml
+          nextHtml = nextHtml.replace(/<html[^>]*>/, `<html lang="${language}">`)
+
+          return nextHtml
+        },
+      },
+      vue({
+        include: [/\.vue$/, /\.md$/],
+      }),
+      Markdown({
+        headEnabled: true,
+        markdownItOptions: {
+          html: true,
+          linkify: true,
+          typographer: true,
+        },
+        markdownItSetup(md) {
+          md.use(fromHighlighter(highlighter, { theme: 'github-dark' }))
+          const defaultImage =
+            md.renderer.rules.image ||
+            ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options))
+
+          md.renderer.rules.image = (tokens, idx, options, env, self) => {
+            const token = tokens[idx]
+            const attrs = token.attrs ? [...token.attrs] : []
+            const srcIndex = attrs.findIndex(([name]) => name === 'src')
+            const src = srcIndex >= 0 ? attrs[srcIndex][1] : ''
+            if (srcIndex >= 0) attrs.splice(srcIndex, 1)
+            if (src) attrs.push(['data-src', src])
+            attrs.push(['v-lazy', ''])
+            token.attrs = attrs
+            return defaultImage(tokens, idx, options, env, self)
+          }
+        },
+      }),
+      postsMetaPlugin(),
+      vueDevTools(),
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
-    vue({
-      include: [/\.vue$/, /\.md$/],
-    }),
-    Markdown({
-      headEnabled: true,
-      markdownItOptions: {
-        html: true,
-        linkify: true,
-        typographer: true,
+    ssgOptions: {
+      includedRoutes(paths: string[]) {
+        return paths.flatMap((path) => {
+          return path === '/article/:category/:id' ? getPostRoutes() : path
+        })
       },
-      markdownItSetup(md) {
-        md.use(fromHighlighter(highlighter, { theme: 'github-dark' }))
-        const defaultImage =
-          md.renderer.rules.image ||
-          ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options))
-
-        md.renderer.rules.image = (tokens, idx, options, env, self) => {
-          const token = tokens[idx]
-          const attrs = token.attrs ? [...token.attrs] : []
-          const srcIndex = attrs.findIndex(([name]) => name === 'src')
-          const src = srcIndex >= 0 ? attrs[srcIndex][1] : ''
-          if (srcIndex >= 0) attrs.splice(srcIndex, 1)
-          if (src) attrs.push(['data-src', src])
-          attrs.push(['v-lazy', ''])
-          token.attrs = attrs
-          return defaultImage(tokens, idx, options, env, self)
-        }
-      },
-    }),
-    postsMetaPlugin(),
-    vueDevTools(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
-  },
-  // @ts-expect-error ssgOptions is recognized by vite-ssg but not standard vite config
-  ssgOptions: {
-    includedRoutes(paths: string[]) {
-      return paths.flatMap((path) => {
-        return path === '/article/:category/:id' ? getPostRoutes() : path
-      })
-    },
-  },
   }
 })
