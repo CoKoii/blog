@@ -39,5 +39,10 @@
   },
   "stats": {
     "startDate": "2026-01-04"
-  }
+  },
+  "tagColors": {
+    "VueJS设计与实现": "#42b883",
+    "八股文": "red"
+  },
+  "defaultTagColor": "#9ca3af"
 }

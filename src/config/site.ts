@@ -6,6 +6,8 @@ type SiteConfig = {
   description?: string
   image?: string
   language?: string
+  tagColors?: Record<string, string>
+  defaultTagColor?: string
 }
 
 const normalizeSiteUrl = (url: string): string => url.replace(/\/+$/, '')
@@ -25,3 +27,10 @@ export const siteName = resolvedName
 export const siteDescription = resolvedDescription
 export const siteImage = env.VITE_SITE_IMAGE || config.image || ''
 export const siteLanguage = env.VITE_SITE_LANGUAGE || config.language || 'zh-CN'
+
+export const defaultTagColor = config.defaultTagColor || '#9ca3af'
+
+export const getTagColor = (tag: string): string => {
+  const normalizedTag = tag.replace(/\s+/g, '')
+  return config.tagColors?.[normalizedTag] || defaultTagColor
+}

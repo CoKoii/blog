@@ -1,10 +1,10 @@
 import type { MenuType } from '@/types/menus'
 import { getAllCategories } from '@/utils/posts'
-import { defaultTagColor, tagColorMap } from '@/config/tagColors'
+import { getTagColor } from '@/config/site'
 
 const tagMenus = getAllCategories().map((category) => ({
   title: category,
-  color: tagColorMap[category] ?? defaultTagColor,
+  color: getTagColor(category),
   path: `/${category}`,
 }))
 

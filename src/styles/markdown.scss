@@ -158,105 +158,106 @@
       padding: 16px;
     }
   }
-}
-
-// 自定义的
-strong {
-  font-weight: 900;
-  font-size: 1.5em;
-  padding: 0 12px;
-  color: #4f36dd;
-}
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  line-height: 1.5;
-  margin: 1em 0;
-  &:first-child {
-    margin-top: 0;
+  // 自定义的
+  strong {
+    font-weight: 900;
+    font-size: 1.5em;
+    padding: 0 12px;
+    color: #4f36dd;
   }
-}
-h1 {
-  font-weight: 900;
-  font-size: 2.5em;
-}
-h2 {
-  font-size: 1.8em;
-}
-h3 {
-  font-size: 1.5em;
-}
-pre {
-  background-color: var(--md-bg-code-block);
-  border-radius: var(--md-radius);
-  padding: 36px 24px 20px;
-  margin: 2em 0;
-  overflow-x: auto;
-  color: #e5e7eb;
-  position: relative;
-  .code-copy-mount {
-    position: absolute;
-    top: 10px;
-    right: 12px;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: 1.5;
+    margin: 1em 0;
+    &:first-child {
+      margin-top: 0;
+    }
   }
-  .code-copy {
-    border: 0;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
+  h1 {
+    font-weight: 900;
+    font-size: 2.5em;
+  }
+  h2 {
+    font-size: 1.8em;
+  }
+  h3 {
+    font-size: 1.5em;
+  }
+  pre {
+    background-color: var(--md-bg-code-block);
+    border-radius: var(--md-radius);
+    padding: 36px 24px 20px;
+    margin: 2em 0;
+    overflow-x: auto;
     color: #e5e7eb;
-    width: 30px;
-    height: 30px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0.5;
-    transition:
-      opacity 0.2s ease,
-      background-color 0.2s ease,
-      color 0.2s ease;
-    &:hover {
-      opacity: 0.9;
-      background: rgba(255, 255, 255, 0.14);
-      color: #ffffff;
+    position: relative;
+    .code-copy-mount {
+      position: absolute;
+      top: 10px;
+      right: 12px;
     }
-    &:active {
-      opacity: 1;
-    }
-    &.is-copied {
-      opacity: 1;
-      background: rgba(34, 197, 94, 0.2);
-      color: #bbf7d0;
-    }
-  }
-  .code-copy-icon {
-    font-size: 14px;
-  }
-  &:hover {
     .code-copy {
-      opacity: 1;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e5e7eb;
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0.5;
+      transition:
+        opacity 0.2s ease,
+        background-color 0.2s ease,
+        color 0.2s ease;
+      &:hover {
+        opacity: 0.9;
+        background: rgba(255, 255, 255, 0.14);
+        color: #ffffff;
+      }
+      &:active {
+        opacity: 1;
+      }
+      &.is-copied {
+        opacity: 1;
+        background: rgba(34, 197, 94, 0.2);
+        color: #bbf7d0;
+      }
     }
-  }
-  &::before {
-    content: "";
-    position: absolute;
-    top: 12px;
-    left: 14px;
-    width: 12px;
-    height: 12px;
-    border-radius: 999px;
-    background: #ff5f57;
-    box-shadow: 18px 0 0 #ffbd2e, 36px 0 0 #28c840;
-  }
-  code {
-    color: inherit;
-    padding: 0;
-    border-radius: 0;
-    margin: 0;
-    font-size: 14px;
-    box-shadow: none;
+    .code-copy-icon {
+      font-size: 14px;
+    }
+    &:hover {
+      .code-copy {
+        opacity: 1;
+      }
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: #ff5f57;
+      box-shadow:
+        18px 0 0 #ffbd2e,
+        36px 0 0 #28c840;
+    }
+    code {
+      color: inherit;
+      padding: 0;
+      border-radius: 0;
+      margin: 0;
+      font-size: 14px;
+      box-shadow: none;
+    }
   }
 }
