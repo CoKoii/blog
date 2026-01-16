@@ -6,6 +6,8 @@ import { useHead } from '@vueuse/head'
 import { siteImage, siteName, siteUrl } from '@/config/site'
 import { getPostContent } from '@/utils/posts'
 import { formatDate } from '@/utils/date'
+import { safeDecodeURIComponent } from '@/utils/strings'
+import { buildArticlePath } from '@/utils/paths'
 import type { PostFrontmatter } from '@/types/post'
 import type { Component } from 'vue'
 
@@ -36,14 +38,8 @@ const DEFAULT_FRONTMATTER: PostFrontmatter = {
 }
 const frontmatter = ref<PostFrontmatter>({ ...DEFAULT_FRONTMATTER })
 
-const getTitleFromSlug = (slug?: string): string => {
-  if (!slug) return 'Untitled'
-  try {
-    return decodeURIComponent(slug)
-  } catch {
-    return slug
-  }
-}
+const getTitleFromSlug = (slug?: string): string =>
+  safeDecodeURIComponent(slug || '') || 'Untitled'
 
 const fallbackTitle = computed(() => getTitleFromSlug(route.params.id as string | undefined))
 
@@ -68,7 +64,7 @@ const articlePath = computed(() => {
   const category = String(route.params.category || '')
   const slug = String(route.params.id || '')
   if (!category || !slug) return ''
-  return `/article/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`
+  return buildArticlePath(category, slug)
 })
 
 const canonicalUrl = computed(() => {

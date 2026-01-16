@@ -1,48 +1,16 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import matter from 'gray-matter'
+import { loadEnv } from './utils/env.mjs'
 
 const rootDir = process.cwd()
 const distDir = path.join(rootDir, 'dist')
 const postsDir = path.join(rootDir, 'posts')
 const siteConfigPath = path.join(rootDir, 'site.config.json')
 
-const readEnvFile = (filePath) => {
-  if (!fs.existsSync(filePath)) return {}
-  const content = fs.readFileSync(filePath, 'utf-8')
-  const result = {}
-  for (const line of content.split(/\r?\n/)) {
-    const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('#')) continue
-    const eqIndex = trimmed.indexOf('=')
-    if (eqIndex === -1) continue
-    const key = trimmed.slice(0, eqIndex).trim()
-    let value = trimmed.slice(eqIndex + 1).trim()
-    if (value.startsWith('"') && value.endsWith('"')) {
-      value = value.slice(1, -1)
-    }
-    result[key] = value
-  }
-  return result
-}
-
-const loadEnv = () => {
-  const envOrder = [
-    path.join(rootDir, '.env'),
-    path.join(rootDir, '.env.local'),
-    path.join(rootDir, '.env.production'),
-    path.join(rootDir, '.env.production.local'),
-  ]
-  const env = {}
-  for (const envPath of envOrder) {
-    Object.assign(env, readEnvFile(envPath))
-  }
-  return { ...env, ...process.env }
-}
-
 const normalizeSiteUrl = (url) => url.replace(/\/+$/, '')
 
-const env = loadEnv()
+const env = loadEnv(rootDir)
 const rawSiteConfig = fs.existsSync(siteConfigPath)
   ? JSON.parse(fs.readFileSync(siteConfigPath, 'utf-8'))
   : {}
@@ -97,6 +65,9 @@ const toIso = (value) => {
   if (Number.isNaN(parsed)) return ''
   return new Date(parsed).toISOString()
 }
+
+const getFrontmatterDate = (frontmatter) =>
+  frontmatter?.date || frontmatter?.publishDate || ''
 
 const buildSitemap = (entries) => {
   const urls = entries
@@ -232,7 +203,7 @@ const main = () => {
   for (const post of posts) {
     const pathName = buildArticlePath(post.category, post.slug)
     const loc = `${siteUrl}${pathName}`
-    const lastmod = toIso(post.frontmatter?.date || post.frontmatter?.publishDate)
+    const lastmod = toIso(getFrontmatterDate(post.frontmatter))
     sitemapEntries.push({ loc, lastmod })
   }
 
@@ -243,7 +214,7 @@ const main = () => {
     .map((post) => {
       const title = post.frontmatter?.title || post.slug
       const description = post.frontmatter?.description || ''
-      const date = toIso(post.frontmatter?.date || post.frontmatter?.publishDate)
+      const date = toIso(getFrontmatterDate(post.frontmatter))
       return {
         title,
         description,

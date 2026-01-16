@@ -3,6 +3,8 @@ import { Icon } from '@iconify/vue'
 import { computed, nextTick, onBeforeUnmount, onBeforeUpdate, onMounted, ref, watch } from 'vue'
 import type { ComponentPublicInstance } from 'vue'
 import { useRouter } from 'vue-router'
+import { buildArticlePath } from '@/utils/paths'
+import { parsePostId } from '@/utils/posts'
 
 defineOptions({
   name: 'CenterCardFeedSection',
@@ -82,7 +84,9 @@ const setTab = (tab: string) => {
 }
 
 const goToArticle = (postId: string | number) => {
-  router.push(`/article/${postId}`)
+  const parsed = parsePostId(String(postId))
+  if (!parsed) return
+  router.push(buildArticlePath(parsed.category, parsed.slug))
 }
 
 // Lifecycle hooks

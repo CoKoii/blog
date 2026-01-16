@@ -4,22 +4,27 @@ import { postsMeta } from 'virtual:posts-meta'
 // Lazy 加载文章内容（按需加载）
 const postComponents = import.meta.glob<MarkdownModule>('/posts/**/*.md')
 
-const idToPathMap = new Map<string, string>()
+const getPostDateValue = (post: PostMeta): string =>
+  post.frontmatter?.date || post.frontmatter?.publishDate || ''
 
-// 初始化映射
-for (const path of Object.keys(postComponents)) {
-  const parts = path.split('/')
-  const fileName = parts.pop() || ''
-  const category = parts.pop() || ''
-  const id = category ? `${category}/${fileName.replace(/\.md$/, '')}` : fileName.replace(/\.md$/, '')
-  idToPathMap.set(id, path)
+export const parsePostId = (
+  id: string,
+): {
+  category: string
+  slug: string
+} | null => {
+  if (!id) return null
+  const [category, slug] = id.split('/')
+  if (!category || !slug) return null
+  return { category, slug }
 }
 
-const sortedPosts = [...postsMeta].sort((a, b) => {
-  const dateA = new Date(a.frontmatter?.date || a.frontmatter?.publishDate || 0)
-  const dateB = new Date(b.frontmatter?.date || b.frontmatter?.publishDate || 0)
-  return dateB.getTime() - dateA.getTime()
-})
+const getPostDateTimestamp = (post: PostMeta): number =>
+  new Date(getPostDateValue(post) || 0).getTime()
+
+const sortedPosts = [...postsMeta].sort(
+  (a, b) => getPostDateTimestamp(b) - getPostDateTimestamp(a),
+)
 
 const postsMetaById = new Map(sortedPosts.map((post) => [post.id, post]))
 
@@ -44,7 +49,8 @@ export function getPostsByCategory(category: string): PostMeta[] {
  * @returns 文章模块或 null
  */
 export async function getPostContent(id: string): Promise<PostModule | null> {
-  const path = idToPathMap.get(id)
+  const meta = postsMetaById.get(id)
+  const path = meta?.path
 
   if (!path || !postComponents[path]) {
     console.warn(`[Posts] Article not found: ${id}`)
@@ -56,7 +62,6 @@ export async function getPostContent(id: string): Promise<PostModule | null> {
     const mod = await postComponents[path]()
 
     // 从虚拟模块中获取 frontmatter（预解析的）
-    const meta = postsMetaById.get(id)
     const frontmatter = meta?.frontmatter || {}
 
     return {
@@ -70,16 +75,13 @@ export async function getPostContent(id: string): Promise<PostModule | null> {
 }
 
 /**
- * 检查文章是否存在
- */
-export function hasPost(id: string): boolean {
-  return idToPathMap.has(id)
-}
-
-/**
  * 获取所有分类
  */
 export function getAllCategories(): string[] {
   const categories = new Set(getAllPosts().map((post) => post.category))
   return Array.from(categories)
+}
+
+export function getPostDate(post: PostMeta): string {
+  return getPostDateValue(post)
 }

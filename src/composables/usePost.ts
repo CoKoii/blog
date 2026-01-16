@@ -1,5 +1,7 @@
 import type { PostMeta } from '@/types/post'
 import { getRelativeTime } from '@/utils/date'
+import { getPostDate, parsePostId } from '@/utils/posts'
+import { safeDecodeURIComponent } from '@/utils/strings'
 
 /**
  * 转换文章数据为列表显示格式
@@ -15,21 +17,15 @@ export interface PostListItem {
   tags?: string[]
 }
 
-const getTitleFromSlug = (slug: string): string => {
-  if (!slug) return 'Untitled'
-  try {
-    return decodeURIComponent(slug)
-  } catch {
-    return slug
-  }
-}
+const getTitleFromSlug = (slug: string): string =>
+  safeDecodeURIComponent(slug) || 'Untitled'
 
 export function usePostListFormat(posts: PostMeta[], markHotCount = 2): PostListItem[] {
   return posts.map((post, index) => ({
     id: post.id,
-    title: post.frontmatter.title ?? getTitleFromSlug(post.id.split('/').pop() || ''),
+    title: post.frontmatter.title ?? getTitleFromSlug(parsePostId(post.id)?.slug || ''),
     category: post.category,
-    time: getRelativeTime(post.frontmatter.date || post.frontmatter.publishDate),
+    time: getRelativeTime(getPostDate(post)),
     readTime: post.frontmatter.readTime ? `${post.frontmatter.readTime} min` : '5 min',
     hot: index < markHotCount,
     cover: post.frontmatter.coverImage ?? '',

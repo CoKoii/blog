@@ -1,6 +1,7 @@
-import { writeFile, readFile } from 'node:fs/promises'
+import { writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { resolve, dirname } from 'node:path'
+import { loadEnv } from './utils/env.mjs'
 
 const color = {
   cyan: '\x1b[36m',
@@ -15,34 +16,12 @@ const success = (message) => console.log(`${color.green}${message}${color.reset}
 const warn = (message) => console.log(`${color.yellow}${message}${color.reset}`)
 const error = (message) => console.log(`${color.red}${message}${color.reset}`)
 
-const envPath = resolve(process.cwd(), '.env')
-const loadEnv = async () => {
-  try {
-    const content = await readFile(envPath, 'utf8')
-    content.split('\n').forEach((line) => {
-      const trimmed = line.trim()
-      if (!trimmed || trimmed.startsWith('#')) return
-      const separatorIndex = trimmed.indexOf('=')
-      if (separatorIndex === -1) return
-      const key = trimmed.slice(0, separatorIndex).trim()
-      const value = trimmed.slice(separatorIndex + 1).trim()
-      if (key && !(key in process.env)) {
-        process.env[key] = value
-      }
-    })
-  } catch (err) {
-    if (err?.code !== 'ENOENT') {
-      warn(`读取 .env 失败：${err?.message ?? err}`)
-    }
-  }
-}
-
-await loadEnv()
+const env = loadEnv()
 
 const username = 'CoKoii'
 const profileUrl = `https://github.com/${username}`
 const apiUrl = `https://api.github.com/users/${username}/repos?per_page=100&sort=updated`
-const token = process.env.GITHUB_TOKEN
+const token = env.GITHUB_TOKEN
 
 const startedAt = Date.now()
 info(`开始获取 GitHub 数据... 用户：${username}`)
