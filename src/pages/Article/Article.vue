@@ -3,6 +3,7 @@ import { ref, shallowRef, watchEffect, computed, onMounted, nextTick, onUnmounte
 import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
+import { siteImage, siteName, siteUrl } from '@/config/site'
 import { getPostContent } from '@/utils/posts'
 import { formatDate } from '@/utils/date'
 import type { PostFrontmatter } from '@/types/post'
@@ -63,13 +64,31 @@ const getHeadings = (): HTMLElement[] => {
   return Array.from(document.querySelectorAll(HEADING_SELECTOR)) as HTMLElement[]
 }
 
+const articlePath = computed(() => {
+  const category = String(route.params.category || '')
+  const slug = String(route.params.id || '')
+  if (!category || !slug) return ''
+  return `/article/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`
+})
+
+const canonicalUrl = computed(() => {
+  const path = articlePath.value
+  return path ? `${siteUrl}${path}` : siteUrl
+})
+
 // 动态设置页面 head
-useHead(() => ({
-  title: article.value.title,
-  meta: [
+useHead(() => {
+  const description = frontmatter.value.description || article.value.title
+  const coverImage = article.value.coverImage || siteImage
+  const publishDateRaw = frontmatter.value.publishDate || frontmatter.value.date
+  const publishDateIso =
+    publishDateRaw && !Number.isNaN(Date.parse(publishDateRaw))
+      ? new Date(publishDateRaw).toISOString()
+      : ''
+  const meta = [
     {
       name: 'description',
-      content: frontmatter.value.description || article.value.title,
+      content: description,
     },
     {
       property: 'og:title',
@@ -77,14 +96,69 @@ useHead(() => ({
     },
     {
       property: 'og:description',
-      content: frontmatter.value.description || article.value.title,
+      content: description,
+    },
+    {
+      property: 'og:type',
+      content: 'article',
+    },
+    {
+      property: 'og:url',
+      content: canonicalUrl.value,
+    },
+    {
+      property: 'og:site_name',
+      content: siteName,
+    },
+    {
+      name: 'twitter:card',
+      content: coverImage ? 'summary_large_image' : 'summary',
+    },
+    {
+      name: 'twitter:title',
+      content: article.value.title,
+    },
+    {
+      name: 'twitter:description',
+      content: description,
     },
     {
       name: 'keywords',
       content: article.value.tags.join(', '),
     },
-  ],
-}))
+  ] as Array<Record<string, string>>
+
+  if (coverImage) {
+    meta.push(
+      {
+        property: 'og:image',
+        content: coverImage,
+      },
+      {
+        name: 'twitter:image',
+        content: coverImage,
+      },
+    )
+  }
+
+  if (publishDateIso) {
+    meta.push({
+      property: 'article:published_time',
+      content: publishDateIso,
+    })
+  }
+
+  return {
+    title: article.value.title,
+    link: [
+      {
+        rel: 'canonical',
+        href: canonicalUrl.value,
+      },
+    ],
+    meta,
+  }
+})
 
 // 生成目录
 const generateToc = () => {
@@ -314,7 +388,7 @@ watchEffect(async () => {
       background: linear-gradient(
         to bottom,
         rgba(0, 0, 0, 0) 0%,
-        rgba(0, 0, 0, 0.2) 40%,
+        rgba(0, 0, 0, 0.2) 60%,
         rgba(0, 0, 0, 0.6) 80%,
         rgba(0, 0, 0, 0.85) 100%
       );
@@ -341,7 +415,9 @@ watchEffect(async () => {
           font-size: 14px;
           font-weight: 500;
           letter-spacing: 0.5px;
-          transition: transform 0.3s ease, background-color 0.3s ease;
+          transition:
+            transform 0.3s ease,
+            background-color 0.3s ease;
 
           &.hash {
             background-color: rgba(0, 0, 0, 0.45);
@@ -391,7 +467,6 @@ watchEffect(async () => {
   .cover_info.is_skeleton {
     background: #ffffff;
   }
-
 
   .content {
     display: flex;

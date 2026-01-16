@@ -10,7 +10,7 @@
     "dev": "node scripts/update-oss-data.mjs && vite",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
-    "build-only": "vite-ssg build",
+    "build-only": "vite-ssg build && node scripts/generate-seo.mjs",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli src/"

@@ -10,6 +10,36 @@ import Markdown from 'unplugin-vue-markdown/vite'
 import matter from 'gray-matter'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
+const siteConfigPath = fileURLToPath(new URL('./site.config.json', import.meta.url))
+
+type SiteConfig = {
+  url?: string
+  name?: string
+  description?: string
+  image?: string
+  language?: string
+}
+
+const loadSiteConfig = (): SiteConfig => {
+  if (!fs.existsSync(siteConfigPath)) return {}
+  try {
+    const raw = fs.readFileSync(siteConfigPath, 'utf-8')
+    return JSON.parse(raw) as SiteConfig
+  } catch (error) {
+    console.warn('[site-config] Failed to parse site.config.json', error)
+    return {}
+  }
+}
+
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+
+const siteConfig = loadSiteConfig()
 
 // 辅助函数：扫描 posts 目录生成路由列表（给 SSG build 用）
 function getPostRoutes() {
@@ -105,6 +135,33 @@ export default defineConfig({
     open: true,
   },
   plugins: [
+    {
+      name: 'site-config-index-html',
+      transformIndexHtml(html) {
+        const title = escapeHtml(siteConfig.name || 'CaoKai - 技术博客')
+        const description = escapeHtml(
+          siteConfig.description || '专注前端、SSG、Vue、工程化实践等技术领域的分享',
+        )
+        const language = escapeHtml(siteConfig.language || 'zh-CN')
+
+        let nextHtml = html.replace(/<title>.*<\/title>/, `<title>${title}</title>`)
+        if (nextHtml.includes('name="description"')) {
+          nextHtml = nextHtml.replace(
+            /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/,
+            `<meta name="description" content="${description}" />`,
+          )
+        } else {
+          nextHtml = nextHtml.replace(
+            /<meta charset="[^"]*"\s*\/?>/,
+            (match) => `${match}\n    <meta name="description" content="${description}" />`,
+          )
+        }
+
+        nextHtml = nextHtml.replace(/<html[^>]*>/, `<html lang="${language}">`)
+
+        return nextHtml
+      },
+    },
     vue({
       include: [/\.vue$/, /\.md$/],
     }),
