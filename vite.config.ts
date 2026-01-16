@@ -8,6 +8,8 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import Markdown from 'unplugin-vue-markdown/vite'
 import matter from 'gray-matter'
+import { fromHighlighter } from '@shikijs/markdown-it'
+import { createHighlighter, bundledLanguages } from 'shiki'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const siteConfigPath = fileURLToPath(new URL('./site.config.json', import.meta.url))
@@ -130,7 +132,13 @@ function postsMetaPlugin() {
 }
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(async () => {
+  const highlighter = await createHighlighter({
+    themes: ['github-dark'],
+    langs: Object.keys(bundledLanguages),
+  })
+
+  return {
   server: {
     open: true,
   },
@@ -173,6 +181,7 @@ export default defineConfig({
         typographer: true,
       },
       markdownItSetup(md) {
+        md.use(fromHighlighter(highlighter, { theme: 'github-dark' }))
         const defaultImage =
           md.renderer.rules.image ||
           ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options))
@@ -206,4 +215,5 @@ export default defineConfig({
       })
     },
   },
+  }
 })

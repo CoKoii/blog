@@ -1,5 +1,16 @@
 <script setup lang="ts">
-import { ref, shallowRef, watchEffect, computed, onMounted, nextTick, onUnmounted } from 'vue'
+import {
+  ref,
+  shallowRef,
+  watchEffect,
+  computed,
+  onMounted,
+  nextTick,
+  onUnmounted,
+  createApp,
+  defineComponent,
+  h,
+} from 'vue'
 import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
@@ -57,6 +68,82 @@ const article = computed(() => ({
 const getHeadings = (): HTMLElement[] => {
   if (!canUseDOM) return []
   return Array.from(document.querySelectorAll(HEADING_SELECTOR)) as HTMLElement[]
+}
+
+const CopyButton = defineComponent({
+  props: {
+    text: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
+    const copied = ref(false)
+    let resetTimer: number | undefined
+
+    const resetCopied = () => {
+      copied.value = false
+      if (resetTimer) {
+        window.clearTimeout(resetTimer)
+        resetTimer = undefined
+      }
+    }
+
+    const handleCopy = async () => {
+      const text = props.text || ''
+      if (!text) return
+      try {
+        await navigator.clipboard.writeText(text)
+      } catch {
+        const textarea = document.createElement('textarea')
+        textarea.value = text
+        textarea.style.position = 'fixed'
+        textarea.style.top = '-9999px'
+        document.body.appendChild(textarea)
+        textarea.focus()
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+      }
+      copied.value = true
+      if (resetTimer) window.clearTimeout(resetTimer)
+      resetTimer = window.setTimeout(resetCopied, 1600)
+    }
+
+    return () =>
+      h(
+        'button',
+        {
+          type: 'button',
+          class: ['code-copy', { 'is-copied': copied.value }],
+          onClick: handleCopy,
+          'aria-label': copied.value ? '已复制' : '复制代码',
+        },
+        [
+          h(Icon, {
+            class: 'code-copy-icon',
+            icon: copied.value ? 'lucide:check' : 'lucide:copy',
+            'aria-hidden': 'true',
+          }),
+        ],
+      )
+  },
+})
+
+const enhanceCodeBlocks = () => {
+  if (!canUseDOM) return
+  const blocks = Array.from(document.querySelectorAll('.markdown-content pre')) as HTMLElement[]
+  blocks.forEach((block) => {
+    if (block.dataset.codeEnhanced === 'true') return
+    const code = block.querySelector('code') as HTMLElement | null
+    if (!code) return
+
+    const mount = document.createElement('div')
+    mount.className = 'code-copy-mount'
+    block.appendChild(mount)
+    createApp(CopyButton, { text: code.textContent || '' }).mount(mount)
+    block.dataset.codeEnhanced = 'true'
+  })
 }
 
 const articlePath = computed(() => {
@@ -250,6 +337,7 @@ watchEffect(async () => {
       window.requestAnimationFrame?.bind(window) ||
       ((cb: FrameRequestCallback) => window.setTimeout(cb, 0))
     schedule(() => {
+      enhanceCodeBlocks()
       generateToc()
       handleScroll()
     })
