@@ -46,6 +46,14 @@ useHead(() => {
     },
   ] as Array<Record<string, string>>
 
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: siteName,
+    url: siteUrl,
+    description: siteDescription,
+  }
+
   if (siteImage) {
     meta.push(
       {
@@ -68,6 +76,12 @@ useHead(() => {
       },
     ],
     meta,
+    script: [
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify(schema),
+      },
+    ],
   }
 })
 </script>

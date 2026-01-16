@@ -8,6 +8,12 @@ type SiteConfig = {
   language?: string
   tagColors?: Record<string, string>
   defaultTagColor?: string
+  owner?: {
+    name: string
+    avatar?: string
+    bio?: string
+    githubUsername?: string
+  }
 }
 
 const normalizeSiteUrl = (url: string): string => url.replace(/\/+$/, '')
@@ -27,6 +33,7 @@ export const siteName = resolvedName
 export const siteDescription = resolvedDescription
 export const siteImage = env.VITE_SITE_IMAGE || config.image || ''
 export const siteLanguage = env.VITE_SITE_LANGUAGE || config.language || 'zh-CN'
+export const siteOwner = config.owner || { name: 'Author' }
 
 export const defaultTagColor = config.defaultTagColor || '#9ca3af'
 

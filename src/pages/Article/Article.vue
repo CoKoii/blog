@@ -14,7 +14,7 @@ import {
 import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
-import { siteImage, siteName, siteUrl } from '@/config/site'
+import { siteImage, siteUrl, siteOwner } from '@/config/site'
 import { getPostContent } from '@/utils/posts'
 import { formatDate } from '@/utils/date'
 import { safeDecodeURIComponent } from '@/utils/strings'
@@ -163,82 +163,49 @@ useHead(() => {
   const description = frontmatter.value.description || article.value.title
   const coverImage = article.value.coverImage || siteImage
   const publishDateRaw = frontmatter.value.publishDate || frontmatter.value.date
-  const publishDateIso =
-    publishDateRaw && !Number.isNaN(Date.parse(publishDateRaw))
-      ? new Date(publishDateRaw).toISOString()
-      : ''
+  const publishDateIso = publishDateRaw ? new Date(publishDateRaw).toISOString() : ''
+
+  const fullCoverImage = coverImage?.startsWith('http') ? coverImage : `${siteUrl}${coverImage}`
+
   const meta = [
-    {
-      name: 'description',
-      content: description,
-    },
-    {
-      property: 'og:title',
-      content: article.value.title,
-    },
-    {
-      property: 'og:description',
-      content: description,
-    },
-    {
-      property: 'og:type',
-      content: 'article',
-    },
-    {
-      property: 'og:url',
-      content: canonicalUrl.value,
-    },
-    {
-      property: 'og:site_name',
-      content: siteName,
-    },
-    {
-      name: 'twitter:card',
-      content: coverImage ? 'summary_large_image' : 'summary',
-    },
-    {
-      name: 'twitter:title',
-      content: article.value.title,
-    },
-    {
-      name: 'twitter:description',
-      content: description,
-    },
-    {
-      name: 'keywords',
-      content: article.value.tags.join(', '),
-    },
+    { name: 'description', content: description },
+    { property: 'og:title', content: article.value.title },
+    { property: 'og:description', content: description },
+    { property: 'og:type', content: 'article' },
+    { property: 'og:url', content: canonicalUrl.value },
+    { name: 'twitter:card', content: 'summary_large_image' },
   ] as Array<Record<string, string>>
 
   if (coverImage) {
-    meta.push(
-      {
-        property: 'og:image',
-        content: coverImage,
-      },
-      {
-        name: 'twitter:image',
-        content: coverImage,
-      },
-    )
+    meta.push({ property: 'og:image', content: fullCoverImage })
   }
 
   if (publishDateIso) {
-    meta.push({
-      property: 'article:published_time',
-      content: publishDateIso,
-    })
+    meta.push({ property: 'article:published_time', content: publishDateIso })
+  }
+
+  if (article.value.tags.length > 0) {
+    meta.push({ name: 'keywords', content: article.value.tags.join(', ') })
   }
 
   return {
     title: article.value.title,
-    link: [
+    link: [{ rel: 'canonical', href: canonicalUrl.value }],
+    meta,
+    script: [
       {
-        rel: 'canonical',
-        href: canonicalUrl.value,
+        type: 'application/ld+json',
+        children: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: article.value.title,
+          ...(coverImage && { image: fullCoverImage }),
+          ...(publishDateIso && { datePublished: publishDateIso }),
+          author: { '@type': 'Person', name: siteOwner.name },
+          description,
+        }),
       },
     ],
-    meta,
   }
 })
 
