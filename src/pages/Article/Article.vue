@@ -38,8 +38,7 @@ const DEFAULT_FRONTMATTER: PostFrontmatter = {
 }
 const frontmatter = ref<PostFrontmatter>({ ...DEFAULT_FRONTMATTER })
 
-const getTitleFromSlug = (slug?: string): string =>
-  safeDecodeURIComponent(slug || '') || 'Untitled'
+const getTitleFromSlug = (slug?: string): string => safeDecodeURIComponent(slug || '') || 'Untitled'
 
 const fallbackTitle = computed(() => getTitleFromSlug(route.params.id as string | undefined))
 
@@ -476,7 +475,6 @@ watchEffect(async () => {
       border-radius: var(--radius-md);
       padding: 48px 24px;
       transition: var(--transition-base);
-      font-family: LXGWWenKai-Regular;
     }
 
     .menus {
