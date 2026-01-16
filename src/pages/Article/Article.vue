@@ -15,7 +15,7 @@ import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
 import { siteImage, siteUrl, siteOwner } from '@/config/site'
-import { getPostContent, getAllPosts } from '@/utils/posts'
+import { getPostContent, getAllPosts, parsePostId } from '@/utils/posts'
 import { formatDate } from '@/utils/date'
 import { safeDecodeURIComponent } from '@/utils/strings'
 import { findPostBySlug } from '@/utils/url'
@@ -48,6 +48,7 @@ const DEFAULT_FRONTMATTER: PostFrontmatter = {
   comments: 0,
 }
 const frontmatter = ref<PostFrontmatter>({ ...DEFAULT_FRONTMATTER })
+const resolvedTitle = ref('')
 
 const getTitleFromSlug = (slug?: string): string => safeDecodeURIComponent(slug || '') || 'Untitled'
 
@@ -55,7 +56,7 @@ const fallbackTitle = computed(() => getTitleFromSlug(route.params.id as string 
 
 // 计算显示数据
 const article = computed(() => ({
-  title: frontmatter.value.title || fallbackTitle.value,
+  title: frontmatter.value.title || resolvedTitle.value || fallbackTitle.value,
   coverImage: frontmatter.value.coverImage || '',
   tags: frontmatter.value.tags || [],
   wordCount: frontmatter.value.wordCount || 0,
@@ -285,6 +286,7 @@ watchEffect(async () => {
   const categorySlug = route.params.category as string
   const articleSlug = route.params.id as string
   if (!categorySlug || !articleSlug) return
+  resolvedTitle.value = ''
 
   // 通过 slug 查找文章
   const allPosts = getAllPosts()
@@ -296,6 +298,7 @@ watchEffect(async () => {
   }
 
   const id = post.id // 使用原始 ID 加载文章
+  resolvedTitle.value = getTitleFromSlug(parsePostId(post.id)?.slug || '')
 
   ContentComponent.value = null
   frontmatter.value = { ...DEFAULT_FRONTMATTER }
