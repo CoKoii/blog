@@ -47,7 +47,7 @@ const siteConfig = loadSiteConfig()
 // 辅助函数：将中文转换为 URL 友好的拼音格式（保留英文和数字）
 function toPinyinSlug(text: string): string {
   // 分割文本，识别中文和非中文部分
-  const segments: string[] = []
+  const segments: Array<{ text: string; isChinese: boolean }> = []
   let currentSegment = ''
   let isChineseSegment = false
 
@@ -61,16 +61,20 @@ function toPinyinSlug(text: string): string {
     } else if (isChinese === isChineseSegment) {
       currentSegment += char
     } else {
-      if (currentSegment) segments.push({ text: currentSegment, isChinese: isChineseSegment })
+      if (currentSegment) {
+        segments.push({ text: currentSegment, isChinese: isChineseSegment })
+      }
       currentSegment = char
       isChineseSegment = isChinese
     }
   }
-  if (currentSegment) segments.push({ text: currentSegment, isChinese: isChineseSegment })
+  if (currentSegment) {
+    segments.push({ text: currentSegment, isChinese: isChineseSegment })
+  }
 
   // 处理每个片段
   const result = segments
-    .map((seg: any) => {
+    .map((seg) => {
       if (seg.isChinese) {
         // 中文转拼音
         return pinyin(seg.text, {
