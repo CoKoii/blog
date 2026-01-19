@@ -163,7 +163,7 @@ watch(() => props.activeTab, centerActiveTab)
     </div>
 
     <div class="more-btn-wrapper">
-      <button class="view-all-btn">View Archive</button>
+      <button class="view-all-btn">查看全部文章</button>
     </div>
   </section>
 </template>

@@ -21,17 +21,17 @@
     {
       "label": "GitHub",
       "icon": "lucide:github",
-      "url": "#"
+      "url": "https://github.com/CoKoii"
     },
     {
       "label": "Twitter / X",
-      "icon": "lucide:twitter",
-      "url": "#"
+      "icon": "meteor-icons:telegram",
+      "url": "https://t.me/CaoK_ai"
     },
     {
       "label": "Dribbble",
-      "icon": "lucide:dribbble",
-      "url": "#"
+      "icon": "codicon:twitter",
+      "url": "https://x.com/CaoKaiii"
     }
   ],
   "wechat": {
