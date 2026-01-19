@@ -3,7 +3,7 @@ import { Icon } from '@iconify/vue'
 import { onMounted, ref, computed } from 'vue'
 import { getAllPosts } from '@/utils/posts'
 import { usePostStats } from '@/composables/usePost'
-import { statsConfig } from '@/config/profile'
+import { statsConfig } from '@/config'
 
 defineOptions({
   name: 'StatsCard',

@@ -1,10 +1,11 @@
 import type { PostMeta } from '@/types/post'
+import { buildArticlePath } from '@/utils/paths'
 
 /**
  * 生成文章的 URL 路径（使用拼音 slug）
  */
 export function getPostUrl(post: PostMeta): string {
-  return `/article/${post.categorySlug}/${post.slug}`
+  return buildArticlePath(post)
 }
 
 /**

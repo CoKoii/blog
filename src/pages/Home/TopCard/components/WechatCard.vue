@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { wechatConfig } from '@/config/profile'
+import { wechatConfig } from '@/config'
 
 defineOptions({
   name: 'WechatCard',

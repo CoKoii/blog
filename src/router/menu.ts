@@ -1,6 +1,6 @@
 import type { MenuType } from '@/types/menus'
 import { getAllPosts } from '@/utils/posts'
-import { getTagColor } from '@/config/site'
+import { getTagColor } from '@/config'
 
 const tagMenus = (() => {
   const posts = getAllPosts()

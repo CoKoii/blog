@@ -1,31 +1,18 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import matter from 'gray-matter'
-import { pinyin } from 'pinyin-pro'
 import { loadEnv } from './utils/env.mjs'
+import { buildArticlePath } from './utils/slug.mjs'
+import { resolveSiteMeta } from './utils/site-config.mjs'
+import { listPostFiles } from './utils/posts.mjs'
 
 const rootDir = process.cwd()
 const distDir = path.join(rootDir, 'dist')
-const postsDir = path.join(rootDir, 'posts')
-const siteConfigPath = path.join(rootDir, 'site.config.json')
-
-const normalizeSiteUrl = (url) => url.replace(/\/+$/, '')
-
 const env = loadEnv(rootDir)
-const rawSiteConfig = fs.existsSync(siteConfigPath)
-  ? JSON.parse(fs.readFileSync(siteConfigPath, 'utf-8'))
-  : {}
-const siteConfig = rawSiteConfig || {}
-
-const siteUrl = normalizeSiteUrl(
-  env.VITE_SITE_URL || env.SITE_URL || siteConfig.url || 'https://example.com',
-)
-const siteName = env.VITE_SITE_NAME || siteConfig.name || 'CaoKai - 技术博客'
-const siteDescription =
-  env.VITE_SITE_DESCRIPTION ||
-  siteConfig.description ||
-  '专注前端、SSG、Vue、工程化实践等技术领域的分享'
-const siteLanguage = env.VITE_SITE_LANGUAGE || siteConfig.language || 'zh-CN'
+const { siteUrl, siteName, siteDescription, siteLanguage } = resolveSiteMeta({
+  env,
+  rootDir,
+})
 
 const ensureDist = () => {
   if (!fs.existsSync(distDir)) {
@@ -33,82 +20,16 @@ const ensureDist = () => {
   }
 }
 
-const collectPosts = () => {
-  const posts = []
-  if (!fs.existsSync(postsDir)) return posts
-  const categories = fs.readdirSync(postsDir)
-  for (const category of categories) {
-    const categoryDir = path.join(postsDir, category)
-    if (!fs.statSync(categoryDir).isDirectory()) continue
-    const files = fs.readdirSync(categoryDir)
-    for (const file of files) {
-      if (!file.endsWith('.md')) continue
-      const filePath = path.join(categoryDir, file)
-      const raw = fs.readFileSync(filePath, 'utf-8')
-      const { data: frontmatter } = matter(raw)
-      const slug = file.replace(/\.md$/, '')
-      posts.push({
-        category,
-        slug,
-        frontmatter,
-      })
+const collectPosts = () =>
+  listPostFiles(rootDir).map((post) => {
+    const raw = fs.readFileSync(post.filePath, 'utf-8')
+    const { data: frontmatter } = matter(raw)
+    return {
+      category: post.category,
+      slug: post.slug,
+      frontmatter,
     }
-  }
-  return posts
-}
-
-const toPinyinSlug = (text) => {
-  // 分割文本，识别中文和非中文部分
-  const segments = []
-  let currentSegment = ''
-  let isChineseSegment = false
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i]
-    const isChinese = /[\u4e00-\u9fa5]/.test(char)
-
-    if (i === 0) {
-      currentSegment = char
-      isChineseSegment = isChinese
-    } else if (isChinese === isChineseSegment) {
-      currentSegment += char
-    } else {
-      if (currentSegment) segments.push({ text: currentSegment, isChinese: isChineseSegment })
-      currentSegment = char
-      isChineseSegment = isChinese
-    }
-  }
-  if (currentSegment) segments.push({ text: currentSegment, isChinese: isChineseSegment })
-
-  // 处理每个片段
-  const result = segments
-    .map((seg) => {
-      if (seg.isChinese) {
-        // 中文转拼音
-        return pinyin(seg.text, {
-          pattern: 'pinyin',
-          toneType: 'none',
-          type: 'array',
-        }).join('')
-      } else {
-        // 保留英文和数字，移除特殊字符
-        return seg.text.replace(/[^a-zA-Z0-9]/g, '')
-      }
-    })
-    .filter((s) => s.length > 0)
-    .join('-')
-    .toLowerCase()
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-
-  return result
-}
-
-const buildArticlePath = (category, slug) => {
-  const categorySlug = toPinyinSlug(category)
-  const articleSlug = toPinyinSlug(slug)
-  return `/article/${categorySlug}/${articleSlug}`
-}
+  })
 
 const toIso = (value) => {
   if (!value) return ''

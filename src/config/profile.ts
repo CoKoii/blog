@@ -1,41 +1,6 @@
-import rawConfig from '../../site.config.json'
+import { siteConfig, type SiteOwner, type SiteSocialLink, type SiteStats, type SiteWechat } from './raw'
 
-type SiteOwner = {
-  name?: string
-  headline?: string
-  greeting?: string
-  greetingEmoji?: string
-  bio?: string
-  bioEmphasis?: string
-  quote?: string
-  avatar?: string
-  tags?: string[]
-  githubUsername?: string
-}
-
-type SocialLink = {
-  label: string
-  icon: string
-  url: string
-}
-
-type WechatConfig = {
-  qrUrl?: string
-}
-
-type StatsConfig = {
-  startDate?: string
-}
-
-type SiteProfileConfig = {
-  brandName?: string
-  owner?: SiteOwner
-  socials?: SocialLink[]
-  wechat?: WechatConfig
-  stats?: StatsConfig
-}
-
-const config = rawConfig as SiteProfileConfig
+const config = siteConfig
 
 export const brandName = config.brandName || config.owner?.name || 'CaoKai'
 
@@ -54,18 +19,18 @@ export const ownerProfile: Required<SiteOwner> = {
   githubUsername: config.owner?.githubUsername || 'CoKoii',
 }
 
-export const socialLinks: SocialLink[] = config.socials || [
+export const socialLinks: SiteSocialLink[] = config.socials || [
   { label: 'GitHub', icon: 'lucide:github', url: '#' },
   { label: 'Twitter / X', icon: 'lucide:twitter', url: '#' },
   { label: 'Dribbble', icon: 'lucide:dribbble', url: '#' },
 ]
 
-export const wechatConfig: Required<WechatConfig> = {
+export const wechatConfig: Required<SiteWechat> = {
   qrUrl:
     config.wechat?.qrUrl ||
     'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=https://weixin.qq.com/',
 }
 
-export const statsConfig: Required<StatsConfig> = {
+export const statsConfig: Required<SiteStats> = {
   startDate: config.stats?.startDate || '2026-01-04',
 }

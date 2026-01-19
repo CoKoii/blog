@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
-import { siteDescription, siteImage, siteName, siteUrl } from '@/config/site'
+import { siteDescription, siteImage, siteName, siteUrl } from '@/config'
 import TopCard from './TopCard/TopCard.vue'
 import CenterCard from './CenterCard/CenterCard.vue'
 

@@ -10,29 +10,11 @@ import Markdown from 'unplugin-vue-markdown/vite'
 import matter from 'gray-matter'
 import { fromHighlighter } from '@shikijs/markdown-it'
 import { createHighlighter, bundledLanguages } from 'shiki'
-import { pinyin } from 'pinyin-pro'
+import { buildArticlePath, toPinyinSlug } from './scripts/utils/slug'
+import { resolveSiteMeta } from './scripts/utils/site-config'
+import { listPostFiles, type PostFileEntry } from './scripts/utils/posts'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
-const siteConfigPath = fileURLToPath(new URL('./site.config.json', import.meta.url))
-
-type SiteConfig = {
-  url?: string
-  name?: string
-  description?: string
-  image?: string
-  language?: string
-}
-
-const loadSiteConfig = (): SiteConfig => {
-  if (!fs.existsSync(siteConfigPath)) return {}
-  try {
-    const raw = fs.readFileSync(siteConfigPath, 'utf-8')
-    return JSON.parse(raw) as SiteConfig
-  } catch (error) {
-    console.warn('[site-config] Failed to parse site.config.json', error)
-    return {}
-  }
-}
 
 const escapeHtml = (value: string): string =>
   value
@@ -42,83 +24,13 @@ const escapeHtml = (value: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
 
-const siteConfig = loadSiteConfig()
-
-// 辅助函数：将中文转换为 URL 友好的拼音格式（保留英文和数字）
-function toPinyinSlug(text: string): string {
-  // 分割文本，识别中文和非中文部分
-  const segments: Array<{ text: string; isChinese: boolean }> = []
-  let currentSegment = ''
-  let isChineseSegment = false
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i]
-    const isChinese = /[\u4e00-\u9fa5]/.test(char)
-
-    if (i === 0) {
-      currentSegment = char
-      isChineseSegment = isChinese
-    } else if (isChinese === isChineseSegment) {
-      currentSegment += char
-    } else {
-      if (currentSegment) {
-        segments.push({ text: currentSegment, isChinese: isChineseSegment })
-      }
-      currentSegment = char
-      isChineseSegment = isChinese
-    }
-  }
-  if (currentSegment) {
-    segments.push({ text: currentSegment, isChinese: isChineseSegment })
-  }
-
-  // 处理每个片段
-  const result = segments
-    .map((seg) => {
-      if (seg.isChinese) {
-        // 中文转拼音
-        return pinyin(seg.text, {
-          pattern: 'pinyin',
-          toneType: 'none',
-          type: 'array',
-        }).join('')
-      } else {
-        // 保留英文和数字，移除特殊字符
-        return seg.text.replace(/[^a-zA-Z0-9]/g, '')
-      }
-    })
-    .filter((s: string) => s.length > 0)
-    .join('-')
-    .toLowerCase()
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-
-  return result
-}
+const { siteName, siteDescription, siteLanguage } = resolveSiteMeta({ rootDir: __dirname })
 
 // 辅助函数：扫描 posts 目录生成路由列表（给 SSG build 用）
 function getPostRoutes() {
-  const postsDir = path.resolve(__dirname, 'posts')
-  const routes: string[] = []
-
-  if (fs.existsSync(postsDir)) {
-    const categories = fs.readdirSync(postsDir)
-    categories.forEach((cat) => {
-      const catPath = path.join(postsDir, cat)
-      if (fs.statSync(catPath).isDirectory()) {
-        const files = fs.readdirSync(catPath)
-        files.forEach((file) => {
-          if (file.endsWith('.md')) {
-            const name = file.replace(/\.md$/, '')
-            const categorySlug = toPinyinSlug(cat)
-            const nameSlug = toPinyinSlug(name)
-            routes.push(`/article/${categorySlug}/${nameSlug}`)
-          }
-        })
-      }
-    })
-  }
-  return routes
+  return listPostFiles(__dirname).map((post: PostFileEntry) =>
+    buildArticlePath(post.category, post.slug),
+  )
 }
 
 // 插件：生成文章元数据虚拟模块
@@ -145,33 +57,20 @@ function postsMetaPlugin() {
           frontmatter: Record<string, unknown>
         }> = []
 
-        if (fs.existsSync(postsDir)) {
-          const categories = fs.readdirSync(postsDir)
-          categories.forEach((cat) => {
-            const catPath = path.join(postsDir, cat)
-            if (fs.statSync(catPath).isDirectory()) {
-              const files = fs.readdirSync(catPath)
-              files.forEach((file) => {
-                if (file.endsWith('.md')) {
-                  const filePath = path.join(catPath, file)
-                  const content = fs.readFileSync(filePath, 'utf-8')
-                  const { data: frontmatter } = matter(content)
-                  const name = file.replace(/\.md$/, '')
-                  const id = `${cat}/${name}`
-                  const categorySlug = toPinyinSlug(cat)
-                  const nameSlug = toPinyinSlug(name)
+        for (const post of listPostFiles(__dirname)) {
+          const content = fs.readFileSync(post.filePath, 'utf-8')
+          const { data: frontmatter } = matter(content)
+          const id = `${post.category}/${post.slug}`
+          const categorySlug = toPinyinSlug(post.category)
+          const nameSlug = toPinyinSlug(post.slug)
 
-                  postsData.push({
-                    id,
-                    category: cat,
-                    categorySlug,
-                    slug: nameSlug,
-                    path: `/posts/${cat}/${file}`,
-                    frontmatter,
-                  })
-                }
-              })
-            }
+          postsData.push({
+            id,
+            category: post.category,
+            categorySlug,
+            slug: nameSlug,
+            path: `/posts/${post.category}/${post.fileName}`,
+            frontmatter,
           })
         }
 
@@ -208,11 +107,11 @@ export default defineConfig(async () => {
       {
         name: 'site-config-index-html',
         transformIndexHtml(html: string) {
-          const title = escapeHtml(siteConfig.name || 'CaoKai - 技术博客')
+          const title = escapeHtml(siteName || 'CaoKai - 技术博客')
           const description = escapeHtml(
-            siteConfig.description || '专注前端、SSG、Vue、工程化实践等技术领域的分享',
+            siteDescription || '专注前端、SSG、Vue、工程化实践等技术领域的分享',
           )
-          const language = escapeHtml(siteConfig.language || 'zh-CN')
+          const language = escapeHtml(siteLanguage || 'zh-CN')
 
           let nextHtml = html.replace(/<title>.*<\/title>/, `<title>${title}</title>`)
           if (nextHtml.includes('name="description"')) {

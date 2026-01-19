@@ -14,7 +14,7 @@ import {
 import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
-import { siteImage, siteUrl, siteOwner, siteName } from '@/config/site'
+import { siteImage, siteUrl, siteOwner, siteName } from '@/config'
 import { getPostContent, getAllPosts, parsePostId } from '@/utils/posts'
 import { formatDate } from '@/utils/date'
 import { safeDecodeURIComponent } from '@/utils/strings'

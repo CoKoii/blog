@@ -1,11 +1,11 @@
 .markdown-content {
-  --md-primary: #4f46e5;
-  --md-primary-hover: #4338ca;
+  --md-primary: var(--color-md-primary);
+  --md-primary-hover: var(--color-md-primary-hover);
 
-  --md-text-muted: #6b7280;
+  --md-text-muted: var(--color-md-text-muted);
 
-  --md-bg-block: #eff6ff;
-  --md-bg-code-block: #1e1e1e;
+  --md-bg-block: var(--color-md-bg-block);
+  --md-bg-code-block: var(--color-md-bg-code-block);
 
   --md-radius: 12px;
   user-select: text;

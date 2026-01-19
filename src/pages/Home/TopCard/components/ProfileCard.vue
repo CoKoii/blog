@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { ownerProfile, socialLinks } from '@/config/profile'
+import { ownerProfile, socialLinks } from '@/config'
 
 defineOptions({
   name: 'ProfileCard',

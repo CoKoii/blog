@@ -4,7 +4,7 @@ import { Icon } from '@iconify/vue'
 import Search from '@/components/Search/Search.vue'
 import { Dropdown } from 'ant-design-vue'
 import { useLayoutStore } from '@/stores/layout'
-import { brandName } from '@/config/profile'
+import { brandName } from '@/config'
 const layoutStore = useLayoutStore()
 </script>
 
