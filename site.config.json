@@ -42,7 +42,8 @@
   },
   "tagColors": {
     "VueJS设计与实现": "#42b883",
-    "八股文": "red"
+    "八股文": "red",
+    "前端工程": "#f6ad55"
   },
   "defaultTagColor": "#9ca3af"
 }
