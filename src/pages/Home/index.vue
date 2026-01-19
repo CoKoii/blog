@@ -9,6 +9,10 @@ const canonicalUrl = siteUrl
 useHead(() => {
   const meta = [
     {
+      name: 'robots',
+      content: 'index, follow',
+    },
+    {
       name: 'description',
       content: siteDescription,
     },
@@ -31,6 +35,10 @@ useHead(() => {
     {
       property: 'og:site_name',
       content: siteName,
+    },
+    {
+      property: 'og:locale',
+      content: 'zh_CN',
     },
     {
       name: 'twitter:card',
@@ -69,9 +77,22 @@ useHead(() => {
 
   return {
     title: siteName,
+    htmlAttrs: {
+      lang: 'zh-CN',
+    },
     link: [
       {
         rel: 'canonical',
+        href: canonicalUrl,
+      },
+      {
+        rel: 'alternate',
+        hreflang: 'zh-CN',
+        href: canonicalUrl,
+      },
+      {
+        rel: 'alternate',
+        hreflang: 'x-default',
         href: canonicalUrl,
       },
     ],

@@ -14,7 +14,7 @@ import {
 import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
-import { siteImage, siteUrl, siteOwner } from '@/config/site'
+import { siteImage, siteUrl, siteOwner, siteName } from '@/config/site'
 import { getPostContent, getAllPosts, parsePostId } from '@/utils/posts'
 import { formatDate } from '@/utils/date'
 import { safeDecodeURIComponent } from '@/utils/strings'
@@ -171,11 +171,14 @@ useHead(() => {
   const fullCoverImage = coverImage?.startsWith('http') ? coverImage : `${siteUrl}${coverImage}`
 
   const meta = [
+    { name: 'robots', content: 'index, follow' },
     { name: 'description', content: description },
     { property: 'og:title', content: article.value.title },
     { property: 'og:description', content: description },
     { property: 'og:type', content: 'article' },
     { property: 'og:url', content: canonicalUrl.value },
+    { property: 'og:locale', content: 'zh_CN' },
+    { property: 'og:site_name', content: siteName },
     { name: 'twitter:card', content: 'summary_large_image' },
   ] as Array<Record<string, string>>
 
@@ -193,7 +196,14 @@ useHead(() => {
 
   return {
     title: article.value.title,
-    link: [{ rel: 'canonical', href: canonicalUrl.value }],
+    htmlAttrs: {
+      lang: 'zh-CN',
+    },
+    link: [
+      { rel: 'canonical', href: canonicalUrl.value },
+      { rel: 'alternate', hreflang: 'zh-CN', href: canonicalUrl.value },
+      { rel: 'alternate', hreflang: 'x-default', href: canonicalUrl.value },
+    ],
     meta,
     script: [
       {
