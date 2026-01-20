@@ -1,8 +1,14 @@
 .sideBar {
-  padding: var(--space-3) var(--space-sidebar-padding-x);
+  padding: var(--space-3) var(--space-sidebar-padding-x) var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  .sidebar-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
   .box {
     display: flex;
     flex-direction: column;
@@ -64,7 +70,71 @@
     }
   }
 }
+
+// Sidebar Footer Styles
+.sidebar-footer {
+  padding-top: var(--space-5);
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+
+  .footer-heading {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+
+    .footer-icon {
+      font-size: 16px;
+      color: var(--color-text-tertiary);
+    }
+  }
+
+  .footer-stats {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  .footer-stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-0-5);
+  }
+
+  .stat-value {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .stat-label {
+    font-size: var(--font-size-xxs);
+    color: var(--color-text-tertiary);
+  }
+
+  .footer-hint {
+    font-size: var(--font-size-xxs);
+    color: var(--color-text-tertiary);
+    text-align: right;
+  }
+
+  .copyright {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+  }
+}
+
 .collapse {
+  .sidebar-footer {
+    display: none;
+  }
+
   .box {
     .title {
       display: none;

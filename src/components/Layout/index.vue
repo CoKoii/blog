@@ -2,7 +2,6 @@
 import { onBeforeUnmount, onMounted } from 'vue'
 import TopBar from './TopBar/index.vue'
 import SideBar from './SideBar/index.vue'
-import Footer from './Footer/index.vue'
 import { useLayoutStore } from '@/stores/layout'
 import Mask from '../Mask/Mask.vue'
 import MobileSideBar from './MobileSideBar/MobileSideBar.vue'
@@ -55,10 +54,6 @@ const handleBeforeEnter = () => {
             <component :is="Component" />
           </transition>
         </router-view>
-        <!-- 页脚 -->
-        <div class="footer">
-          <Footer />
-        </div>
       </div>
     </div>
   </div>
