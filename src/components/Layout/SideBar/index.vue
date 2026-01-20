@@ -35,18 +35,18 @@ const visitorCount = ref('统计中')
 
     <!-- Footer -->
     <div class="sidebar-footer">
-      <div class="footer-heading">
+      <div class="footer-stat footer-stat--compact" aria-live="polite">
         <Icon class="footer-icon" icon="lucide:bar-chart-3" />
-        <span>访问数据</span>
+        <span class="stat-label">访问人数</span>
+        <span class="stat-value">
+          <Icon v-if="visitorCount === '统计中'" class="loading-icon" icon="lucide:loader-2" />
+          <span v-else>{{ visitorCount }}</span>
+        </span>
       </div>
-      <div class="footer-stats" aria-live="polite">
-        <div class="footer-stat">
-          <div class="stat-value">{{ visitorCount }}</div>
-          <div class="stat-label">访问人数</div>
-        </div>
-        <div class="footer-hint">由百度统计提供</div>
+      <div class="copyright">
+        <span>© 2026 CaoKai</span>
+        <span class="status-dot" aria-hidden="true"></span>
       </div>
-      <div class="copyright">© 2026 🤖 Meepo</div>
     </div>
   </div>
 </template>
