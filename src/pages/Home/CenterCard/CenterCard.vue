@@ -56,7 +56,7 @@ const groupedResources = [
   <div class="CenterCard">
     <main class="main-content">
       <FeedSection v-model:active-tab="activeTab" :tabs="tabs" :latest-posts="latestPosts" />
-      <SidebarSection :projects="projects" :grouped-resources="groupedResources" />
+      <SidebarSection class="center-sidebar" :projects="projects" :grouped-resources="groupedResources" />
     </main>
   </div>
 </template>
@@ -80,8 +80,18 @@ const groupedResources = [
   grid-template-columns: 1fr calc(25% - 32px);
   gap: 24px;
 
+  @media (max-width: 1800px) {
+    grid-template-columns: 1fr;
+  }
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+  }
+}
+
+.center-sidebar {
+  @media (max-width: 1800px) {
+    display: none;
   }
 }
 </style>

@@ -1,5 +1,5 @@
 .sideBar {
-  padding: var(--space-3) calc(var(--space-sidebar-padding-x) + var(--space-2)) var(--space-4);
+  padding: var(--space-3) var(--space-sidebar-padding-x) var(--space-4);
   display: flex;
   flex-direction: column;
   .sidebar-content {
