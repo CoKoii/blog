@@ -732,6 +732,19 @@ watchEffect(async () => {
     }
   }
 }
+
+@media (max-width: 1200px) {
+  .Article {
+    .content {
+      .menus {
+        display: none;
+      }
+      .article {
+        flex: 1;
+      }
+    }
+  }
+}
 </style>
 
 <style lang="scss">
