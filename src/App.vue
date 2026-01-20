@@ -29,13 +29,13 @@
 }
 
 .zoomBlur-leave-from {
-  transform: scale(1);
+  transform: translateY(0);
   opacity: 1;
   filter: blur(0);
 }
 
 .zoomBlur-leave-to {
-  transform: scale(1.05);
+  transform: translateY(8px);
   opacity: 0;
   filter: blur(10px);
 }

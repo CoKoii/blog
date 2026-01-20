@@ -79,7 +79,7 @@ const handleBeforeEnter = () => {
   opacity: 1;
 }
 
-/* 离开：放大 + 透明 + 模糊 */
+/* 离开：轻微下移 + 透明 + 模糊 */
 :deep(.zoomBlur-leave-active) {
   transition:
     transform 220ms ease,
@@ -89,13 +89,13 @@ const handleBeforeEnter = () => {
 }
 
 :deep(.zoomBlur-leave-from) {
-  transform: scale(1);
+  transform: translateY(0);
   opacity: 1;
   filter: blur(0px);
 }
 
 :deep(.zoomBlur-leave-to) {
-  transform: scale(1.04);
+  transform: translateY(8px);
   opacity: 0;
   filter: blur(10px);
 }
