@@ -1,3 +1,5 @@
+/// <reference types="./types/index" />
+
 import { fileURLToPath, URL } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -12,7 +14,14 @@ import { fromHighlighter } from '@shikijs/markdown-it'
 import { createHighlighter, bundledLanguages } from 'shiki'
 import { buildArticlePath, toPinyinSlug } from './scripts/utils/slug.mjs'
 import { resolveSiteMeta } from './scripts/utils/site-config.mjs'
-import { listPostFiles, type PostFileEntry } from './scripts/utils/posts.mjs'
+import { listPostFiles } from './scripts/utils/posts.mjs'
+
+type PostFileEntry = {
+  category: string
+  slug: string
+  fileName: string
+  filePath: string
+}
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 

@@ -25,21 +25,27 @@ export type SiteStats = {
   startDate?: string
 }
 
+export type TagConfig =
+  | string
+  | {
+      color?: string
+      cover?: string
+      description?: string
+    }
+
+export type TagMeta = {
+  color: string
+  cover?: string
+  description?: string
+}
+
 export type SiteConfig = {
   url?: string
   name?: string
   description?: string
   image?: string
   language?: string
-  tagMeta?: Record<
-    string,
-    | string
-    | {
-        color?: string
-        cover?: string
-        description?: string
-      }
-  >
+  tagMeta?: Record<string, TagConfig>
   defaultTagColor?: string
   brandName?: string
   owner?: SiteOwner

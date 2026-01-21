@@ -1,34 +1,18 @@
-import { siteConfig } from './raw'
+import type { TagMeta } from './types'
+import { normalizedConfig } from './normalize'
 
-const normalizeSiteUrl = (url: string): string => url.replace(/\/+$/, '')
+export const siteUrl = normalizedConfig.siteUrl
+export const siteName = normalizedConfig.siteName
+export const siteDescription = normalizedConfig.siteDescription
+export const siteImage = normalizedConfig.siteImage
+export const siteLanguage = normalizedConfig.siteLanguage
+export const siteOwner = normalizedConfig.siteOwner
 
-const env = import.meta.env
-
-const resolvedUrl = env.VITE_SITE_URL || siteConfig.url || 'https://example.com'
-const resolvedName = env.VITE_SITE_NAME || siteConfig.name || 'CaoKai - 技术博客'
-const resolvedDescription =
-  env.VITE_SITE_DESCRIPTION ||
-  siteConfig.description ||
-  '专注前端、SSG、Vue、工程化实践等技术领域的分享'
-
-export const siteUrl = normalizeSiteUrl(resolvedUrl)
-export const siteName = resolvedName
-export const siteDescription = resolvedDescription
-export const siteImage = env.VITE_SITE_IMAGE || siteConfig.image || ''
-export const siteLanguage = env.VITE_SITE_LANGUAGE || siteConfig.language || 'zh-CN'
-export const siteOwner = siteConfig.owner || { name: 'Author' }
-
-export const defaultTagColor = siteConfig.defaultTagColor || '#9ca3af'
-
-type TagMeta = {
-  color: string
-  cover?: string
-  description?: string
-}
+export const defaultTagColor = normalizedConfig.defaultTagColor
 
 export const getTagMeta = (tag: string): TagMeta => {
   const normalizedTag = tag.replace(/\s+/g, '')
-  const config = siteConfig.tagMeta?.[normalizedTag]
+  const config = normalizedConfig.tagMeta?.[normalizedTag]
 
   if (!config) {
     return { color: defaultTagColor }
