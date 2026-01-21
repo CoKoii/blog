@@ -2,10 +2,17 @@
   --md-primary: var(--color-md-primary);
   --md-primary-hover: var(--color-md-primary-hover);
 
+  --md-text-primary: #111827;
+  --md-text-body: #374151;
   --md-text-muted: var(--color-md-text-muted);
 
   --md-bg-block: var(--color-md-bg-block);
   --md-bg-code-block: var(--color-md-bg-code-block);
+  --md-border-color: #e5e7eb;
+  --md-blockquote-border: rgba(79, 70, 229, 0.1);
+  --md-table-head-bg: #f9fafb;
+  --md-link-hover-bg: rgba(79, 70, 229, 0.05);
+  --md-strong-color: #4f36dd;
 
   --md-radius: 12px;
   user-select: text;
@@ -29,7 +36,7 @@
   }
 
   a {
-    color: #111827;
+    color: var(--md-text-primary);
     text-decoration: none;
     border-bottom: 2px dotted var(--md-primary);
     transition: all 0.2s ease;
@@ -38,7 +45,7 @@
     &:hover {
       color: var(--md-primary);
       border-bottom-style: solid;
-      background-color: rgba(79, 70, 229, 0.05);
+      background-color: var(--md-link-hover-bg);
       border-radius: 2px;
     }
 
@@ -52,8 +59,8 @@
     padding: 24px;
     background-color: var(--md-bg-block);
     border-radius: var(--md-radius);
-    border: 1px solid rgba(79, 70, 229, 0.1);
-    color: #374151;
+    border: 1px solid var(--md-blockquote-border);
+    color: var(--md-text-body);
     position: relative;
 
     border-left: none;
@@ -109,7 +116,7 @@
   hr {
     border: 0;
     height: 1px;
-    background: #e5e7eb;
+    background: var(--md-border-color);
     margin: 3em 0;
   }
 
@@ -118,21 +125,21 @@
     border-collapse: separate;
     border-spacing: 0;
     margin: 2em 0;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--md-border-color);
     border-radius: 8px;
     overflow: hidden;
 
     th,
     td {
       padding: 12px 16px;
-      border-bottom: 1px solid #e5e7eb;
+      border-bottom: 1px solid var(--md-border-color);
       text-align: left;
     }
 
     th {
-      background-color: #f9fafb;
+      background-color: var(--md-table-head-bg);
       font-weight: 600;
-      color: #374151;
+      color: var(--md-text-body);
     }
 
     tr:last-child td {
@@ -163,7 +170,7 @@
     font-weight: 900;
     font-size: 1.5em;
     padding: 0 12px;
-    color: #4f36dd;
+    color: var(--md-strong-color);
   }
   h1,
   h2,

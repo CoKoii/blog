@@ -7,7 +7,7 @@ export type TagEntry = {
 
 export const ALL_TAG_SLUG = 'all'
 
-export const getTagEntries = (): TagEntry[] => {
+const buildTagEntries = (): TagEntry[] => {
   const posts = getAllPosts()
   const seen = new Set<string>()
   return posts.reduce<TagEntry[]>((acc, post) => {
@@ -21,4 +21,11 @@ export const getTagEntries = (): TagEntry[] => {
   }, [])
 }
 
-export const getTagSlugSet = (): Set<string> => new Set(getTagEntries().map((tag) => tag.slug))
+const tagEntriesCache = buildTagEntries()
+const tagSlugSetCache = new Set(tagEntriesCache.map((tag) => tag.slug))
+
+export const getTagEntries = (): TagEntry[] => {
+  return tagEntriesCache.map((entry) => ({ ...entry }))
+}
+
+export const getTagSlugSet = (): Set<string> => new Set(tagSlugSetCache)

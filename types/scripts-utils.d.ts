@@ -19,3 +19,14 @@ declare module './scripts/utils/site-config.mjs' {
     rootDir?: string
   }): SiteMeta
 }
+
+declare module './scripts/utils/posts.mjs' {
+  export type PostFileEntry = {
+    category: string
+    slug: string
+    fileName: string
+    filePath: string
+  }
+
+  export function listPostFiles(rootDir?: string): PostFileEntry[]
+}

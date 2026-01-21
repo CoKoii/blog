@@ -10,9 +10,9 @@ import Markdown from 'unplugin-vue-markdown/vite'
 import matter from 'gray-matter'
 import { fromHighlighter } from '@shikijs/markdown-it'
 import { createHighlighter, bundledLanguages } from 'shiki'
-import { buildArticlePath, toPinyinSlug } from './scripts/utils/slug'
-import { resolveSiteMeta } from './scripts/utils/site-config'
-import { listPostFiles, type PostFileEntry } from './scripts/utils/posts'
+import { buildArticlePath, toPinyinSlug } from './scripts/utils/slug.mjs'
+import { resolveSiteMeta } from './scripts/utils/site-config.mjs'
+import { listPostFiles, type PostFileEntry } from './scripts/utils/posts.mjs'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 

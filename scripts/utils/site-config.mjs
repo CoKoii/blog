@@ -24,7 +24,8 @@ export const resolveSiteMeta = ({ env = {}, rootDir = process.cwd() } = {}) => {
     env.VITE_SITE_DESCRIPTION ||
     siteConfig.description ||
     '专注前端、SSG、Vue、工程化实践等技术领域的分享'
-  const siteLanguage = env.VITE_SITE_LANGUAGE || siteConfig.language || 'zh-CN'
+  const siteLanguage =
+    env.VITE_SITE_LANGUAGE || siteConfig.language || 'zh-CN'
   return {
     siteConfig,
     siteUrl,

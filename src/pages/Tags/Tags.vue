@@ -120,6 +120,17 @@ const goToArticle = (postId: string | number) => {
   flex-direction: column;
   gap: 24px;
   --primary-hover-color: #7d2ae8;
+  --tags-color-text-primary: #111827;
+  --tags-color-text-secondary: #6b7280;
+  --tags-color-text-muted: #4b5563;
+  --tags-color-text-title: #1f2937;
+  --tags-color-accent: #3b82f6;
+  --tags-color-divider: #d1d5db;
+  --tags-color-pill-bg: #f3f4f6;
+  --tags-color-pill-text: #555;
+  --tags-color-badge-bg: rgba(17, 24, 39, 0.82);
+  --tags-color-badge-text: #fff;
+  --tags-color-hover-outline: rgba(59, 130, 246, 1);
 }
 
 .tags-tabs {
@@ -144,30 +155,30 @@ const goToArticle = (postId: string | number) => {
 
 .hero-meta {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--tags-color-text-secondary);
   display: flex;
   align-items: center;
   gap: 8px;
 
   .count {
     font-weight: 600;
-    color: #111827;
+    color: var(--tags-color-text-primary);
   }
 
   .dot {
-    color: #d1d5db;
+    color: var(--tags-color-divider);
   }
 }
 
 .hero-title {
   font-size: 2.25rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--tags-color-text-primary);
 }
 
 .hero-desc {
   font-size: 1.05rem;
-  color: #4b5563;
+  color: var(--tags-color-text-muted);
   line-height: 1.8;
 }
 
@@ -239,8 +250,8 @@ const goToArticle = (postId: string | number) => {
     position: absolute;
     right: 12px;
     bottom: 12px;
-    background: rgba(17, 24, 39, 0.82);
-    color: #fff;
+    background: var(--tags-color-badge-bg);
+    color: var(--tags-color-badge-text);
     padding: 4px 10px;
     border-radius: 10px;
     font-size: 0.7rem;
@@ -252,7 +263,7 @@ const goToArticle = (postId: string | number) => {
 .post-card:focus-within .card-cover {
   transform: scale(1.03);
   box-shadow: none;
-  outline: 3px solid rgba(59, 130, 246, 1);
+  outline: 3px solid var(--tags-color-hover-outline);
   outline-offset: 2px;
 }
 
@@ -268,13 +279,13 @@ const goToArticle = (postId: string | number) => {
 .card-title {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--tags-color-text-title);
   line-height: 1.5;
   transition: color 0.2s ease;
   cursor: pointer;
 
   &:hover {
-    color: #3b82f6;
+    color: var(--tags-color-accent);
   }
 }
 
@@ -283,19 +294,19 @@ const goToArticle = (postId: string | number) => {
   align-items: center;
   gap: 6px;
   font-size: 0.95rem;
-  color: #6b7280;
+  color: var(--tags-color-text-secondary);
 
   .tag-pill {
-    background: #f3f4f6;
+    background: var(--tags-color-pill-bg);
     padding: 2px 8px;
     border-radius: 4px;
-    color: #555;
+    color: var(--tags-color-pill-text);
     font-weight: 500;
     font-size: 0.72rem;
   }
 
   .dot {
-    color: #d1d5db;
+    color: var(--tags-color-divider);
   }
 }
 

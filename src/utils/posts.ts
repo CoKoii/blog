@@ -19,6 +19,18 @@ export const parsePostId = (
   return { category, slug }
 }
 
+/**
+ * 从 URL 参数解析文章 ID
+ * 支持拼音 slug 反向查找
+ */
+export function findPostBySlug(
+  categorySlug: string,
+  slug: string,
+  posts: PostMeta[],
+): PostMeta | null {
+  return posts.find((post) => post.categorySlug === categorySlug && post.slug === slug) || null
+}
+
 const getPostDateTimestamp = (post: PostMeta): number =>
   new Date(getPostDateValue(post) || 0).getTime()
 
