@@ -17,7 +17,7 @@ const visitorCount = ref('统计中')
         <ul>
           <li v-for="child in item.children" :key="child.title">
             <Tooltip :title="!layoutStore.isSideBarOpen ? child.title : ''" placement="right">
-              <router-link :to="child.path" active-class="active">
+              <router-link :to="child.path" active-class="" exact-active-class="active">
                 <Icon :icon="child.icon" v-if="child.icon" />
                 <div
                   class="color"

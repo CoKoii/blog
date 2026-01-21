@@ -12,7 +12,7 @@ const tagMenus = (() => {
       acc.push({
         title: post.category,
         color: getTagColor(post.category),
-        path: `/${post.categorySlug}`,
+        path: `/tags/${post.categorySlug}`,
       })
       return acc
     },

@@ -1,4 +1,9 @@
 import type { RouteRecordRaw } from 'vue-router'
+import { getAllPosts } from '@/utils/posts'
+
+const allPosts = getAllPosts()
+const validCategorySlugs = new Set(allPosts.map((post) => post.categorySlug))
+const validArticleIds = new Set(allPosts.map((post) => `${post.categorySlug}/${post.slug}`))
 
 const routes: RouteRecordRaw[] = [
   {
@@ -14,6 +19,24 @@ const routes: RouteRecordRaw[] = [
         path: '/article/:category/:id',
         name: 'article',
         component: () => import('../pages/Article/Article.vue'),
+        beforeEnter: (to) => {
+          const category = String(to.params.category || '')
+          const id = String(to.params.id || '')
+          if (!category || !id || !validArticleIds.has(`${category}/${id}`)) {
+            return { name: 'not-found' }
+          }
+        },
+      },
+      {
+        path: '/tags/:category',
+        name: 'tags',
+        component: () => import('../pages/Tags/Tags.vue'),
+        beforeEnter: (to) => {
+          const category = String(to.params.category || '')
+          if (!category || !validCategorySlugs.has(category)) {
+            return { name: 'not-found' }
+          }
+        },
       },
     ],
   },
