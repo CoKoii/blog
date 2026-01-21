@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "node scripts/update-oss-data.mjs && vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "run-p type-check build-only",
     "preview": "vite preview",
     "build-only": "vite-ssg build && node scripts/generate-seo.mjs",
     "type-check": "vue-tsc --build",
