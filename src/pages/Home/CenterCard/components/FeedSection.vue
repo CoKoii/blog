@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { computed, nextTick, onBeforeUnmount, onBeforeUpdate, onMounted, ref, watch } from 'vue'
-import type { ComponentPublicInstance } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { buildArticlePath } from '@/utils/paths'
 import { getAllPosts } from '@/utils/posts'
+import SlidingTabs from '@/components/Tabs/SlidingTabs.vue'
 
 defineOptions({
   name: 'CenterCardFeedSection',
@@ -32,56 +32,10 @@ const emit = defineEmits<{
 
 const router = useRouter()
 
-// Computed properties
-const activeIndex = computed(() => {
-  const index = props.tabs.indexOf(props.activeTab)
-  return index === -1 ? 0 : index
+const activeTab = computed({
+  get: () => props.activeTab,
+  set: (value: string) => emit('update:activeTab', value),
 })
-
-const tabsStyle = computed(() => ({
-  '--active-index': activeIndex.value,
-}))
-
-// Refs
-const tabsRef = ref<HTMLDivElement>()
-const tabButtons = ref<HTMLButtonElement[]>([])
-const tabsResizeObserver = ref<ResizeObserver | null>(null)
-
-// Methods
-const setTabButtonRef = (el: Element | ComponentPublicInstance | null) => {
-  if (el && el instanceof HTMLButtonElement) {
-    tabButtons.value.push(el)
-  }
-}
-
-const centerActiveTab = async () => {
-  await nextTick()
-  const container = tabsRef.value
-  const button = tabButtons.value[activeIndex.value]
-
-  if (!container || !button) return
-
-  const containerRect = container.getBoundingClientRect()
-  const buttonRect = button.getBoundingClientRect()
-  const containerStyles = getComputedStyle(container)
-  const paddingLeft = Number.parseFloat(containerStyles.paddingLeft) || 0
-  const indicatorX = buttonRect.left - containerRect.left - paddingLeft
-  const indicatorWidth = buttonRect.width
-
-  container.style.setProperty('--indicator-x', `${Math.max(0, indicatorX)}px`)
-  container.style.setProperty('--indicator-width', `${indicatorWidth}px`)
-  const offset =
-    buttonRect.left + buttonRect.width / 2 - containerRect.left - containerRect.width / 2
-
-  container.scrollTo({
-    left: container.scrollLeft + offset,
-    behavior: 'smooth',
-  })
-}
-
-const setTab = (tab: string) => {
-  emit('update:activeTab', tab)
-}
 
 const goToArticle = (postId: string | number) => {
   const allPosts = getAllPosts()
@@ -89,27 +43,6 @@ const goToArticle = (postId: string | number) => {
   if (!post) return
   router.push(buildArticlePath(post))
 }
-
-// Lifecycle hooks
-onBeforeUpdate(() => {
-  tabButtons.value = []
-})
-
-onMounted(() => {
-  centerActiveTab()
-  if (!tabsRef.value) return
-  tabsResizeObserver.value = new ResizeObserver(() => {
-    centerActiveTab()
-  })
-  tabsResizeObserver.value.observe(tabsRef.value)
-})
-
-onBeforeUnmount(() => {
-  tabsResizeObserver.value?.disconnect()
-  tabsResizeObserver.value = null
-})
-
-watch(() => props.activeTab, centerActiveTab)
 </script>
 
 <template>
@@ -119,21 +52,7 @@ watch(() => props.activeTab, centerActiveTab)
         <Icon icon="lucide:sparkles" class="title-icon" />
         最新文章
       </h2>
-      <div ref="tabsRef" class="tabs" :style="tabsStyle">
-        <span class="tab-indicator" aria-hidden="true">
-          <span :key="activeTab" class="tab-indicator-inner" />
-        </span>
-        <button
-          v-for="tab in tabs"
-          :key="tab"
-          :ref="setTabButtonRef"
-          class="tab-btn"
-          :class="{ active: activeTab === tab }"
-          @click="setTab(tab)"
-        >
-          {{ tab }}
-        </button>
-      </div>
+      <SlidingTabs v-model:activeTab="activeTab" :tabs="tabs" />
     </div>
 
     <div class="post-list">
@@ -184,76 +103,6 @@ watch(() => props.activeTab, centerActiveTab)
       align-items: center;
       gap: 8px;
     }
-  }
-
-  // Tabs section
-  .tabs {
-    --tabs-gap: 6px;
-    --tabs-padding: 3px;
-    display: flex;
-    align-items: center;
-    gap: var(--tabs-gap);
-    background: #eaecf0;
-    padding: var(--tabs-padding);
-    border-radius: 14px;
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-
-    .tab-indicator {
-      position: absolute;
-      top: var(--tabs-padding);
-      bottom: var(--tabs-padding);
-      left: var(--tabs-padding);
-      width: var(--indicator-width, 0px);
-      transform: translateX(var(--indicator-x, 0px));
-      transition: transform 0.55s cubic-bezier(0.16, 1.35, 0.3, 1);
-      will-change: transform;
-      z-index: 0;
-    }
-
-    .tab-indicator-inner {
-      position: absolute;
-      inset: 0;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 6px 14px rgba(17, 24, 39, 0.12);
-      animation: jelly 0.55s ease-out;
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
-      padding: 6px 14px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #666;
-      cursor: pointer;
-      border-radius: 10px;
-      transition: color 0.2s ease;
-      position: relative;
-      z-index: 1;
-      white-space: nowrap;
-
-      &.active {
-        color: #000;
-      }
-    }
-  }
-}
-
-@keyframes jelly {
-  0% {
-    transform: scale(0.9);
-  }
-  45% {
-    transform: scaleX(1.08) scaleY(0.92);
-  }
-  70% {
-    transform: scaleX(0.98) scaleY(1.04);
-  }
-  100% {
-    transform: scale(1);
   }
 }
 
@@ -406,37 +255,6 @@ watch(() => props.activeTab, centerActiveTab)
   .feed-section .feed-header {
     flex-wrap: wrap;
     gap: 12px;
-
-    .tabs {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-
-      &::-webkit-scrollbar {
-        display: none;
-      }
-
-      .tab-indicator {
-        display: none;
-      }
-
-      .tab-btn {
-        flex: 0 0 auto;
-        padding: 6px 14px;
-        scroll-snap-align: center;
-
-        &.active {
-          background: #fff;
-          color: #000;
-          box-shadow: 0 6px 14px rgba(17, 24, 39, 0.12);
-          animation: jelly 0.55s ease-out;
-        }
-      }
-    }
   }
 
   .post-row {

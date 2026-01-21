@@ -40,10 +40,27 @@
   "stats": {
     "startDate": "2026-01-04"
   },
-  "tagColors": {
-    "VueJS设计与实现": "#42b883",
-    "八股文": "red",
-    "前端": "#f6ad55"
+  "tagMeta": {
+    "all": {
+      "color": "#9ca3af",
+      "cover": "",
+      "description": "全站内容聚合区，集中展示前端、工程化、性能与日常实践的文章与记录，方便快速浏览与系统回顾。"
+    },
+    "VueJS设计与实现": {
+      "color": "#42b883",
+      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/vuejs.svg",
+      "description": "围绕《Vue.js 设计与实现》的读书笔记与源码解析，记录关键设计思路、实现细节与个人理解的延伸整理。"
+    },
+    "八股文": {
+      "color": "red",
+      "cover": "",
+      "description": "高频面试题与基础知识梳理，覆盖核心概念、易错点与答题思路，适合阶段复盘与系统查缺补漏。"
+    },
+    "前端": {
+      "color": "#f6ad55",
+      "cover": "",
+      "description": "前端技术与实战记录，涵盖工程化实践、性能优化、体验打磨与常见问题的解决方案沉淀。"
+    }
   },
   "defaultTagColor": "#9ca3af"
 }

@@ -1,24 +1,12 @@
 import type { MenuType } from '@/types/menus'
-import { getAllPosts } from '@/utils/posts'
-import { getTagColor } from '@/config'
+import { getTagMeta } from '@/config'
+import { getTagEntries } from '@/utils/tags'
 
-const tagMenus = (() => {
-  const posts = getAllPosts()
-  const seen = new Set<string>()
-  return posts.reduce(
-    (acc, post) => {
-      if (seen.has(post.category)) return acc
-      seen.add(post.category)
-      acc.push({
-        title: post.category,
-        color: getTagColor(post.category),
-        path: `/tags/${post.categorySlug}`,
-      })
-      return acc
-    },
-    [] as { title: string; color?: string; path: string }[],
-  )
-})()
+const tagMenus = getTagEntries().map((tag) => ({
+  title: tag.label,
+  color: getTagMeta(tag.label).color,
+  path: `/tags/${tag.slug}`,
+}))
 
 const menus: MenuType[] = [
   {

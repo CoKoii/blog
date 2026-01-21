@@ -20,7 +20,29 @@ export const siteOwner = siteConfig.owner || { name: 'Author' }
 
 export const defaultTagColor = siteConfig.defaultTagColor || '#9ca3af'
 
-export const getTagColor = (tag: string): string => {
-  const normalizedTag = tag.replace(/\s+/g, '')
-  return siteConfig.tagColors?.[normalizedTag] || defaultTagColor
+type TagMeta = {
+  color: string
+  cover?: string
+  description?: string
 }
+
+export const getTagMeta = (tag: string): TagMeta => {
+  const normalizedTag = tag.replace(/\s+/g, '')
+  const config = siteConfig.tagMeta?.[normalizedTag]
+
+  if (!config) {
+    return { color: defaultTagColor }
+  }
+
+  if (typeof config === 'string') {
+    return { color: config }
+  }
+
+  return {
+    color: config.color || defaultTagColor,
+    cover: config.cover,
+    description: config.description,
+  }
+}
+
+export const getTagColor = (tag: string): string => getTagMeta(tag).color

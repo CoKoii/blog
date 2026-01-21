@@ -33,7 +33,15 @@ export type SiteConfig = {
   description?: string
   image?: string
   language?: string
-  tagColors?: Record<string, string>
+  tagMeta?: Record<
+    string,
+    | string
+    | {
+        color?: string
+        cover?: string
+        description?: string
+      }
+  >
   defaultTagColor?: string
   brandName?: string
   owner?: SiteOwner

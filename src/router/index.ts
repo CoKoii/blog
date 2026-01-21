@@ -1,8 +1,9 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { getAllPosts } from '@/utils/posts'
+import { ALL_TAG_SLUG, getTagSlugSet } from '@/utils/tags'
 
 const allPosts = getAllPosts()
-const validCategorySlugs = new Set(allPosts.map((post) => post.categorySlug))
+const validCategorySlugs = getTagSlugSet()
 const validArticleIds = new Set(allPosts.map((post) => `${post.categorySlug}/${post.slug}`))
 
 const routes: RouteRecordRaw[] = [
@@ -33,7 +34,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../pages/Tags/Tags.vue'),
         beforeEnter: (to) => {
           const category = String(to.params.category || '')
-          if (!category || !validCategorySlugs.has(category)) {
+          if (!category || (!validCategorySlugs.has(category) && category !== ALL_TAG_SLUG)) {
             return { name: 'not-found' }
           }
         },
