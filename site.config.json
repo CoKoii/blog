@@ -48,7 +48,7 @@
     },
     "VueJS设计与实现": {
       "color": "#42b883",
-      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/vuejs.svg",
+      "cover": "http://caokai-blog.oss-cn-hangzhou.aliyuncs.com/vuejssjysx.webp",
       "description": "围绕《Vue.js 设计与实现》的读书笔记与源码解析，记录关键设计思路、实现细节与个人理解的延伸整理。"
     },
     "八股文": {
@@ -58,7 +58,7 @@
     },
     "前端": {
       "color": "#f6ad55",
-      "cover": "",
+      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
       "description": "前端技术与实战记录，涵盖工程化实践、性能优化、体验打磨与常见问题的解决方案沉淀。"
     }
   },

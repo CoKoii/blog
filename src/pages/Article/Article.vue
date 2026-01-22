@@ -699,15 +699,30 @@ watchEffect(async () => {
       min-height: 300px;
 
       .article_header {
-        padding: 40px 20px;
+        padding: 28px 18px 24px;
+
+        .tags {
+          gap: 8px;
+          margin-bottom: 14px;
+
+          .tag {
+            padding: 4px 12px;
+            font-size: 12px;
+          }
+        }
 
         .title {
-          font-size: 32px;
+          font-size: 28px;
+          margin-bottom: 16px;
         }
 
         .meta_info {
-          gap: 20px;
-          font-size: 14px;
+          gap: 12px 16px;
+          font-size: 13px;
+
+          .meta_item {
+            white-space: nowrap;
+          }
         }
       }
     }

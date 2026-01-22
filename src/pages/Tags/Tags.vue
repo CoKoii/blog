@@ -192,7 +192,7 @@ const goToArticle = (postId: string | number) => {
   img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
     transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -298,7 +298,7 @@ const goToArticle = (postId: string | number) => {
 
   .tag-pill {
     background: var(--tags-color-pill-bg);
-    padding: 2px 8px;
+    padding: 2px 6px;
     border-radius: 4px;
     color: var(--tags-color-pill-text);
     font-weight: 500;
@@ -310,11 +310,13 @@ const goToArticle = (postId: string | number) => {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1300px) {
   .tags-hero {
     grid-template-columns: 1fr;
   }
-
+  .hero-media {
+    display: none;
+  }
   .tags-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -323,7 +325,9 @@ const goToArticle = (postId: string | number) => {
 @media (max-width: 720px) {
   .tags-hero {
     padding: 20px;
+    gap: 24px;
   }
+
 
   .hero-title {
     font-size: 1.6rem;

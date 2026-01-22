@@ -197,7 +197,7 @@ const goToArticle = (postId: string | number) => {
 
       .tag-pill {
         background: #f3f4f6;
-        padding: 2px 8px;
+        padding: 2px 6px;
         border-radius: 4px;
         color: #555;
         font-weight: 500;
@@ -258,7 +258,7 @@ const goToArticle = (postId: string | number) => {
   }
 
   .post-row {
-    padding: 18px;
+    padding: 8px;
     min-height: 130px;
 
     .post-cover {
