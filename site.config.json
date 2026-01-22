@@ -48,7 +48,7 @@
     },
     "VueJS设计与实现": {
       "color": "#42b883",
-      "cover": "http://caokai-blog.oss-cn-hangzhou.aliyuncs.com/vuejssjysx.webp",
+      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/vuejssjysx.webp",
       "description": "围绕《Vue.js 设计与实现》的读书笔记与源码解析，记录关键设计思路、实现细节与个人理解的延伸整理。"
     },
     "八股文": {
