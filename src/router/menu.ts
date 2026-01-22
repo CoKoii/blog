@@ -14,7 +14,7 @@ const menus: MenuType[] = [
     children: [
       {
         title: 'Home',
-        icon: 'mynaui:home',
+        icon: 'octicon:home-16',
         path: '/',
       },
       {
