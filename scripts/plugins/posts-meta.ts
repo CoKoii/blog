@@ -20,6 +20,24 @@ export const getPostRoutes = (rootDir: string) => {
   )
 }
 
+const ALL_TAG_SLUG = 'all'
+
+export const getTagRoutes = (rootDir: string) => {
+  const tagSlugs = new Set<string>()
+  for (const post of listPostFiles(rootDir)) {
+    tagSlugs.add(toPinyinSlug(post.category))
+  }
+
+  tagSlugs.delete(ALL_TAG_SLUG)
+
+  return [
+    `/tags/${ALL_TAG_SLUG}`,
+    ...Array.from(tagSlugs)
+      .sort()
+      .map((slug) => `/tags/${slug}`),
+  ]
+}
+
 export const createPostsMetaPlugin = (rootDir: string) => {
   const postsDir = path.resolve(rootDir, 'posts')
   const virtualModuleId = 'virtual:posts-meta'
