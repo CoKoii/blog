@@ -1,0 +1,57 @@
+.top-card {
+  .bento-grid {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1.2fr)
+      minmax(0, 1fr)
+      minmax(0, 1fr)
+      minmax(0, 1fr);
+    grid-template-rows: 180px 180px;
+    grid-template-areas:
+      'profile profile oss stats'
+      'profile profile journey wechat';
+    gap: var(--space-4);
+
+    @media (max-width: 1800px) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: 380px 180px 180px;
+      grid-template-areas:
+        'profile profile'
+        'oss stats'
+        'journey wechat';
+    }
+
+    @media (max-width: 1000px) {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows:
+        minmax(420px, auto) minmax(180px, auto) minmax(180px, auto) minmax(180px, auto)
+        minmax(180px, auto);
+      grid-template-areas:
+        'profile'
+        'oss'
+        'stats'
+        'journey'
+        'wechat';
+    }
+  }
+
+  .bento-profile {
+    grid-area: profile;
+  }
+
+  .bento-oss {
+    grid-area: oss;
+  }
+
+  .bento-stats {
+    grid-area: stats;
+  }
+
+  .bento-journey {
+    grid-area: journey;
+  }
+
+  .bento-wechat {
+    grid-area: wechat;
+  }
+}

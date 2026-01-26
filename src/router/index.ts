@@ -14,12 +14,12 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/',
         name: 'home',
-        component: () => import('../pages/Home/index.vue'),
+        component: () => import('../pages/home/index.vue'),
       },
       {
         path: '/article/:category/:id',
         name: 'article',
-        component: () => import('../pages/Article/Article.vue'),
+        component: () => import('../pages/article/index.vue'),
         beforeEnter: (to) => {
           const category = String(to.params.category || '')
           const id = String(to.params.id || '')
@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/tags/:category',
         name: 'tags',
-        component: () => import('../pages/Tags/Tags.vue'),
+        component: () => import('../pages/tags/index.vue'),
         beforeEnter: (to) => {
           const category = String(to.params.category || '')
           if (!category || (!validCategorySlugs.has(category) && category !== ALL_TAG_SLUG)) {
@@ -44,7 +44,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
-    component: () => import('../pages/NotFound/index.vue'),
+    component: () => import('../pages/not-found/index.vue'),
   },
 ]
 

@@ -1,5 +1,0 @@
-export { default as ProfileCard } from './ProfileCard.vue'
-export { default as OpenSourceCard } from './OpenSourceCard.vue'
-export { default as StatsCard } from './StatsCard.vue'
-export { default as JourneyCard } from './JourneyCard.vue'
-export { default as WechatCard } from './WechatCard.vue'

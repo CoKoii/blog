@@ -1,5 +1,5 @@
 import rawConfig from '../../site.config.json'
-import type { SiteConfig, SiteOwner, SiteSocialLink, SiteStats, SiteWechat } from './types'
+import type { SiteConfig } from './types'
 
 export type { SiteConfig, SiteOwner, SiteSocialLink, SiteStats, SiteWechat } from './types'
 

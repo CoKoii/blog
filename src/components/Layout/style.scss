@@ -1,27 +1,25 @@
 .Layout {
-  --topBar-height: var(--layout-topbar-height);
-  --sideBar-width: var(--layout-sidebar-width);
   display: flex;
   flex-direction: column;
   .topBar {
     position: fixed;
-    height: var(--topBar-height);
+    height: var(--layout-topbar-height);
     width: 100%;
     z-index: 10;
   }
   .content {
-    margin-top: var(--topBar-height);
+    margin-top: var(--layout-topbar-height);
     display: flex;
     flex: 1;
     .sideBar {
       position: fixed;
-      width: var(--sideBar-width);
-      height: calc(100vh - var(--topBar-height));
+      width: var(--layout-sidebar-width);
+      height: calc(100vh - var(--layout-topbar-height));
       z-index: 10;
     }
     .main {
       padding: var(--space-3) var(--space-5);
-      margin-left: var(--sideBar-width);
+      margin-left: var(--layout-sidebar-width);
       flex: 1;
       min-width: 0;
       display: flex;
@@ -31,15 +29,25 @@
   }
 }
 .collapse {
-  --sideBar-width: var(--layout-sidebar-width-collapsed);
+  .content {
+    .sideBar {
+      width: var(--layout-sidebar-width-collapsed);
+    }
+    .main {
+      margin-left: var(--layout-sidebar-width-collapsed);
+    }
+  }
 }
 @media (max-width: 768px) {
   .Layout {
-    --layout-topbar-height: 48px;
-    --sideBar-width: 0;
+    .topBar {
+      height: var(--layout-topbar-height-mobile);
+    }
     .content {
+      margin-top: var(--layout-topbar-height-mobile);
       .sideBar {
         display: none;
+        width: 0;
       }
       .main {
         margin-left: 0;

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import menus from '@/router/menu'
-import { Icon } from '@iconify/vue'
-import { useLayoutStore } from '@/stores/layout'
-import { Tooltip } from 'ant-design-vue'
 import { ref } from 'vue'
-const layoutStore = useLayoutStore()
+import { Icon } from '@iconify/vue'
+import { Tooltip } from 'ant-design-vue'
+import menus from '@/router/menu'
+import { useLayoutStore } from '@/stores/layout'
 
+const layoutStore = useLayoutStore()
 const visitorCount = ref('统计中')
 </script>
 
@@ -33,7 +33,6 @@ const visitorCount = ref('统计中')
       <div class="box"></div>
     </div>
 
-    <!-- Footer -->
     <div class="sidebar-footer">
       <div class="footer-stat footer-stat--compact" aria-live="polite">
         <Icon class="footer-icon" icon="lucide:bar-chart-3" />

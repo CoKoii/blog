@@ -35,8 +35,8 @@
 }
 
 .zoomBlur-leave-to {
-  transform: translateY(8px);
+  transform: translateY(var(--space-2));
   opacity: 0;
-  filter: blur(10px);
+  filter: blur(var(--blur-lg));
 }
 </style>

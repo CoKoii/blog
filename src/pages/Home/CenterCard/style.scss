@@ -1,0 +1,23 @@
+.CenterCard {
+  color: var(--color-gray-900);
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr calc(25% - var(--space-32px));
+  gap: var(--space-5);
+
+  @media (max-width: 1800px) {
+    grid-template-columns: 1fr;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.center-sidebar {
+  @media (max-width: 1800px) {
+    display: none;
+  }
+}

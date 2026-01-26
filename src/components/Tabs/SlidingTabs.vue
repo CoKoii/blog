@@ -111,14 +111,12 @@ watch(
 
 <style scoped lang="scss">
 .tabs {
-  --tabs-gap: 6px;
-  --tabs-padding: 3px;
   display: inline-flex;
   align-items: center;
-  gap: var(--tabs-gap);
-  background: #eaecf0;
-  padding: var(--tabs-padding);
-  border-radius: 14px;
+  gap: var(--space-6px);
+  background: var(--color-gray-140);
+  padding: var(--space-3px);
+  border-radius: var(--radius-lg);
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -129,9 +127,9 @@ watch(
 
   .tab-indicator {
     position: absolute;
-    top: var(--tabs-padding);
-    bottom: var(--tabs-padding);
-    left: var(--tabs-padding);
+    top: var(--space-3px);
+    bottom: var(--space-3px);
+    left: var(--space-3px);
     width: var(--indicator-width, 0px);
     transform: translateX(var(--indicator-x, 0px));
     transition: transform 0.55s cubic-bezier(0.16, 1.35, 0.3, 1);
@@ -142,8 +140,8 @@ watch(
   .tab-indicator-inner {
     position: absolute;
     inset: 0;
-    background: #fff;
-    border-radius: 10px;
+    background: var(--color-white);
+    border-radius: var(--radius-sm);
     box-shadow: 0 6px 14px rgba(17, 24, 39, 0.12);
     animation: jelly 0.55s ease-out;
   }
@@ -151,19 +149,19 @@ watch(
   .tab-btn {
     background: transparent;
     border: none;
-    padding: 6px 14px;
+    padding: var(--space-6px) var(--space-14px);
     font-size: 0.85rem;
     font-weight: 600;
-    color: #666;
+    color: var(--color-gray-550);
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     transition: color 0.2s ease;
     position: relative;
     z-index: 1;
     white-space: nowrap;
 
     &.active {
-      color: #000;
+      color: var(--color-black);
     }
   }
 }
@@ -203,12 +201,12 @@ watch(
 
     .tab-btn {
       flex: 0 0 auto;
-      padding: 6px 14px;
+      padding: var(--space-6px) var(--space-14px);
       scroll-snap-align: center;
 
       &.active {
-        background: #fff;
-        color: #000;
+        background: var(--color-white);
+        color: var(--color-black);
         box-shadow: 0 6px 14px rgba(17, 24, 39, 0.12);
         animation: jelly 0.55s ease-out;
       }

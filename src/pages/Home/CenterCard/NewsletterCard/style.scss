@@ -1,0 +1,27 @@
+.sidebar-block {
+  background: var(--color-white);
+  border-radius: var(--radius-xl);
+  padding: var(--space-20px);
+  border: var(--border-width-1) solid var(--color-gray-150);
+}
+
+.ad-block {
+  background: var(--color-gray-900-alt);
+  color: var(--color-white);
+  text-align: center;
+  padding: var(--space-30px) var(--space-20px);
+
+  .ad-icon {
+    font-size: 2rem;
+    margin-bottom: var(--space-3);
+    opacity: 0.8;
+  }
+  h4 {
+    font-size: 1.1rem;
+    margin-bottom: var(--space-1);
+  }
+  p {
+    font-size: 0.85rem;
+    opacity: 0.6;
+  }
+}
