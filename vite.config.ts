@@ -31,7 +31,6 @@ export default defineConfig(async () => {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
-      extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json', '.vue'],
     },
     ssgOptions: {
       includedRoutes(paths: string[]) {
