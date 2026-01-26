@@ -19,7 +19,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/article/:category/:id',
         name: 'article',
-        component: () => import('../pages/Article/index.vue'),
+        component: () => import('../pages/article/index.vue'),
         beforeEnter: (to) => {
           const category = String(to.params.category || '')
           const id = String(to.params.id || '')
@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/tags/:category',
         name: 'tags',
-        component: () => import('../pages/Tags/index.vue'),
+        component: () => import('../pages/tags/index.vue'),
         beforeEnter: (to) => {
           const category = String(to.params.category || '')
           if (!category || (!validCategorySlugs.has(category) && category !== ALL_TAG_SLUG)) {
