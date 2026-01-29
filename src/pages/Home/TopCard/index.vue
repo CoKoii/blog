@@ -4,7 +4,6 @@ import OpenSourceCard from './OpenSourceCard/index.vue'
 import ProfileCard from './ProfileCard/index.vue'
 import StatsCard from './StatsCard/index.vue'
 import WechatCard from './WechatCard/index.vue'
-
 </script>
 
 <template>

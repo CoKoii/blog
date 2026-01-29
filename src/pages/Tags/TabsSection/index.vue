@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import SlidingTabs from '@/components/Tabs/SlidingTabs.vue'
 
-
 type TabItem = {
   value: string
   label: string

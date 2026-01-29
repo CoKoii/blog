@@ -25,7 +25,7 @@ import {
 } from '@/utils/posts'
 import { safeDecodeURIComponent } from '@/utils/strings'
 import type { Component } from 'vue'
-import type { PostFrontmatter } from '@/types/post'
+import type { PostFrontmatter, PostModule } from '@/types/post'
 import type { ArticleMeta, TocItem } from './types'
 
 const DEFAULT_FRONTMATTER: PostFrontmatter = {
@@ -49,6 +49,7 @@ export const useArticlePage = () => {
   const frontmatter = ref<PostFrontmatter>({ ...DEFAULT_FRONTMATTER })
   const resolvedTitle = ref('')
   const loadedArticleId = ref('')
+  const loadToken = ref(0)
 
   const canUseDOM = typeof window !== 'undefined' && typeof document !== 'undefined'
   const HEADING_SELECTOR = '.markdown-content h1, .markdown-content h2, .markdown-content h3'
@@ -166,7 +167,12 @@ export const useArticlePage = () => {
     const description = frontmatter.value.description || article.value.title
     const coverImage = article.value.coverImage || siteImage
     const publishDateRaw = frontmatter.value.publishDate || frontmatter.value.date
+    const modifiedDateRaw =
+      (frontmatter.value.updated as string | undefined) ||
+      (frontmatter.value.modified as string | undefined) ||
+      ''
     const publishDateIso = publishDateRaw ? new Date(publishDateRaw).toISOString() : ''
+    const modifiedDateIso = modifiedDateRaw ? new Date(modifiedDateRaw).toISOString() : ''
 
     const fullCoverImage = coverImage?.startsWith('http') ? coverImage : `${siteUrl}${coverImage}`
 
@@ -179,19 +185,35 @@ export const useArticlePage = () => {
       { property: 'og:url', content: canonicalUrl.value },
       { property: 'og:locale', content: 'zh_CN' },
       { property: 'og:site_name', content: siteName },
-      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:card', content: coverImage ? 'summary_large_image' : 'summary' },
+      { name: 'twitter:title', content: article.value.title },
+      { name: 'twitter:description', content: description },
+      { name: 'author', content: String(frontmatter.value.author || siteOwner.name) },
     ] as Array<Record<string, string>>
 
     if (coverImage) {
       meta.push({ property: 'og:image', content: fullCoverImage })
+      meta.push({ property: 'og:image:alt', content: article.value.title })
+      meta.push({ name: 'twitter:image', content: fullCoverImage })
     }
 
     if (publishDateIso) {
       meta.push({ property: 'article:published_time', content: publishDateIso })
     }
 
+    if (modifiedDateIso) {
+      meta.push({ property: 'article:modified_time', content: modifiedDateIso })
+    }
+
     if (article.value.tags.length > 0) {
       meta.push({ name: 'keywords', content: article.value.tags.join(', ') })
+      article.value.tags.forEach((tag) => {
+        meta.push({ property: 'article:tag', content: tag })
+      })
+    }
+
+    if (frontmatter.value.category) {
+      meta.push({ property: 'article:section', content: String(frontmatter.value.category) })
     }
 
     return {
@@ -212,8 +234,15 @@ export const useArticlePage = () => {
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
             headline: article.value.title,
+            mainEntityOfPage: {
+              '@type': 'WebPage',
+              '@id': canonicalUrl.value,
+            },
             ...(coverImage && { image: fullCoverImage }),
             ...(publishDateIso && { datePublished: publishDateIso }),
+            ...(modifiedDateIso && { dateModified: modifiedDateIso }),
+            ...(article.value.wordCount ? { wordCount: article.value.wordCount } : {}),
+            ...(article.value.tags.length ? { keywords: article.value.tags.join(', ') } : {}),
             author: { '@type': 'Person', name: siteOwner.name },
             description,
           }),
@@ -288,7 +317,7 @@ export const useArticlePage = () => {
     window.removeEventListener('scroll', handleScroll)
   })
 
-  const applyContent = (id: string, module: Awaited<ReturnType<typeof getPostContent>>) => {
+  const applyContent = (id: string, module: PostModule | null) => {
     if (!module) return
     ContentComponent.value = module.default
     frontmatter.value = { ...DEFAULT_FRONTMATTER, ...module.frontmatter }
@@ -307,53 +336,65 @@ export const useArticlePage = () => {
     })
   }
 
-  const loadArticle = async (categorySlug: string, articleSlug: string) => {
-    if (!categorySlug || !articleSlug) return
-    resolvedTitle.value = ''
+  const resolveArticle = (categorySlug: string, articleSlug: string) => {
+    if (!categorySlug || !articleSlug) return null
 
     const allPosts = getAllPosts()
     const post = findPostBySlug(categorySlug, articleSlug, allPosts)
 
     if (!post) {
       console.warn(`Article not found: ${categorySlug}/${articleSlug}`)
-      return
+      return null
     }
 
     const id = post.id
     resolvedTitle.value = getTitleFromSlug(parsePostId(post.id)?.slug || '')
 
-    if (loadedArticleId.value === id && ContentComponent.value) return
+    if (loadedArticleId.value === id && ContentComponent.value) return null
+
+    return { id }
+  }
+
+  const loadArticle = (categorySlug: string, articleSlug: string) => {
+    const resolved = resolveArticle(categorySlug, articleSlug)
+    if (!resolved) return
+    const { id } = resolved
+
+    const currentToken = ++loadToken.value
+    const syncModule = getPostContentSync(id)
+    if (syncModule) {
+      toc.value = []
+      activeHeadingId.value = ''
+      applyContent(id, syncModule)
+      return
+    }
 
     ContentComponent.value = null
     frontmatter.value = { ...DEFAULT_FRONTMATTER }
     toc.value = []
     activeHeadingId.value = ''
 
-    try {
-      const syncModule = getPostContentSync(id)
-      if (syncModule) {
-        applyContent(id, syncModule)
-        return
-      }
-
-      const module = await getPostContent(id)
+    void getPostContent(id).then((module) => {
+      if (loadToken.value !== currentToken) return
       applyContent(id, module)
-    } catch (error) {
-      console.error('Failed to load article:', error)
-    }
+    })
   }
 
   onServerPrefetch(async () => {
     const categorySlug = route.params.category as string
     const articleSlug = route.params.id as string
-    await loadArticle(categorySlug, articleSlug)
+    const resolved = resolveArticle(categorySlug, articleSlug)
+    if (!resolved) return
+    const { id } = resolved
+    const module = await getPostContent(id)
+    applyContent(id, module)
   })
 
   if (!isServer) {
     watch(
       () => [route.params.category, route.params.id],
       ([category, id]) => {
-        void loadArticle(String(category || ''), String(id || ''))
+        loadArticle(String(category || ''), String(id || ''))
       },
       { immediate: true },
     )

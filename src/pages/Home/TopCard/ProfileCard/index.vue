@@ -2,7 +2,6 @@
 import { Icon } from '@iconify/vue'
 import { ownerProfile, socialLinks } from '@/config'
 
-
 const handleAction = (message: string) => {
   alert(message)
 }
@@ -19,7 +18,8 @@ const handleAction = (message: string) => {
 
         <div>
           <h1 class="title">
-            {{ ownerProfile.greeting }} <span aria-hidden="true">{{ ownerProfile.greetingEmoji }}</span>
+            {{ ownerProfile.greeting }}
+            <span aria-hidden="true">{{ ownerProfile.greetingEmoji }}</span>
           </h1>
 
           <p class="subtitle">{{ ownerProfile.headline }}</p>

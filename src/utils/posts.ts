@@ -2,13 +2,13 @@ import type { PostMeta, PostModule, MarkdownModule } from '@/types/post'
 import { postsMeta } from 'virtual:posts-meta'
 
 type PostComponentLoader = () => Promise<MarkdownModule>
-type PostComponentEntry = MarkdownModule | PostComponentLoader
 
-// 生产环境 eager（SSR + 客户端）可避免首屏 Hydration 时正文缺失
-const shouldEagerImport = import.meta.env.SSR || import.meta.env.PROD
-const postComponents = (shouldEagerImport
-  ? import.meta.glob<MarkdownModule>('/posts/**/*.md', { eager: true })
-  : import.meta.glob<MarkdownModule>('/posts/**/*.md')) as Record<string, PostComponentEntry>
+const postComponents = import.meta.glob<MarkdownModule>('/posts/**/*.md') as Record<
+  string,
+  PostComponentLoader
+>
+
+const postModuleCache = new Map<string, MarkdownModule>()
 
 const getPostDateValue = (post: PostMeta): string =>
   post.frontmatter?.date || post.frontmatter?.publishDate || ''
@@ -37,12 +37,16 @@ export function findPostBySlug(
   return posts.find((post) => post.categorySlug === categorySlug && post.slug === slug) || null
 }
 
+export function resolvePostIdBySlug(categorySlug: string, slug: string): string | null {
+  if (!categorySlug || !slug) return null
+  const post = findPostBySlug(categorySlug, slug, getAllPosts())
+  return post?.id || null
+}
+
 const getPostDateTimestamp = (post: PostMeta): number =>
   new Date(getPostDateValue(post) || 0).getTime()
 
-const sortedPosts = [...postsMeta].sort(
-  (a, b) => getPostDateTimestamp(b) - getPostDateTimestamp(a),
-)
+const sortedPosts = [...postsMeta].sort((a, b) => getPostDateTimestamp(b) - getPostDateTimestamp(a))
 
 const postsMetaById = new Map(sortedPosts.map((post) => [post.id, post]))
 
@@ -66,27 +70,48 @@ export function getPostsByCategory(category: string): PostMeta[] {
  * @param id 文章 ID（文件夹/文件名，不含 .md）
  * @returns 文章模块或 null
  */
-export async function getPostContent(id: string): Promise<PostModule | null> {
+export function getPostContentSync(id: string): PostModule | null {
   const meta = postsMetaById.get(id)
   const path = meta?.path
 
-  const entry = path ? postComponents[path] : undefined
-
-  if (!path || !entry) {
+  if (!path || !postComponents[path]) {
     console.warn(`[Posts] Article not found: ${id}`)
     return null
   }
 
+  const cached = postModuleCache.get(id)
+  if (!cached) return null
+  return {
+    default: cached.default,
+    frontmatter: meta?.frontmatter || {},
+  } as PostModule
+}
+
+export async function getPostContent(id: string): Promise<PostModule | null> {
+  const meta = postsMetaById.get(id)
+  const path = meta?.path
+
+  const loader = path ? postComponents[path] : undefined
+
+  if (!path || !loader) {
+    console.warn(`[Posts] Article not found: ${id}`)
+    return null
+  }
+
+  const cached = postModuleCache.get(id)
+  if (cached) {
+    return {
+      default: cached.default,
+      frontmatter: meta?.frontmatter || {},
+    } as PostModule
+  }
+
   try {
-    // 加载 Vue 组件
-    const mod = typeof entry === 'function' ? await entry() : entry
-
-    // 从虚拟模块中获取 frontmatter（预解析的）
-    const frontmatter = meta?.frontmatter || {}
-
+    const mod = await loader()
+    postModuleCache.set(id, mod)
     return {
       default: mod.default,
-      frontmatter,
+      frontmatter: meta?.frontmatter || {},
     } as PostModule
   } catch (error) {
     console.error(`[Posts] Failed to load article: ${id}`, error)
@@ -94,25 +119,8 @@ export async function getPostContent(id: string): Promise<PostModule | null> {
   }
 }
 
-/**
- * 同步读取文章内容（仅当 eager 模式可用）
- */
-export function getPostContentSync(id: string): PostModule | null {
-  const meta = postsMetaById.get(id)
-  const path = meta?.path
-  const entry = path ? postComponents[path] : undefined
-
-  if (!path || !entry) {
-    console.warn(`[Posts] Article not found: ${id}`)
-    return null
-  }
-
-  if (typeof entry === 'function') return null
-
-  return {
-    default: entry.default,
-    frontmatter: meta?.frontmatter || {},
-  } as PostModule
+export async function preloadPostContent(id: string): Promise<void> {
+  await getPostContent(id)
 }
 
 /**

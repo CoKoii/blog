@@ -4,7 +4,6 @@ import PostsGrid from './PostsGrid/index.vue'
 import TabsSection from './TabsSection/index.vue'
 import { useTagsPage } from './utils'
 
-
 const {
   categories,
   activeTab,

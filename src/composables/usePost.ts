@@ -17,8 +17,7 @@ export interface PostListItem {
   tags?: string[]
 }
 
-const getTitleFromSlug = (slug: string): string =>
-  safeDecodeURIComponent(slug) || 'Untitled'
+const getTitleFromSlug = (slug: string): string => safeDecodeURIComponent(slug) || 'Untitled'
 
 export function usePostListFormat(posts: PostMeta[], markHotCount = 2): PostListItem[] {
   return posts.map((post, index) => ({

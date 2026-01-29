@@ -5,7 +5,6 @@ import { getAllPosts } from '@/utils/posts'
 import { usePostStats } from '@/composables/usePost'
 import { statsConfig } from '@/config'
 
-
 const statsDays = ref('—')
 
 // 获取文章统计数据

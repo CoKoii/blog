@@ -1,4 +1,10 @@
-import { siteConfig, type SiteOwner, type SiteSocialLink, type SiteStats, type SiteWechat } from './raw'
+import {
+  siteConfig,
+  type SiteOwner,
+  type SiteSocialLink,
+  type SiteStats,
+  type SiteWechat,
+} from './raw'
 
 const normalizeSiteUrl = (url: string): string => url.replace(/\/+$/, '')
 

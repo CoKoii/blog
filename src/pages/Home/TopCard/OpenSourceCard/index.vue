@@ -4,7 +4,6 @@ import { computed } from 'vue'
 import { getRelativeTime } from '@/utils/date'
 import ossData from '@/data/opensource.json'
 
-
 const formatCount = (count: number) => {
   if (count < 1000) return `${count}`
   const value = count >= 10000 ? count / 1000 : Math.round((count / 1000) * 10) / 10

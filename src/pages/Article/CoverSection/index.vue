@@ -13,8 +13,11 @@ defineProps<{
     <img
       v-if="!loading && article.coverImage"
       class="cover_background"
-      v-lazy="article.coverImage"
+      :src="article.coverImage"
       :alt="article.title"
+      loading="eager"
+      decoding="async"
+      fetchpriority="high"
     />
     <div class="cover_overlay"></div>
     <div v-if="!loading" class="article_header">

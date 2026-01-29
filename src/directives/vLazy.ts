@@ -51,12 +51,16 @@ export const setupLazyImage = (el: HTMLImageElement, src: string): (() => void) 
   const lazyEl = el as LazyImageEl
   if (!src) return () => {}
 
-  setLoadingStyles(lazyEl)
-
-  if (lazyEl.complete && lazyEl.naturalWidth > 0 && lazyEl.currentSrc === src) {
+  if (
+    lazyEl.complete &&
+    lazyEl.naturalWidth > 0 &&
+    (lazyEl.currentSrc === src || lazyEl.src === src)
+  ) {
     schedule(() => setLoadedStyles(lazyEl))
     return () => {}
   }
+
+  setLoadingStyles(lazyEl)
 
   const onLoad = () => setLoadedStyles(lazyEl)
   const loadImage = () => {

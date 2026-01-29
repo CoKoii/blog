@@ -7,7 +7,6 @@ import { getAllPosts } from '@/utils/posts'
 import SlidingTabs from '@/components/Tabs/SlidingTabs.vue'
 import type { PostListItem } from '@/composables/usePost'
 
-
 const props = defineProps<{
   tabs: string[]
   activeTab: string

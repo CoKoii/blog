@@ -2,7 +2,6 @@
 import { Icon } from '@iconify/vue'
 import type { Resource } from '../types'
 
-
 defineProps<{
   groupedResources: Resource[]
 }>()

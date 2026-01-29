@@ -2,7 +2,6 @@
 import { Icon } from '@iconify/vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
-
 const barrageMessages = [
   '第一次实习',
   '赚到第一个 W',

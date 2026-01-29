@@ -2,7 +2,6 @@
 import { Icon } from '@iconify/vue'
 import type { Project } from '../types'
 
-
 defineProps<{
   projects: Project[]
 }>()

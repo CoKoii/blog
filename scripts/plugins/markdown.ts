@@ -28,11 +28,9 @@ export const createMarkdownPlugin = (
       md.renderer.rules.image = (tokens, idx, options, env, self) => {
         const token = tokens[idx]
         const attrs = token.attrs ? [...token.attrs] : []
-        const srcIndex = attrs.findIndex(([name]) => name === 'src')
-        const src = srcIndex >= 0 ? attrs[srcIndex][1] : ''
-        if (srcIndex >= 0) attrs.splice(srcIndex, 1)
-        if (src) attrs.push(['data-src', src])
-        attrs.push(['v-lazy', ''])
+        const hasAttr = (name: string) => attrs.some(([key]) => key === name)
+        if (!hasAttr('loading')) attrs.push(['loading', 'lazy'])
+        if (!hasAttr('decoding')) attrs.push(['decoding', 'async'])
         token.attrs = attrs
         return defaultImage(tokens, idx, options, env, self)
       }
