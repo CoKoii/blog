@@ -1,12 +1,27 @@
-<script setup lang="ts">
-import { ref } from 'vue'
+<script lang="ts">
+import { defineComponent, ref } from 'vue'
 import { Icon } from '@iconify/vue'
 import { Tooltip } from 'ant-design-vue'
 import menus from '@/router/menu'
 import { useLayoutStore } from '@/stores/layout'
 
-const layoutStore = useLayoutStore()
-const visitorCount = ref('统计中')
+export default defineComponent({
+  name: 'SideBar',
+  components: {
+    Icon,
+    Tooltip,
+  },
+  setup() {
+    const layoutStore = useLayoutStore()
+    const visitorCount = ref('统计中')
+
+    return {
+      layoutStore,
+      visitorCount,
+      menus,
+    }
+  },
+})
 </script>
 
 <template>
