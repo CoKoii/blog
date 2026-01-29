@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import matter from 'gray-matter'
 import { loadEnv } from './utils/env.mjs'
-import { buildArticlePath } from './utils/slug.mjs'
+import { buildArticlePath, toPinyinSlug } from './utils/slug.mjs'
 import { resolveSiteMeta } from './utils/site-config.mjs'
 import { listPostFiles } from './utils/posts.mjs'
 
@@ -30,6 +30,15 @@ const collectPosts = () =>
       frontmatter,
     }
   })
+
+const buildTagPaths = (posts) => {
+  const tagSlugs = new Set()
+  for (const post of posts) {
+    tagSlugs.add(toPinyinSlug(post.category))
+  }
+  tagSlugs.delete('all')
+  return ['/tags/all', ...Array.from(tagSlugs).sort().map((slug) => `/tags/${slug}`)]
+}
 
 const toIso = (value) => {
   if (!value) return ''
@@ -175,6 +184,10 @@ const main = () => {
     const loc = `${siteUrl}${pathName}`
     const lastmod = toIso(getFrontmatterDate(post.frontmatter))
     sitemapEntries.push({ loc, lastmod })
+  }
+
+  for (const pathName of buildTagPaths(posts)) {
+    sitemapEntries.push({ loc: `${siteUrl}${pathName}` })
   }
 
   writeFile('sitemap.xml', buildSitemap(sitemapEntries))

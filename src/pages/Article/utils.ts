@@ -6,16 +6,23 @@ import {
   nextTick,
   onMounted,
   onUnmounted,
+  onServerPrefetch,
   ref,
   shallowRef,
-  watchEffect,
+  watch,
 } from 'vue'
 import { useRoute } from 'vue-router'
 import { Icon } from '@iconify/vue'
 import { useHead } from '@vueuse/head'
 import { siteImage, siteName, siteOwner, siteUrl } from '@/config'
 import { formatDate } from '@/utils/date'
-import { findPostBySlug, getAllPosts, getPostContent, parsePostId } from '@/utils/posts'
+import {
+  findPostBySlug,
+  getAllPosts,
+  getPostContent,
+  getPostContentSync,
+  parsePostId,
+} from '@/utils/posts'
 import { safeDecodeURIComponent } from '@/utils/strings'
 import type { Component } from 'vue'
 import type { PostFrontmatter } from '@/types/post'
@@ -41,10 +48,12 @@ export const useArticlePage = () => {
   const activeHeadingId = ref<string>('')
   const frontmatter = ref<PostFrontmatter>({ ...DEFAULT_FRONTMATTER })
   const resolvedTitle = ref('')
+  const loadedArticleId = ref('')
 
   const canUseDOM = typeof window !== 'undefined' && typeof document !== 'undefined'
   const HEADING_SELECTOR = '.markdown-content h1, .markdown-content h2, .markdown-content h3'
   const SCROLL_OFFSET = 400
+  const isServer = import.meta.env.SSR
 
   const fallbackTitle = computed(() => getTitleFromSlug(route.params.id as string | undefined))
 
@@ -279,9 +288,26 @@ export const useArticlePage = () => {
     window.removeEventListener('scroll', handleScroll)
   })
 
-  watchEffect(async () => {
-    const categorySlug = route.params.category as string
-    const articleSlug = route.params.id as string
+  const applyContent = (id: string, module: Awaited<ReturnType<typeof getPostContent>>) => {
+    if (!module) return
+    ContentComponent.value = module.default
+    frontmatter.value = { ...DEFAULT_FRONTMATTER, ...module.frontmatter }
+    loadedArticleId.value = id
+
+    if (!canUseDOM) return
+    void nextTick().then(() => {
+      const schedule =
+        window.requestAnimationFrame?.bind(window) ||
+        ((cb: FrameRequestCallback) => window.setTimeout(cb, 0))
+      schedule(() => {
+        enhanceCodeBlocks()
+        generateToc()
+        handleScroll()
+      })
+    })
+  }
+
+  const loadArticle = async (categorySlug: string, articleSlug: string) => {
     if (!categorySlug || !articleSlug) return
     resolvedTitle.value = ''
 
@@ -296,33 +322,42 @@ export const useArticlePage = () => {
     const id = post.id
     resolvedTitle.value = getTitleFromSlug(parsePostId(post.id)?.slug || '')
 
+    if (loadedArticleId.value === id && ContentComponent.value) return
+
     ContentComponent.value = null
     frontmatter.value = { ...DEFAULT_FRONTMATTER }
     toc.value = []
     activeHeadingId.value = ''
 
     try {
+      const syncModule = getPostContentSync(id)
+      if (syncModule) {
+        applyContent(id, syncModule)
+        return
+      }
+
       const module = await getPostContent(id)
-
-      if (!module) return
-
-      ContentComponent.value = module.default
-      frontmatter.value = { ...DEFAULT_FRONTMATTER, ...module.frontmatter }
-
-      if (!canUseDOM) return
-      await nextTick()
-      const schedule =
-        window.requestAnimationFrame?.bind(window) ||
-        ((cb: FrameRequestCallback) => window.setTimeout(cb, 0))
-      schedule(() => {
-        enhanceCodeBlocks()
-        generateToc()
-        handleScroll()
-      })
+      applyContent(id, module)
     } catch (error) {
       console.error('Failed to load article:', error)
     }
+  }
+
+  onServerPrefetch(async () => {
+    const categorySlug = route.params.category as string
+    const articleSlug = route.params.id as string
+    await loadArticle(categorySlug, articleSlug)
   })
+
+  if (!isServer) {
+    watch(
+      () => [route.params.category, route.params.id],
+      ([category, id]) => {
+        void loadArticle(String(category || ''), String(id || ''))
+      },
+      { immediate: true },
+    )
+  }
 
   return {
     ContentComponent,

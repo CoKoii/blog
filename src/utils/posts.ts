@@ -1,8 +1,14 @@
 import type { PostMeta, PostModule, MarkdownModule } from '@/types/post'
 import { postsMeta } from 'virtual:posts-meta'
 
-// Lazy 加载文章内容（按需加载）
-const postComponents = import.meta.glob<MarkdownModule>('/posts/**/*.md')
+type PostComponentLoader = () => Promise<MarkdownModule>
+type PostComponentEntry = MarkdownModule | PostComponentLoader
+
+// 生产环境 eager（SSR + 客户端）可避免首屏 Hydration 时正文缺失
+const shouldEagerImport = import.meta.env.SSR || import.meta.env.PROD
+const postComponents = (shouldEagerImport
+  ? import.meta.glob<MarkdownModule>('/posts/**/*.md', { eager: true })
+  : import.meta.glob<MarkdownModule>('/posts/**/*.md')) as Record<string, PostComponentEntry>
 
 const getPostDateValue = (post: PostMeta): string =>
   post.frontmatter?.date || post.frontmatter?.publishDate || ''
@@ -64,14 +70,16 @@ export async function getPostContent(id: string): Promise<PostModule | null> {
   const meta = postsMetaById.get(id)
   const path = meta?.path
 
-  if (!path || !postComponents[path]) {
+  const entry = path ? postComponents[path] : undefined
+
+  if (!path || !entry) {
     console.warn(`[Posts] Article not found: ${id}`)
     return null
   }
 
   try {
     // 加载 Vue 组件
-    const mod = await postComponents[path]()
+    const mod = typeof entry === 'function' ? await entry() : entry
 
     // 从虚拟模块中获取 frontmatter（预解析的）
     const frontmatter = meta?.frontmatter || {}
@@ -84,6 +92,27 @@ export async function getPostContent(id: string): Promise<PostModule | null> {
     console.error(`[Posts] Failed to load article: ${id}`, error)
     return null
   }
+}
+
+/**
+ * 同步读取文章内容（仅当 eager 模式可用）
+ */
+export function getPostContentSync(id: string): PostModule | null {
+  const meta = postsMetaById.get(id)
+  const path = meta?.path
+  const entry = path ? postComponents[path] : undefined
+
+  if (!path || !entry) {
+    console.warn(`[Posts] Article not found: ${id}`)
+    return null
+  }
+
+  if (typeof entry === 'function') return null
+
+  return {
+    default: entry.default,
+    frontmatter: meta?.frontmatter || {},
+  } as PostModule
 }
 
 /**
