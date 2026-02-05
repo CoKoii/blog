@@ -44,8 +44,7 @@ pnpm preview
 
 **写作**
 
-在 `posts/<分类>/<标题>.md` 中新增文章，URL 规则:
-`/article/<分类拼音>/<标题拼音>`
+在 `posts/<分类>/<标题>.md` 中新增文章
 
 Frontmatter 示例:
 
@@ -69,10 +68,6 @@ comments: 12
 
 主配置在 `site.config.json`，可修改站点信息、作者信息、社交链接、标签封面与颜色等。
 
-**环境变量（可选）**
+**开源协议**
 
-- `GITHUB_TOKEN`: 拉取 GitHub 数据，避免匿名请求限流
-- `VITE_SITE_URL`: 站点 URL
-- `VITE_SITE_NAME`: 站点名称
-- `VITE_SITE_DESCRIPTION`: 站点描述
-- `VITE_SITE_LANGUAGE`: 站点语言
+本项目采用 MIT 协议，详见 `LICENSE`。
