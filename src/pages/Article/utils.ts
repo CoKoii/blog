@@ -1,20 +1,5 @@
-import {
-  computed,
-  createApp,
-  defineComponent,
-  h,
-  nextTick,
-  onMounted,
-  onUnmounted,
-  onServerPrefetch,
-  ref,
-  shallowRef,
-  watch,
-} from 'vue'
-import { useRoute } from 'vue-router'
-import { Icon } from '@iconify/vue'
-import { useHead } from '@vueuse/head'
 import { siteImage, siteName, siteOwner, siteUrl } from '@/config'
+import type { PostFrontmatter, PostModule } from '@/types/post'
 import { formatDate } from '@/utils/date'
 import {
   findPostBySlug,
@@ -24,8 +9,23 @@ import {
   parsePostId,
 } from '@/utils/posts'
 import { safeDecodeURIComponent } from '@/utils/strings'
+import { Icon } from '@iconify/vue'
+import { useHead } from '@vueuse/head'
 import type { Component } from 'vue'
-import type { PostFrontmatter, PostModule } from '@/types/post'
+import {
+  computed,
+  createApp,
+  defineComponent,
+  h,
+  nextTick,
+  onMounted,
+  onServerPrefetch,
+  onUnmounted,
+  ref,
+  shallowRef,
+  watch,
+} from 'vue'
+import { useRoute } from 'vue-router'
 import type { ArticleMeta, TocItem } from './types'
 
 const DEFAULT_FRONTMATTER: PostFrontmatter = {
@@ -299,7 +299,7 @@ export const useArticlePage = () => {
 
     const element = document.getElementById(id)
     if (element) {
-      const offsetTop = element.offsetTop - 80
+      const offsetTop = element.offsetTop - 150
       window.scrollTo({
         top: offsetTop,
         behavior: 'smooth',
