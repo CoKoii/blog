@@ -39,6 +39,13 @@ const DEFAULT_FRONTMATTER: PostFrontmatter = {
   comments: 0,
 }
 
+type HeadingEntry = {
+  id: string
+  text: string
+  level: number
+  el: HTMLElement
+}
+
 const getTitleFromSlug = (slug?: string): string => safeDecodeURIComponent(slug || '') || 'Untitled'
 
 export const useArticlePage = () => {
@@ -50,11 +57,16 @@ export const useArticlePage = () => {
   const resolvedTitle = ref('')
   const loadedArticleId = ref('')
   const loadToken = ref(0)
+  let headings: HeadingEntry[] = []
+  let positions: number[] = []
+  let raf = 0
+  let needMeasure = false
 
   const canUseDOM = typeof window !== 'undefined' && typeof document !== 'undefined'
   const HEADING_SELECTOR = '.markdown-content h1, .markdown-content h2, .markdown-content h3'
-  const SCROLL_OFFSET = 400
+  const SCROLL_GAP = 16
   const isServer = import.meta.env.SSR
+  let observer: ResizeObserver | null = null
 
   const fallbackTitle = computed(() => getTitleFromSlug(route.params.id as string | undefined))
 
@@ -69,9 +81,109 @@ export const useArticlePage = () => {
     comments: frontmatter.value.comments || 0,
   }))
 
-  const getHeadings = (): HTMLElement[] => {
-    if (!canUseDOM) return []
-    return Array.from(document.querySelectorAll(HEADING_SELECTOR)) as HTMLElement[]
+  const normalizeHeadingText = (text: string) =>
+    text
+      .replace(/^[\d.]+\s+/, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+  const resetTocState = () => {
+    toc.value = []
+    activeHeadingId.value = ''
+    headings = []
+    positions = []
+  }
+
+  const getScrollOffset = () => {
+    if (!canUseDOM) return 0
+    const topBar = document.querySelector('.Layout .topBar') as HTMLElement | null
+    const height =
+      (topBar?.getBoundingClientRect().height ??
+        Number.parseFloat(
+          window
+            .getComputedStyle(document.documentElement)
+            .getPropertyValue('--layout-topbar-height'),
+        )) ||
+      0
+    return height + SCROLL_GAP
+  }
+
+  const measurePositions = () => {
+    positions = headings.map((entry) => entry.el.getBoundingClientRect().top + window.scrollY)
+  }
+
+  const getActiveId = () => {
+    if (!headings.length || positions.length !== headings.length) return activeHeadingId.value
+    const target = window.scrollY + getScrollOffset()
+    for (let i = positions.length - 1; i >= 0; i -= 1) {
+      if (positions[i]! <= target) return headings[i]?.id || ''
+    }
+    return headings[0]?.id || ''
+  }
+
+  const syncActive = (force = false) => {
+    const nextId = getActiveId()
+    if (force || nextId !== activeHeadingId.value) activeHeadingId.value = nextId
+  }
+
+  const schedule = (measure = false) => {
+    if (!canUseDOM) return
+    if (measure) needMeasure = true
+    if (raf) return
+    raf = window.requestAnimationFrame(() => {
+      raf = 0
+      if (needMeasure) {
+        measurePositions()
+        needMeasure = false
+      }
+      syncActive()
+    })
+  }
+
+  const scheduleMeasure = () => schedule(true)
+  const handleScroll = () => schedule()
+  const handleResize = () => schedule(true)
+
+  const disconnectObserver = () => {
+    if (observer) {
+      observer.disconnect()
+      observer = null
+    }
+    if (canUseDOM) window.removeEventListener('load', scheduleMeasure)
+  }
+
+  const connectObserver = () => {
+    if (!canUseDOM) return
+    const articleEl = document.querySelector('.markdown-content')
+    if (!articleEl) return
+    if ('ResizeObserver' in window) {
+      observer = new ResizeObserver(scheduleMeasure)
+      observer.observe(articleEl)
+      return
+    }
+    ;(window as Window).addEventListener('load', scheduleMeasure, { once: true })
+  }
+
+  const refreshToc = () => {
+    if (!canUseDOM) return
+    disconnectObserver()
+    const nodes = Array.from(document.querySelectorAll(HEADING_SELECTOR)) as HTMLElement[]
+    headings = nodes.map((heading, index) => {
+      const level = Number.parseInt(heading.tagName.substring(1), 10)
+      const text = normalizeHeadingText(heading.textContent || '')
+      const id = heading.id || `heading-${index}`
+      if (!heading.id) heading.id = id
+      return { id, text, level, el: heading }
+    })
+    toc.value = headings.map(({ id, text, level }) => ({ id, text, level }))
+    if (!headings.length) {
+      positions = []
+      activeHeadingId.value = ''
+      return
+    }
+    measurePositions()
+    syncActive(true)
+    connectObserver()
   }
 
   const CopyButton = defineComponent({
@@ -251,70 +363,36 @@ export const useArticlePage = () => {
     }
   })
 
-  const generateToc = () => {
-    const headings = getHeadings()
-    const tocItems: TocItem[] = []
-
-    headings.forEach((heading, index) => {
-      const level = Number.parseInt(heading.tagName.substring(1), 10)
-      let text = heading.textContent || ''
-      text = text.replace(/^[\d\.]+\s+/, '')
-      let id = heading.id
-
-      if (!id) {
-        id = `heading-${index}`
-        heading.id = id
-      }
-
-      tocItems.push({ id, text, level })
-    })
-
-    toc.value = tocItems
-  }
-
-  const handleScroll = () => {
-    const headings = getHeadings()
-    const scrollPosition = window.scrollY + SCROLL_OFFSET
-
-    let activeId = ''
-
-    headings.forEach((heading) => {
-      if (heading.offsetTop <= scrollPosition) {
-        activeId = heading.id
-      }
-    })
-
-    if (!activeId) {
-      const firstHeading = headings[0]
-      if (firstHeading) {
-        activeId = firstHeading.id
-      }
-    }
-
-    activeHeadingId.value = activeId
-  }
-
   const scrollToHeading = (id: string) => {
     if (!canUseDOM) return
-
     const element = document.getElementById(id)
-    if (element) {
-      const offsetTop = element.offsetTop - 150
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth',
-      })
-    }
+    if (!element) return
+
+    const offset = getScrollOffset()
+    const targetTop = element.getBoundingClientRect().top + window.scrollY - offset + 1
+
+    window.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: 'smooth',
+    })
   }
 
   onMounted(() => {
     if (!canUseDOM) return
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', handleResize)
   })
 
   onUnmounted(() => {
     if (!canUseDOM) return
     window.removeEventListener('scroll', handleScroll)
+    window.removeEventListener('resize', handleResize)
+    disconnectObserver()
+    if (raf) {
+      window.cancelAnimationFrame(raf)
+      raf = 0
+    }
+    needMeasure = false
   })
 
   const applyContent = (id: string, module: PostModule | null) => {
@@ -330,8 +408,7 @@ export const useArticlePage = () => {
         ((cb: FrameRequestCallback) => window.setTimeout(cb, 0))
       schedule(() => {
         enhanceCodeBlocks()
-        generateToc()
-        handleScroll()
+        refreshToc()
       })
     })
   }
@@ -363,16 +440,16 @@ export const useArticlePage = () => {
     const currentToken = ++loadToken.value
     const syncModule = getPostContentSync(id)
     if (syncModule) {
-      toc.value = []
-      activeHeadingId.value = ''
+      disconnectObserver()
+      resetTocState()
       applyContent(id, syncModule)
       return
     }
 
     ContentComponent.value = null
     frontmatter.value = { ...DEFAULT_FRONTMATTER }
-    toc.value = []
-    activeHeadingId.value = ''
+    disconnectObserver()
+    resetTocState()
 
     void getPostContent(id).then((module) => {
       if (loadToken.value !== currentToken) return
