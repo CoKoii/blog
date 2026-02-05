@@ -11,12 +11,7 @@
 .card {
   position: relative;
   background-image:
-    linear-gradient(
-      125deg,
-      rgba(6, 18, 9, 0.72) 0%,
-      rgba(6, 18, 9, 0.38) 48%,
-      rgba(10, 32, 16, 0.18) 100%
-    ),
+    linear-gradient(125deg, rgba(6, 18, 9, 0.14) 0%, rgba(6, 18, 9, 0.07) 48%),
     url('https://w.wallhaven.cc/full/og/wallhaven-ogyv8l.png');
   background-size: cover;
   background-position: center;
@@ -35,7 +30,7 @@
     height: 340px;
     background: radial-gradient(
       circle at 30% 30%,
-      rgba(255, 244, 214, 0.18),
+      rgba(255, 244, 214, 0.28),
       rgba(255, 244, 214, 0) 58%
     );
     filter: blur(var(--blur-md));
@@ -50,7 +45,7 @@
     height: 420px;
     background: radial-gradient(
       circle at 30% 30%,
-      rgba(34, 197, 94, 0.2),
+      rgba(120, 222, 164, 0.3),
       rgba(34, 197, 94, 0) 60%
     );
     filter: blur(var(--blur-lg));
@@ -79,8 +74,8 @@
   width: 72px;
   height: 72px;
   border-radius: var(--radius-full);
-  border: var(--border-width-1) solid rgba(224, 255, 232, 0.32);
-  background: rgba(232, 255, 236, 0.1);
+  border: var(--border-width-1) solid rgba(224, 255, 232, 0.42);
+  background: rgba(232, 255, 236, 0.2);
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -100,7 +95,7 @@
   width: var(--space-14px);
   height: var(--space-14px);
   background: var(--color-accent-green);
-  border: var(--border-width-3) solid rgba(6, 14, 9, 0.9);
+  border: var(--border-width-3) solid rgba(10, 28, 16, 0.7);
   border-radius: var(--radius-full);
 }
 
@@ -122,20 +117,20 @@
 
 .subtitle {
   margin: 0 0 var(--space-14px);
-  color: rgba(240, 254, 245, 0.92);
+  color: rgba(247, 255, 249, 0.95);
   font-size: var(--font-size-14-5px);
   font-weight: 520;
 }
 
 .value {
   margin: 0 0 var(--space-18px);
-  color: rgba(244, 255, 247, 0.98);
+  color: rgba(250, 255, 251, 0.98);
   font-size: var(--font-size-15-5px);
   line-height: 1.7;
   max-width: 52ch;
 
   span {
-    color: rgba(218, 248, 226, 0.92);
+    color: rgba(224, 252, 234, 0.95);
   }
 
   @media (max-width: 1000px) {
@@ -159,8 +154,8 @@
 
 .btn {
   appearance: none;
-  border: var(--border-width-1) solid rgba(219, 255, 226, 0.22);
-  background: rgba(7, 18, 10, 0.55);
+  border: var(--border-width-1) solid rgba(219, 255, 226, 0.28);
+  background: rgba(12, 32, 18, 0.35);
   color: #ffffff;
   border-radius: var(--radius-full);
   padding: var(--space-10px) var(--space-14px);
@@ -170,23 +165,36 @@
   transition:
     background 0.12s ease,
     border-color 0.12s ease,
-    color 0.12s ease;
+    color 0.12s ease,
+    transform 0.12s ease;
   user-select: none;
 
   &:hover {
-    border-color: rgba(230, 255, 236, 0.44);
-    background: rgba(173, 255, 197, 0.18);
+    border-color: rgba(230, 255, 236, 0.55);
+    background: rgba(173, 255, 197, 0.22);
     color: #ffffff;
   }
 }
 
 .btn.primary {
-  background: linear-gradient(135deg, #f4fbf5 0%, #d5f2dc 45%, #a7e3b6 100%);
-  color: #0b2f16;
-  border-color: transparent;
+  background: linear-gradient(135deg, #fafffb 0%, #dbf6e3 45%, #b4eaca 100%);
+  color: #0e2f18;
+  border: var(--border-width-1) solid rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 
   &:hover {
-    background: linear-gradient(135deg, #ffffff 0%, #dff7e6 45%, #b8efc7 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #e6fbe9 45%, #c2f1d3 100%);
+    border-color: rgba(255, 255, 255, 0.88);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(234, 255, 242, 0.9);
+    outline-offset: 2px;
   }
 }
 
@@ -210,7 +218,8 @@
   border: none;
   padding: var(--space-6px) var(--space-10px);
   border-radius: var(--radius-full);
-  background: rgba(12, 36, 20, 0.35);
+  background: rgba(255, 255, 255, 0.16);
+  color: rgba(245, 255, 248, 0.98);
   backdrop-filter: blur(6px);
 }
 
@@ -221,9 +230,9 @@
   display: flex;
   gap: var(--space-10px);
   padding: var(--space-10px) var(--space-3);
-  border: var(--border-width-1) solid rgba(210, 255, 220, 0.18);
+  border: var(--border-width-1) solid rgba(210, 255, 220, 0.28);
   border-radius: var(--radius-lg);
-  background: rgba(6, 18, 10, 0.74);
+  background: rgba(10, 26, 14, 0.5);
   backdrop-filter: blur(var(--blur-md));
   z-index: 1;
 
@@ -248,7 +257,7 @@
   text-decoration: none;
 
   &:hover {
-    background: rgba(173, 255, 197, 0.18);
+    background: rgba(173, 255, 197, 0.24);
     color: #ffffff;
   }
 }
@@ -263,7 +272,7 @@
   position: absolute;
   left: var(--space-5);
   bottom: var(--space-18px);
-  color: rgba(240, 254, 245, 0.9);
+  color: rgba(246, 255, 249, 0.92);
   font-size: var(--font-size-12-5px);
   letter-spacing: 0.02em;
   max-width: 70%;
