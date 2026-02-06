@@ -196,3 +196,31 @@ javascript 中的 Object 就是以字典的形式设计的
 但是,这样的设计也带来了一些缺陷,不同的键可能会被映射到同一个索引位置,这就叫做哈希冲突
 
 ## DOM 常见的操作有哪些
+
+- `创建节点`
+- `查询节点`
+- `更新节点`
+- `添加节点`
+- `删除节点`
+
+```javascript
+// 创建节点
+const divEl = document.createElement('div')
+const textNode = document.createTextNode('Hello World')
+// 查询节点
+const container = document.getElementById('container')
+const items = document.getElementsByClassName('item')
+const firstItem = document.querySelector('.item:first-child')
+// 更新节点
+divEl.textContent = 'Updated Content'
+divEl.setAttribute('class', 'new-class')
+// 添加节点
+container.appendChild(divEl)
+container.insertBefore(textNode, container.firstChild)
+// 删除节点
+container.removeChild(firstItem)
+```
+
+### 节点间的关系
+
+![DOM节点关系](https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/nodeElement.webp)
