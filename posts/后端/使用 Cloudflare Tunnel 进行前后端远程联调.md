@@ -1,6 +1,6 @@
 ---
 description: >
-  Cloudflare Tunnel 联调教程（全局安装版）：
+  Cloudflare Tunnel 联调教程（命令行 + Docker）：
   用 cloudflared 把 localhost 暴露成 HTTPS 地址，
   解决前后端远程联调、真机调试和第三方回调调试。
 tags:
@@ -20,41 +20,43 @@ comments: 0
 ## 前言
 
 没有公网 IP 时，前后端联调最常见的问题是：别人访问不到你的本地服务。  
-Cloudflare Tunnel 的做法很直接：把 `localhost` 映射成一个公网 HTTPS 地址，拿来做联调和回调调试。
+Cloudflare Tunnel 的作用很简单：把本机 `localhost` 临时变成一个可访问的 HTTPS 地址。
 
 ---
 
-## 快速开始
+## 开始前
 
-### 1. 安装
+默认你的本地服务已运行在 `3000` 端口。下面两种方式任选其一：
+
+- 方式 A：本机安装 `cloudflared`
+- 方式 B：用 Docker 跑 `cloudflared`（更方便开关）
+
+---
+
+## 方式 A：命令行（最快）
+
+### 1. 安装并验证
 
 ```bash
 npm install -g cloudflared
-```
-
-### 2. 验证
-
-```bash
 cloudflared --version
 ```
 
-能输出版本号就说明可用。
-
-### 3. 暴露本地端口
-
-假设你的服务跑在 `http://localhost:3000`：
+### 2. 启动隧道
 
 ```bash
 cloudflared tunnel --url http://localhost:3000
 ```
 
-启动后会拿到一个 `https://xxxx.trycloudflare.com` 地址，发给前端、测试或第三方回调平台即可。
+启动后会得到一个 `https://xxxx.trycloudflare.com` 地址，发给前端、测试或第三方回调平台即可。
+
+### 3. 关闭隧道
+
+当前终端按 `Ctrl + C`。
 
 ---
 
-## 国内网络建议（更稳）
-
-部分网络下 UDP/QUIC 不稳定，建议直接用 HTTP/2：
+## 如果在国内感觉延迟较高,可以试试这条启动命令，我自己测试感觉延迟更低一些：
 
 ```bash
 cloudflared tunnel \
@@ -64,9 +66,33 @@ cloudflared tunnel \
   --url http://localhost:3000
 ```
 
-- `--protocol http2`：走 TCP，通常更稳
-- `--edge-ip-version 4`：避免 IPv6 路由问题
-- `--no-autoupdate`：减少联调中途重连
+---
+
+## 方式 B：Docker（开关更方便）
+
+如果你本机有 Docker，用容器管理 `cloudflared` 的启停会更直观。
+
+```yaml
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared-3000
+    restart: unless-stopped
+    command: >
+      tunnel --protocol http2 --edge-ip-version 4 --no-autoupdate
+      --url http://host.docker.internal:3000
+```
+
+常用命令：
+
+```bash
+docker compose up -d cloudflared     # 启动
+docker compose stop cloudflared      # 停止
+docker compose start cloudflared     # 再启动
+docker compose logs -f cloudflared   # 查看日志
+```
+
+`host.docker.internal` 指向宿主机，所以这里会转发到你本机的 `3000` 端口。
 
 ---
 
@@ -79,13 +105,11 @@ cloudflared tunnel \
 
 ### 访问超时或出现 502/504
 
-先确认本地服务是通的：
+按这个顺序检查：
 
-```bash
-curl http://localhost:3000
-```
-
-本地不通，隧道一定不通。其次检查 `--url` 端口是否写对。
+1. 本地服务是否可用：`curl http://localhost:3000`
+2. `--url` 里的端口是否写对
+3. 换成上面的“网络不稳时”命令再试
 
 ### 联调时偶发断开
 
@@ -95,4 +119,4 @@ curl http://localhost:3000
 
 ## 一句话总结
 
-开发联调用 Cloudflare Tunnel 很省事：先保证本地服务可用，再把端口映射到 HTTPS 公网地址。
+先确认本地服务可用，再开 Tunnel 拿到 HTTPS 地址发给联调方；不用时直接停掉命令或容器。
