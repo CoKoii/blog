@@ -24,14 +24,11 @@
     @media (max-width: 1000px) {
       grid-template-columns: minmax(0, 1fr);
       grid-template-rows:
-        minmax(340px, auto) minmax(180px, auto) minmax(180px, auto) minmax(180px, auto)
-        minmax(180px, auto);
+        minmax(340px, auto) minmax(180px, auto) minmax(180px, auto);
       grid-template-areas:
         'profile'
         'oss'
-        'stats'
-        'journey'
-        'wechat';
+        'journey';
     }
   }
 
@@ -53,5 +50,12 @@
 
   .bento-wechat {
     grid-area: wechat;
+  }
+
+  @media (max-width: 1000px) {
+    .bento-stats,
+    .bento-wechat {
+      display: none;
+    }
   }
 }
