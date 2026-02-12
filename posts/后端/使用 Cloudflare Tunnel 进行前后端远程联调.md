@@ -10,7 +10,7 @@ tags:
   - 内网穿透
   - 本地接口调试
 date: 2026-02-11
-coverImage: https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/cloudflare-tunnel.webp
+coverImage: https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/cloudflare-tunnel.svg
 wordCount: 780
 readTime: 3
 location: 杭州
@@ -19,8 +19,8 @@ comments: 0
 
 ## 前言
 
-没有公网 IP 时，前后端联调最常见的问题是：别人访问不到你的本地服务。  
-Cloudflare Tunnel 的作用很简单：把本机 `localhost` 临时变成一个可访问的 HTTPS 地址。
+前后端远程联调最常见的问题是：你电脑里跑的服务，只有你自己能打开，别人访问不到。  
+Cloudflare Tunnel 的作用很简单：把这个本地服务临时变成一个别人也能访问的 HTTPS 地址。
 
 ---
 
