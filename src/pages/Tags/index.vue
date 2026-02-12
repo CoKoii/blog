@@ -9,6 +9,7 @@ const {
   activeTab,
   activeCategoryLabel,
   cardPosts,
+  activeTagColor,
   heroCover,
   heroDescription,
   goToArticle,
@@ -16,7 +17,7 @@ const {
 </script>
 
 <template>
-  <div class="Tags">
+  <div class="Tags" :style="{ '--tags-accent': activeTagColor }">
     <TabsSection v-model:activeTab="activeTab" :tabs="categories" />
     <HeroSection
       :post-count="cardPosts.length"
@@ -24,7 +25,13 @@ const {
       :hero-cover="heroCover"
       :hero-description="heroDescription"
     />
-    <PostsGrid :posts="cardPosts" @select="goToArticle" />
+    <section class="posts-section">
+      <div class="posts-head">
+        <h2 class="posts-title">文章列表</h2>
+        <p class="posts-subtitle">{{ activeCategoryLabel || 'All' }} · {{ cardPosts.length }} 篇</p>
+      </div>
+      <PostsGrid :posts="cardPosts" @select="goToArticle" />
+    </section>
   </div>
 </template>
 

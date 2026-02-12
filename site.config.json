@@ -43,7 +43,7 @@
   "tagMeta": {
     "all": {
       "color": "#9ca3af",
-      "cover": "",
+      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
       "description": "全站内容聚合区，集中展示前端、工程化、性能与日常实践的文章与记录，方便快速浏览与系统回顾。"
     },
     "VueJS设计与实现": {

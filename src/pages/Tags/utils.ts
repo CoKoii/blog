@@ -49,6 +49,8 @@ export const useTagsPage = () => {
     return getTagMeta(activeCategoryLabel.value)
   })
 
+  const activeTagColor = computed(() => activeTagMeta.value.color || getTagMeta(allTabValue).color)
+
   const heroCover = computed(() => activeTagMeta.value.cover || '')
 
   const heroDescription = computed(() => {
@@ -67,6 +69,7 @@ export const useTagsPage = () => {
     activeTab,
     activeCategoryLabel,
     cardPosts,
+    activeTagColor,
     heroCover,
     heroDescription,
     goToArticle,

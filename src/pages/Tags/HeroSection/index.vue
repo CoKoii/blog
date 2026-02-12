@@ -10,18 +10,20 @@ const props = defineProps<{
 <template>
   <section class="tags-hero">
     <div class="hero-text">
+      <span class="hero-kicker">分类导览</span>
       <div class="hero-meta">
         <span class="count">{{ props.postCount }} posts</span>
         <span class="dot">·</span>
         <span class="label">分类</span>
       </div>
       <h1 class="hero-title">{{ props.activeCategoryLabel || 'Tags' }}</h1>
-      <p class="hero-desc">{{ props.heroDescription }}</p>
+      <p class="hero-desc">
+        {{ props.heroDescription || '按分类浏览文章，快速定位你关心的主题。' }}
+      </p>
     </div>
     <div v-if="props.heroCover" class="hero-media">
       <img v-lazy="props.heroCover" :alt="props.activeCategoryLabel" />
     </div>
-    <div v-else class="hero-media hero-media--empty" aria-hidden="true"></div>
   </section>
 </template>
 
