@@ -6,7 +6,6 @@ import { buildArticlePath } from '@/utils/paths'
 import { getAllPosts } from '@/utils/posts'
 import SlidingTabs from '@/components/Tabs/SlidingTabs.vue'
 import type { PostListItem } from '@/composables/usePost'
-import StatsCard from '@/pages/Home/TopCard/StatsCard/index.vue'
 
 const props = defineProps<{
   tabs: string[]
@@ -69,11 +68,6 @@ const goToArticle = (postId: string | number) => {
       </article>
     </div>
 
-    <StatsCard class="mobile-site-days" />
-
-    <div class="more-btn-wrapper">
-      <button class="view-all-btn">查看全部文章</button>
-    </div>
   </section>
 </template>
 

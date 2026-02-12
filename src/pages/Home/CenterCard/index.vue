@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import FeedSection from './FeedSection/index.vue'
 import SidebarSection from './SidebarSection/index.vue'
+import StatsCard from '@/pages/Home/TopCard/StatsCard/index.vue'
 import { useCenterCardData } from './utils'
 
 const { projects, activeTab, tabs, latestPosts, groupedResources } = useCenterCardData()
@@ -10,6 +11,7 @@ const { projects, activeTab, tabs, latestPosts, groupedResources } = useCenterCa
   <div class="CenterCard">
     <main class="main-content">
       <FeedSection v-model:active-tab="activeTab" :tabs="tabs" :latest-posts="latestPosts" />
+      <StatsCard class="mobile-site-days" />
       <SidebarSection
         class="center-sidebar"
         :projects="projects"

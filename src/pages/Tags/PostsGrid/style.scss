@@ -1,7 +1,7 @@
 .tags-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-20px);
+  gap: var(--space-28px);
 }
 
 .post-card {
@@ -29,7 +29,7 @@
 .card-cover {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16 / 8;
   overflow: hidden;
   border-bottom: var(--border-width-1) solid var(--color-gray-150);
   background: var(--color-gray-125);
@@ -119,17 +119,60 @@
 
 @media (max-width: 720px) {
   .tags-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-3);
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .post-card {
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--space-4);
+    padding: var(--space-2);
+    border-radius: var(--radius-2xl);
+  }
+
+  .card-cover {
+    width: 42%;
+    height: auto;
+    aspect-ratio: 16 / 8;
+    border-bottom: 0;
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+
+    .read-badge {
+      display: none;
+    }
+  }
+
+  .post-card:hover .card-cover,
+  .post-card:focus-within .card-cover {
+    transform: none;
   }
 
   .card-body {
-    padding: var(--space-2) var(--space-2) var(--space-3);
+    padding: 0;
+    flex: 1;
+    justify-content: space-between;
+    min-height: 108px;
   }
-}
 
-@media (max-width: 520px) {
-  .tags-grid {
-    grid-template-columns: 1fr;
+  .card-title {
+    min-height: 0;
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    line-height: 1.35;
+  }
+
+  .card-meta {
+    font-size: 0.85rem;
+
+    .tag-pill {
+      padding: var(--space-2px) var(--space-6px);
+      border-radius: var(--radius-4px);
+      font-weight: 500;
+      font-size: 0.75rem;
+      border: 0;
+    }
   }
 }

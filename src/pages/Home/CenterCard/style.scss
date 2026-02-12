@@ -16,6 +16,48 @@
   }
 }
 
+.mobile-site-days {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .mobile-site-days {
+    display: block;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  .mobile-site-days :deep(.stats-card) {
+    height: auto;
+    min-height: 140px;
+    padding: var(--space-14px) var(--space-10px);
+    border-radius: var(--radius-xl);
+    justify-content: flex-start;
+  }
+
+  .mobile-site-days :deep(.stats-metrics) {
+    margin-top: var(--space-5);
+  }
+
+  .mobile-site-days :deep(.stats-metric) {
+    gap: var(--space-6px);
+    padding: 0 var(--space-6px);
+  }
+
+  .mobile-site-days :deep(.stats-v) {
+    font-size: clamp(1.9rem, 7vw, 2.3rem);
+  }
+
+  .mobile-site-days :deep(.stats-k) {
+    font-size: var(--font-size-12px);
+  }
+
+  .mobile-site-days :deep(.stats-actions) {
+    top: var(--space-2);
+    right: var(--space-2);
+  }
+}
+
 .center-sidebar {
   @media (max-width: 1800px) {
     display: none;
