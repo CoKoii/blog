@@ -16,7 +16,7 @@ const handleAction = (message: string) => {
           <span class="status-dot"></span>
         </div>
 
-        <div>
+        <div class="content">
           <h1 class="title">
             {{ ownerProfile.greeting }}
             <span aria-hidden="true">{{ ownerProfile.greetingEmoji }}</span>

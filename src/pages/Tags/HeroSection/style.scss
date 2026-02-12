@@ -197,7 +197,6 @@
   }
 
   .hero-media {
-    width: min(100%, 320px);
-    height: clamp(170px, 52vw, 240px);
+    display: none;
   }
 }

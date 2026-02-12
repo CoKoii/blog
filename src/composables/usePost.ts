@@ -1,5 +1,5 @@
 import type { PostMeta } from '@/types/post'
-import { getRelativeTime } from '@/utils/date'
+import { formatDateYMD } from '@/utils/date'
 import { getPostDate, parsePostId } from '@/utils/posts'
 import { safeDecodeURIComponent } from '@/utils/strings'
 
@@ -24,7 +24,7 @@ export function usePostListFormat(posts: PostMeta[], markHotCount = 2): PostList
     id: post.id,
     title: post.frontmatter.title ?? getTitleFromSlug(parsePostId(post.id)?.slug || ''),
     category: post.category,
-    time: getRelativeTime(getPostDate(post)),
+    time: formatDateYMD(getPostDate(post)),
     readTime: post.frontmatter.readTime ? `${post.frontmatter.readTime} min` : '5 min',
     hot: index < markHotCount,
     cover: post.frontmatter.coverImage ?? '',
