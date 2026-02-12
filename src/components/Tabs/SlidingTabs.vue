@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onBeforeUpdate, onMounted, ref, watch } from 'vue'
 import type { ComponentPublicInstance } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onBeforeUpdate, onMounted, ref, watch } from 'vue'
 
 type TabItem = string | { label: string; value: string }
 
@@ -151,7 +151,7 @@ watch(
     border: none;
     padding: var(--space-6px) var(--space-14px);
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 900;
     color: var(--color-gray-550);
     cursor: pointer;
     border-radius: var(--radius-sm);
