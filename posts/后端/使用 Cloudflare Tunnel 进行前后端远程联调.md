@@ -1,8 +1,8 @@
 ---
 description: >
-  Cloudflare Tunnel 联调教程（命令行 + Docker）：
-  用 cloudflared 把 localhost 暴露成 HTTPS 地址，
-  解决前后端远程联调、真机调试和第三方回调调试。
+  Cloudflare Tunnel 新手联调教程（命令行 + Docker）：
+  把本地 localhost 临时变成 HTTPS 链接，
+  方便前端、测试和第三方回调一起调试
 tags:
   - Cloudflare Tunnel
   - cloudflared
@@ -11,27 +11,22 @@ tags:
   - 本地接口调试
 date: 2026-02-11
 coverImage: https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/cloudflare-tunnel.svg
-wordCount: 780
-readTime: 3
+wordCount: 560
+readTime: 2
 location: 杭州
 comments: 0
 ---
 
 ## 前言
 
-前后端远程联调最常见的问题是：你电脑里跑的服务，只有你自己能打开，别人访问不到。  
-Cloudflare Tunnel 的作用很简单：把这个本地服务临时变成一个别人也能访问的 HTTPS 地址。
+做联调时最常见的尴尬是：接口在你电脑上能跑，但别人打不开  
+Cloudflare Tunnel 就是解决这件事的，它会给你一个临时 `https://xxxx.trycloudflare.com` 地址，让别人也能访问你本地的服务
 
----
+## 先准备好这 3 件事
 
-## 开始前
-
-默认你的本地服务已运行在 `3000` 端口。下面两种方式任选其一：
-
-- 方式 A：本机安装 `cloudflared`
-- 方式 B：用 Docker 跑 `cloudflared`（更方便开关）
-
----
+1. 你的本地服务已经启动（下面示例用 `3000` 端口）
+2. 先在本机自检：`curl http://localhost:3000` 能拿到响应
+3. 二选一：命令行方式 或 Docker 方式
 
 ## 方式 A：命令行（最快）
 
@@ -48,15 +43,58 @@ cloudflared --version
 cloudflared tunnel --url http://localhost:3000
 ```
 
-启动后会得到一个 `https://xxxx.trycloudflare.com` 地址，发给前端、测试或第三方回调平台即可。
+看到日志里出现 `https://xxxx.trycloudflare.com` 后，这个地址就是别人访问你本地服务的入口，把它发给前端、测试或第三方回调平台即可
 
 ### 3. 关闭隧道
 
-当前终端按 `Ctrl + C`。
+当前终端按 `Ctrl + C`
 
----
+## 方式 B：Docker（开关更方便）
 
-## 如果在国内感觉延迟较高,可以试试这条启动命令，我自己测试感觉延迟更低一些：
+如果你平时就用 Docker，用容器管理 `cloudflared` 会更直观
+
+### 1. 准备 `compose` 配置
+
+如果当前目录还没有 `docker-compose.yml`，先新建一个，再粘贴下面内容  
+如果已经有这个文件，把下面的 `cloudflared` 服务加进去
+
+```yaml
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared-3000
+    restart: unless-stopped
+    command: >
+      tunnel --url http://host.docker.internal:3000
+```
+
+### 2. 启动并拿地址
+
+```bash
+docker compose up -d cloudflared     # 启动
+docker compose logs -f cloudflared   # 看日志并复制地址
+```
+
+日志里出现 `https://xxxx.trycloudflare.com` 后，这个地址就可以直接发给联调方，他们会通过它访问你本机服务
+
+常用开关命令：
+
+```bash
+docker compose stop cloudflared      # 停止
+docker compose start cloudflared     # 再启动
+```
+
+### 3. 图形化开关（更省事）
+
+如果你不想记命令，也可以直接用 Docker Desktop 里的按钮控制容器启动和停止：
+
+![Docker Desktop 里 cloudflared-3000 的 Start/Stop 按钮](https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/docker-desktop-cloudflared.webp)
+
+`host.docker.internal` 可以理解成“容器访问你这台电脑”的入口地址
+
+## 网络不稳时（可选）
+
+联调时偶尔掉线或延迟高，可以试试这条命令（不用纠结参数含义，直接复制即可）：
 
 ```bash
 cloudflared tunnel \
@@ -66,57 +104,25 @@ cloudflared tunnel \
   --url http://localhost:3000
 ```
 
----
+## 常见问题（按顺序排查）
 
-## 方式 B：Docker（开关更方便）
-
-如果你本机有 Docker，用容器管理 `cloudflared` 的启停会更直观。
-
-```yaml
-services:
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared-3000
-    restart: unless-stopped
-    command: >
-      tunnel --protocol http2 --edge-ip-version 4 --no-autoupdate
-      --url http://host.docker.internal:3000
-```
-
-常用命令：
-
-```bash
-docker compose up -d cloudflared     # 启动
-docker compose stop cloudflared      # 停止
-docker compose start cloudflared     # 再启动
-docker compose logs -f cloudflared   # 查看日志
-```
-
-`host.docker.internal` 指向宿主机，所以这里会转发到你本机的 `3000` 端口。
-
----
-
-## 常见问题
-
-### 每次重启地址都变
-
-`trycloudflare.com` 是临时域名，重启就会变。  
-需要固定域名时，改用登录 Cloudflare 账号后的命名 Tunnel。
-
-### 访问超时或出现 502/504
-
-按这个顺序检查：
+### 1. 打不开、超时、502/504
 
 1. 本地服务是否可用：`curl http://localhost:3000`
 2. `--url` 里的端口是否写对
-3. 换成上面的“网络不稳时”命令再试
+3. Docker 方式确认用了 `host.docker.internal`
+4. 还不稳就换上面的“网络不稳”命令
 
-### 联调时偶发断开
+### 2. 为什么每次地址都不一样？
 
-优先使用上面的“稳定参数”命令，并保持终端窗口不要关闭。
+`trycloudflare.com` 是临时地址，重启后会变，这是正常现象  
+如果你需要固定不变的地址，再登录 Cloudflare 账号创建你自己的 Tunnel
 
----
+### 3. 联调到一半断了
+
+命令行方式下，终端关掉连接就会断  
+Docker 方式一般更稳一些，遇到问题先看日志
 
 ## 一句话总结
 
-先确认本地服务可用，再开 Tunnel 拿到 HTTPS 地址发给联调方；不用时直接停掉命令或容器。
+先确认本地服务能跑，再开 Tunnel 拿到 HTTPS 地址发给联调方；联调结束就把命令或容器停掉
