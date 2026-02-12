@@ -143,7 +143,6 @@
 .desc {
   position: relative;
   z-index: 1;
-  margin: var(--space-3) 0;
   color: rgba(229, 231, 235, 0.68);
   font-size: var(--font-size-13px);
   line-height: 1.6;
@@ -159,7 +158,6 @@
   z-index: 1;
   display: flex;
   gap: var(--space-18px);
-  margin: var(--space-3) 0;
 }
 
 .stat {
