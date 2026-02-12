@@ -14,6 +14,18 @@ body {
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
+
+html {
+  overflow-y: auto;
+  scrollbar-gutter: auto;
+}
+
+@supports (overflow: overlay) {
+  html {
+    overflow-y: overlay;
+  }
+}
+
 input,
 textarea,
 select,

@@ -58,15 +58,13 @@ export const useArticlePage = () => {
   const loadedArticleId = ref('')
   const loadToken = ref(0)
   let headings: HeadingEntry[] = []
-  let positions: number[] = []
   let raf = 0
-  let needMeasure = false
+  let forceSyncPending = false
 
   const canUseDOM = typeof window !== 'undefined' && typeof document !== 'undefined'
   const HEADING_SELECTOR = '.markdown-content h1, .markdown-content h2, .markdown-content h3'
   const SCROLL_GAP = 16
   const isServer = import.meta.env.SSR
-  let observer: ResizeObserver | null = null
 
   const fallbackTitle = computed(() => getTitleFromSlug(route.params.id as string | undefined))
 
@@ -88,10 +86,14 @@ export const useArticlePage = () => {
       .trim()
 
   const resetTocState = () => {
+    if (canUseDOM && raf) {
+      window.cancelAnimationFrame(raf)
+      raf = 0
+    }
     toc.value = []
     activeHeadingId.value = ''
     headings = []
-    positions = []
+    forceSyncPending = false
   }
 
   const getScrollOffset = () => {
@@ -108,65 +110,95 @@ export const useArticlePage = () => {
     return height + SCROLL_GAP
   }
 
-  const measurePositions = () => {
-    positions = headings.map((entry) => entry.el.getBoundingClientRect().top + window.scrollY)
+  const decodeHashId = (hash: string) => {
+    const raw = hash.startsWith('#') ? hash.slice(1) : hash
+    if (!raw) return ''
+    try {
+      return decodeURIComponent(raw)
+    } catch {
+      return raw
+    }
   }
 
+  const getHashHeadingId = () => {
+    if (!canUseDOM) return ''
+    return decodeHashId(window.location.hash)
+  }
+
+  const updateHashHeadingId = (id: string) => {
+    if (!canUseDOM) return
+    const currentId = getHashHeadingId()
+    if (currentId === id) return
+    const nextUrl = id
+      ? `${window.location.pathname}${window.location.search}#${encodeURIComponent(id)}`
+      : `${window.location.pathname}${window.location.search}`
+    window.history.replaceState(window.history.state, '', nextUrl)
+  }
+
+  const isScrolledToBottom = () => {
+    if (!canUseDOM) return false
+    const doc = document.documentElement
+    const body = document.body
+    const scrollHeight = Math.max(doc.scrollHeight, body?.scrollHeight || 0)
+    const viewportBottom = window.scrollY + window.innerHeight
+    return viewportBottom >= scrollHeight - 2
+  }
+
+  const hasHeading = (id: string) => headings.some((heading) => heading.id === id)
+
   const getActiveId = () => {
-    if (!headings.length || positions.length !== headings.length) return activeHeadingId.value
+    if (!canUseDOM || !headings.length) return ''
+    if (isScrolledToBottom()) return headings[headings.length - 1]?.id || ''
     const target = window.scrollY + getScrollOffset()
-    for (let i = positions.length - 1; i >= 0; i -= 1) {
-      if (positions[i]! <= target) return headings[i]?.id || ''
+    let currentId = headings[0]?.id || ''
+    for (let i = 0; i < headings.length; i += 1) {
+      const heading = headings[i]
+      if (!heading) continue
+      const top = heading.el.getBoundingClientRect().top + window.scrollY
+      if (top <= target) {
+        currentId = heading.id
+        continue
+      }
+      break
     }
-    return headings[0]?.id || ''
+    return currentId
   }
 
   const syncActive = (force = false) => {
     const nextId = getActiveId()
-    if (force || nextId !== activeHeadingId.value) activeHeadingId.value = nextId
+    if (!nextId) return
+    if (force || nextId !== activeHeadingId.value) {
+      activeHeadingId.value = nextId
+      updateHashHeadingId(nextId)
+    }
   }
 
-  const schedule = (measure = false) => {
+  const scheduleActiveSync = (force = false) => {
     if (!canUseDOM) return
-    if (measure) needMeasure = true
+    if (force) forceSyncPending = true
     if (raf) return
     raf = window.requestAnimationFrame(() => {
       raf = 0
-      if (needMeasure) {
-        measurePositions()
-        needMeasure = false
-      }
-      syncActive()
+      const nextForce = forceSyncPending
+      forceSyncPending = false
+      syncActive(nextForce)
     })
   }
 
-  const scheduleMeasure = () => schedule(true)
-  const handleScroll = () => schedule()
-  const handleResize = () => schedule(true)
-
-  const disconnectObserver = () => {
-    if (observer) {
-      observer.disconnect()
-      observer = null
-    }
-    if (canUseDOM) window.removeEventListener('load', scheduleMeasure)
-  }
-
-  const connectObserver = () => {
-    if (!canUseDOM) return
-    const articleEl = document.querySelector('.markdown-content')
-    if (!articleEl) return
-    if ('ResizeObserver' in window) {
-      observer = new ResizeObserver(scheduleMeasure)
-      observer.observe(articleEl)
+  const handleScroll = () => scheduleActiveSync()
+  const handleResize = () => scheduleActiveSync(true)
+  const handleHashChange = () => {
+    if (!canUseDOM || !headings.length) return
+    const hashId = getHashHeadingId()
+    if (hashId && hasHeading(hashId)) {
+      activeHeadingId.value = hashId
       return
     }
-    ;(window as Window).addEventListener('load', scheduleMeasure, { once: true })
+    scheduleActiveSync(true)
   }
 
   const refreshToc = () => {
     if (!canUseDOM) return
-    disconnectObserver()
     const nodes = Array.from(document.querySelectorAll(HEADING_SELECTOR)) as HTMLElement[]
     headings = nodes.map((heading, index) => {
       const level = Number.parseInt(heading.tagName.substring(1), 10)
@@ -177,13 +209,16 @@ export const useArticlePage = () => {
     })
     toc.value = headings.map(({ id, text, level }) => ({ id, text, level }))
     if (!headings.length) {
-      positions = []
       activeHeadingId.value = ''
+      updateHashHeadingId('')
       return
     }
-    measurePositions()
-    syncActive(true)
-    connectObserver()
+    const hashId = getHashHeadingId()
+    if (hashId && hasHeading(hashId)) {
+      activeHeadingId.value = hashId
+      return
+    }
+    scheduleActiveSync(true)
   }
 
   const CopyButton = defineComponent({
@@ -368,6 +403,9 @@ export const useArticlePage = () => {
     const element = document.getElementById(id)
     if (!element) return
 
+    activeHeadingId.value = id
+    updateHashHeadingId(id)
+
     const offset = getScrollOffset()
     const targetTop = element.getBoundingClientRect().top + window.scrollY - offset + 1
 
@@ -381,18 +419,19 @@ export const useArticlePage = () => {
     if (!canUseDOM) return
     window.addEventListener('scroll', handleScroll, { passive: true })
     window.addEventListener('resize', handleResize)
+    window.addEventListener('hashchange', handleHashChange)
   })
 
   onUnmounted(() => {
     if (!canUseDOM) return
     window.removeEventListener('scroll', handleScroll)
     window.removeEventListener('resize', handleResize)
-    disconnectObserver()
+    window.removeEventListener('hashchange', handleHashChange)
     if (raf) {
       window.cancelAnimationFrame(raf)
       raf = 0
     }
-    needMeasure = false
+    forceSyncPending = false
   })
 
   const applyContent = (id: string, module: PostModule | null) => {
@@ -403,10 +442,10 @@ export const useArticlePage = () => {
 
     if (!canUseDOM) return
     void nextTick().then(() => {
-      const schedule =
+      const runNextFrame =
         window.requestAnimationFrame?.bind(window) ||
         ((cb: FrameRequestCallback) => window.setTimeout(cb, 0))
-      schedule(() => {
+      runNextFrame(() => {
         enhanceCodeBlocks()
         refreshToc()
       })
@@ -440,7 +479,6 @@ export const useArticlePage = () => {
     const currentToken = ++loadToken.value
     const syncModule = getPostContentSync(id)
     if (syncModule) {
-      disconnectObserver()
       resetTocState()
       applyContent(id, syncModule)
       return
@@ -448,7 +486,6 @@ export const useArticlePage = () => {
 
     ContentComponent.value = null
     frontmatter.value = { ...DEFAULT_FRONTMATTER }
-    disconnectObserver()
     resetTocState()
 
     void getPostContent(id).then((module) => {
