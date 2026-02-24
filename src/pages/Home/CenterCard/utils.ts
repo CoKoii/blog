@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { usePostListFormat } from '@/composables/usePost'
-import { getAllCategories, getAllPosts } from '@/utils/posts'
+import { getAllPosts } from '@/utils/posts'
+import { ALL_TAG_SLUG, getTagTabs } from '@/utils/tags'
 import type { Project, Resource } from './types'
 
 export const useCenterCardData = () => {
@@ -21,18 +22,17 @@ export const useCenterCardData = () => {
     },
   ])
 
-  const activeTab = ref('All')
+  const activeTab = ref(ALL_TAG_SLUG)
 
-  const categories = getAllCategories()
-  const tabs = computed(() => ['All', ...categories])
+  const tabs = getTagTabs()
 
   const allPosts = getAllPosts()
 
   const filteredPosts = computed(() => {
-    if (activeTab.value === 'All') {
+    if (activeTab.value === ALL_TAG_SLUG) {
       return allPosts
     }
-    return allPosts.filter((post) => post.category === activeTab.value)
+    return allPosts.filter((post) => post.categorySlug === activeTab.value)
   })
 
   const latestPosts = computed(() => usePostListFormat(filteredPosts.value, 2))

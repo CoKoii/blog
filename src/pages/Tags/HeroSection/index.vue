@@ -18,7 +18,7 @@ const props = defineProps<{
       </div>
       <h1 class="hero-title">{{ props.activeCategoryLabel || 'Tags' }}</h1>
       <p class="hero-desc">
-        {{ props.heroDescription || '按分类浏览文章，快速定位你关心的主题。' }}
+        {{ props.heroDescription }}
       </p>
     </div>
     <div v-if="props.heroCover" class="hero-media">

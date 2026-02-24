@@ -46,20 +46,29 @@
       "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
       "description": "全站内容聚合区，集中展示前端、工程化、性能与日常实践的文章与记录，方便快速浏览与系统回顾。"
     },
+    "前端": {
+      "color": "#f6ad55",
+      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
+      "description": "前端技术与实战记录，涵盖工程化实践、性能优化、体验打磨与常见问题的解决方案沉淀。"
+    },
+    "后端": {
+      "color": "#4380E7",
+      "description": "后端技术与实践记录，涵盖服务端开发、数据库优化、系统架构与部署运维等领域的知识沉淀。"
+    },
+    "Prompt": {
+      "color": "#6245FB",
+      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/Prompt.webp",
+      "description": "Prompt工程与实践记录，涵盖提示词设计原则、优化策略与实际应用案例的总结与分享。"
+    },
     "VueJS设计与实现": {
       "color": "#42b883",
       "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/vuejssjysx.webp",
       "description": "围绕《Vue.js 设计与实现》的读书笔记与源码解析，记录关键设计思路、实现细节与个人理解的延伸整理。"
     },
     "八股文": {
-      "color": "red",
+      "color": "#f87171",
       "cover": "",
       "description": "高频面试题与基础知识梳理，覆盖核心概念、易错点与答题思路，适合阶段复盘与系统查缺补漏。"
-    },
-    "前端": {
-      "color": "#f6ad55",
-      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
-      "description": "前端技术与实战记录，涵盖工程化实践、性能优化、体验打磨与常见问题的解决方案沉淀。"
     }
   },
   "defaultTagColor": "#9ca3af"

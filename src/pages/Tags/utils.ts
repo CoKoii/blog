@@ -4,7 +4,7 @@ import { getTagMeta } from '@/config'
 import { usePostListFormat } from '@/composables/usePost'
 import { buildArticlePath } from '@/utils/paths'
 import { getAllPosts } from '@/utils/posts'
-import { ALL_TAG_SLUG, getTagEntries } from '@/utils/tags'
+import { ALL_TAG_LABEL, ALL_TAG_SLUG, getTagTabs } from '@/utils/tags'
 
 export const useTagsPage = () => {
   const route = useRoute()
@@ -12,10 +12,9 @@ export const useTagsPage = () => {
 
   const allPosts = getAllPosts()
   const allTabValue = ALL_TAG_SLUG
-  const categories = [
-    { value: allTabValue, label: 'All' },
-    ...getTagEntries().map((tag) => ({ value: tag.slug, label: tag.label })),
-  ]
+  const categories = getTagTabs()
+  const allTabLabel =
+    categories.find((category) => category.value === allTabValue)?.label || ALL_TAG_LABEL
 
   const activeTab = ref('')
 
@@ -33,7 +32,7 @@ export const useTagsPage = () => {
   })
 
   const activeCategoryLabel = computed(() => {
-    return categories.find((category) => category.value === activeTab.value)?.label || ''
+    return categories.find((category) => category.value === activeTab.value)?.label || allTabLabel
   })
 
   const filteredPosts = computed(() =>
