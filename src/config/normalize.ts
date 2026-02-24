@@ -8,24 +8,42 @@ import {
 
 const normalizeSiteUrl = (url: string): string => url.replace(/\/+$/, '')
 
-const siteUrl = siteConfig.url ? normalizeSiteUrl(siteConfig.url) : (siteConfig.url as string)
-const siteName = siteConfig.name as string
-const siteDescription = siteConfig.description as string
-const siteImage = siteConfig.image as string
-const siteLanguage = siteConfig.language as string
-const siteOwner = siteConfig.owner as SiteOwner
+const siteUrl = siteConfig.url ? normalizeSiteUrl(siteConfig.url) : ''
+const siteName = siteConfig.name || ''
+const siteDescription = siteConfig.description || ''
+const siteImage = siteConfig.image || ''
+const siteLanguage = siteConfig.language || ''
+const siteOwner: SiteOwner = siteConfig.owner || {}
 
-const defaultTagColor = siteConfig.defaultTagColor as string
+const defaultTagColor = siteConfig.defaultTagColor || ''
 
-const brandName = (siteConfig.brandName || siteConfig.owner?.name) as string
+const brandName = siteConfig.brandName || siteOwner.name || ''
 
-const ownerProfile = (siteConfig.owner || {}) as Required<SiteOwner>
+const ownerProfile: Required<SiteOwner> = {
+  name: siteOwner.name || '',
+  headline: siteOwner.headline || '',
+  greeting: siteOwner.greeting || '',
+  greetingEmoji: siteOwner.greetingEmoji || '',
+  bio: siteOwner.bio || '',
+  bioEmphasis: siteOwner.bioEmphasis || '',
+  quote: siteOwner.quote || '',
+  avatar: siteOwner.avatar || '',
+  tags: siteOwner.tags || [],
+  githubUsername: siteOwner.githubUsername || '',
+}
 
-const socialLinks = siteConfig.socials as SiteSocialLink[]
+const isValidSocialLink = (link: SiteSocialLink): boolean =>
+  Boolean(link.label) && Boolean(link.icon) && Boolean(link.url)
 
-const wechatConfig = (siteConfig.wechat || {}) as Required<SiteWechat>
+const socialLinks: SiteSocialLink[] = (siteConfig.socials || []).filter(isValidSocialLink)
 
-const statsConfig = (siteConfig.stats || {}) as Required<SiteStats>
+const wechatConfig: Required<SiteWechat> = {
+  qrUrl: siteConfig.wechat?.qrUrl || '',
+}
+
+const statsConfig: Required<SiteStats> = {
+  startDate: siteConfig.stats?.startDate || '',
+}
 
 export const normalizedConfig = {
   siteUrl,

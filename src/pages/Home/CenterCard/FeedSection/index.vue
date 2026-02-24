@@ -3,7 +3,7 @@ import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { buildArticlePath } from '@/utils/paths'
-import { getAllPosts } from '@/utils/posts'
+import { findPostById } from '@/utils/posts'
 import SlidingTabs from '@/components/Tabs/SlidingTabs.vue'
 import type { PostListItem } from '@/composables/usePost'
 
@@ -27,8 +27,7 @@ const activeTab = computed({
 })
 
 const goToArticle = (postId: string | number) => {
-  const allPosts = getAllPosts()
-  const post = allPosts.find((p) => p.id === String(postId))
+  const post = findPostById(postId)
   if (!post) return
   router.push(buildArticlePath(post))
 }

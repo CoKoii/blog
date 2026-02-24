@@ -3,7 +3,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { getTagMeta } from '@/config'
 import { usePostListFormat } from '@/composables/usePost'
 import { buildArticlePath } from '@/utils/paths'
-import { getAllPosts } from '@/utils/posts'
+import { findPostById, getAllPosts } from '@/utils/posts'
 import { ALL_TAG_LABEL, ALL_TAG_SLUG, getTagTabs } from '@/utils/tags'
 
 export const useTagsPage = () => {
@@ -58,7 +58,7 @@ export const useTagsPage = () => {
   })
 
   const goToArticle = (postId: string | number) => {
-    const post = allPosts.find((p) => p.id === String(postId))
+    const post = findPostById(postId, allPosts)
     if (!post) return
     router.push(buildArticlePath(post))
   }

@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "build-only": "vite-ssg build && node scripts/generate-seo.mjs",
     "type-check": "vue-tsc --build",
+    "test": "node --test",
     "lint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli src/"
   },

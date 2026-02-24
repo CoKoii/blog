@@ -5,7 +5,7 @@ export const useHomeHead = () => {
   const canonicalUrl = siteUrl
 
   useHead(() => {
-    const meta = [
+    const meta: Array<Record<string, string>> = [
       {
         name: 'robots',
         content: 'index, follow',
@@ -50,7 +50,7 @@ export const useHomeHead = () => {
         name: 'twitter:description',
         content: siteDescription,
       },
-    ] as Array<Record<string, string>>
+    ]
 
     const schema = {
       '@context': 'https://schema.org',

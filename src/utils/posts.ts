@@ -1,12 +1,7 @@
 import type { PostMeta, PostModule, MarkdownModule } from '@/types/post'
 import { postsMeta } from 'virtual:posts-meta'
 
-type PostComponentLoader = () => Promise<MarkdownModule>
-
-const postComponents = import.meta.glob<MarkdownModule>('/posts/**/*.md') as Record<
-  string,
-  PostComponentLoader
->
+const postComponents = import.meta.glob<MarkdownModule>('/posts/**/*.md')
 
 const postModuleCache = new Map<string, MarkdownModule>()
 
@@ -50,6 +45,15 @@ const sortedPosts = [...postsMeta].sort((a, b) => getPostDateTimestamp(b) - getP
 
 const postsMetaById = new Map(sortedPosts.map((post) => [post.id, post]))
 
+const resolvePostModule = (meta: PostMeta | undefined, module: MarkdownModule): PostModule | null => {
+  const component = module.default
+  if (!component) return null
+  return {
+    default: component,
+    frontmatter: meta?.frontmatter || {},
+  }
+}
+
 /**
  * 获取所有文章元数据
  * @returns 文章元数据数组，按日期降序排列
@@ -73,18 +77,16 @@ export function getPostsByCategory(category: string): PostMeta[] {
 export function getPostContentSync(id: string): PostModule | null {
   const meta = postsMetaById.get(id)
   const path = meta?.path
+  const loader = path ? postComponents[path] : undefined
 
-  if (!path || !postComponents[path]) {
+  if (!path || !loader) {
     console.warn(`[Posts] Article not found: ${id}`)
     return null
   }
 
   const cached = postModuleCache.get(id)
   if (!cached) return null
-  return {
-    default: cached.default,
-    frontmatter: meta?.frontmatter || {},
-  } as PostModule
+  return resolvePostModule(meta, cached)
 }
 
 export async function getPostContent(id: string): Promise<PostModule | null> {
@@ -100,19 +102,13 @@ export async function getPostContent(id: string): Promise<PostModule | null> {
 
   const cached = postModuleCache.get(id)
   if (cached) {
-    return {
-      default: cached.default,
-      frontmatter: meta?.frontmatter || {},
-    } as PostModule
+    return resolvePostModule(meta, cached)
   }
 
   try {
     const mod = await loader()
     postModuleCache.set(id, mod)
-    return {
-      default: mod.default,
-      frontmatter: meta?.frontmatter || {},
-    } as PostModule
+    return resolvePostModule(meta, mod)
   } catch (error) {
     console.error(`[Posts] Failed to load article: ${id}`, error)
     return null
@@ -133,4 +129,8 @@ export function getAllCategories(): string[] {
 
 export function getPostDate(post: PostMeta): string {
   return getPostDateValue(post)
+}
+
+export function findPostById(postId: string | number, posts: PostMeta[] = sortedPosts): PostMeta | null {
+  return posts.find((post) => post.id === String(postId)) || null
 }

@@ -3,4 +3,7 @@ import type { SiteConfig } from './types'
 
 export type { SiteConfig, SiteOwner, SiteSocialLink, SiteStats, SiteWechat } from './types'
 
-export const siteConfig = rawConfig as SiteConfig
+const isSiteConfig = (value: unknown): value is SiteConfig =>
+  typeof value === 'object' && value !== null
+
+export const siteConfig: SiteConfig = isSiteConfig(rawConfig) ? rawConfig : {}
