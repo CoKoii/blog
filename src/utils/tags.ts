@@ -1,5 +1,5 @@
 import { siteConfig } from '@/config'
-import { pinyin } from 'pinyin-pro'
+import { postsMeta } from 'virtual:posts-meta'
 
 export type TagEntry = { label: string; slug: string }
 export type TagTab = { label: string; value: string }
@@ -11,21 +11,41 @@ const labels = Object.keys(siteConfig.tagMeta || {})
   .map((l) => l.trim())
   .filter(Boolean)
 
-const toSlug = (text: string): string =>
-  (text.match(/[\u4e00-\u9fa5]+|[^\u4e00-\u9fa5]+/g) || [])
-    .map((s) =>
-      /[\u4e00-\u9fa5]/.test(s)
-        ? pinyin(s, { pattern: 'pinyin', toneType: 'none', type: 'array' }).join('')
-        : s.replace(/[^a-zA-Z0-9]/g, ''),
-    )
-    .filter(Boolean)
-    .join('-')
+const normalizeLabel = (text: string): string =>
+  text
     .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fff]/g, '')
+    .trim()
+
+const slugByCategory = postsMeta.reduce((map, post) => {
+  if (post.category && post.categorySlug && !map.has(post.category)) {
+    map.set(post.category, post.categorySlug)
+  }
+  return map
+}, new Map<string, string>())
+
+const slugByNormalizedCategory = postsMeta.reduce((map, post) => {
+  const normalizedLabel = normalizeLabel(post.category)
+  if (normalizedLabel && post.categorySlug && !map.has(normalizedLabel)) {
+    map.set(normalizedLabel, post.categorySlug)
+  }
+  return map
+}, new Map<string, string>())
+
+const toSlug = (text: string): string =>
+  text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
 
+const resolveSlug = (label: string): string =>
+  slugByCategory.get(label) ||
+  slugByNormalizedCategory.get(normalizeLabel(label)) ||
+  toSlug(label)
+
 const entries = labels.reduce<TagEntry[]>((acc, label) => {
-  const slug = toSlug(label)
+  const slug = resolveSlug(label)
   if (slug && slug !== ALL_TAG_SLUG && !acc.some((e) => e.slug === slug)) {
     acc.push({ label, slug })
   }

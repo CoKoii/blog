@@ -1,14 +1,16 @@
 /// <reference types="./types/index" />
 
+import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { createMarkdownPlugin, createShikiHighlighter } from './scripts/plugins/markdown'
 import { createPostsMetaPlugin, getPostRoutes, getTagRoutes } from './scripts/plugins/posts-meta'
 import { createSiteHeadPlugin } from './scripts/plugins/site-head'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
+const FRAMEWORK_RE =
+  /\/node_modules\/(?:vue\/|@vue\/|vue-router\/|pinia\/|vite-ssg\/|@unhead\/|unhead\/)/
 
 // https://vite.dev/config/
 export default defineConfig(async () => {
@@ -34,6 +36,17 @@ export default defineConfig(async () => {
     },
     build: {
       cssCodeSplit: false,
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            const normalizedId = id.replace(/\\/g, '/')
+            if (!normalizedId.includes('/node_modules/')) return undefined
+            if (FRAMEWORK_RE.test(normalizedId)) return 'framework'
+            if (normalizedId.includes('/node_modules/@iconify/vue/')) return 'iconify'
+            return 'vendor'
+          },
+        },
+      },
     },
     ssgOptions: {
       includedRoutes(paths: string[]) {
