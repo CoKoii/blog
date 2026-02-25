@@ -9,35 +9,35 @@
   --color-accent-fg: #3b82f6;
   --color-accent-muted: rgba(59, 130, 246, 0.1);
   --color-accent-subtle: #f8fafc;
-  
+
   /* 文字颜色 */
   --color-fg-default: #1f2937;
   --color-fg-muted: #6b7280;
   --color-fg-subtle: #9ca3af;
-  
+
   /* 背景色 */
   --color-canvas-default: #ffffff;
   --color-canvas-subtle: #fafafa;
   --color-canvas-inset: #f5f5f5;
-  
+
   /* 边框 */
   --color-border-default: #e5e7eb;
   --color-border-muted: #f0f0f0;
-  
+
   /* 按钮 */
   --color-btn-bg: #ffffff;
   --color-btn-border: #e5e7eb;
   --color-btn-hover-bg: #fafafa;
   --color-btn-active-bg: #f5f5f5;
-  
+
   /* 主色调按钮 */
   --color-btn-primary-bg: #3b82f6;
   --color-btn-primary-hover-bg: #2563eb;
-  
+
   /* 输入框 */
   --color-input-bg: #ffffff;
   --color-input-border: #e5e7eb;
-  
+
   /* 圆角 */
   --border-radius: 8px;
   --border-radius-sharp: 6px;
@@ -242,7 +242,7 @@ main.gsc-main {
   .gsc-comment {
     border-radius: 6px;
   }
-  
+
   .gsc-comment-content {
     font-size: 13px;
   }
