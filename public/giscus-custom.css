@@ -46,12 +46,13 @@
 /* 主容器 */
 main.gsc-main {
   background: transparent;
+  font-family: 'Inter', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
 }
 
 /* 评论输入区域 */
 .gsc-comment-box {
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid transparent;
   background: #ffffff;
   padding: 16px;
 }
@@ -176,12 +177,13 @@ main.gsc-main {
 /* 主要操作按钮 */
 .gsc-comment-box-submit.btn-primary {
   background: #3b82f6;
-  color: #ffffff;
+  color: #ffffff !important;
   border: none;
 }
 
 .gsc-comment-box-submit.btn-primary:hover {
   background: #2563eb;
+  color: #ffffff !important;
 }
 
 /* Emoji 反应按钮 */
