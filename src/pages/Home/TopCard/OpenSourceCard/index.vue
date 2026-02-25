@@ -1,8 +1,7 @@
 <script setup lang="ts">
+import ossData from '@/data/opensource.json'
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
-import { getRelativeTime } from '@/utils/date'
-import ossData from '@/data/opensource.json'
 
 const formatCount = (count: number) => {
   if (count < 1000) return `${count}`
@@ -10,33 +9,43 @@ const formatCount = (count: number) => {
   return `${value}k`
 }
 
+const blogRepoUrl = 'https://github.com/CoKoii/blog'
+
 const metaText = computed(() => {
-  if (!ossData.updatedAt) return '更新于 Recently'
-  return `更新于 ${getRelativeTime(ossData.updatedAt)}`
+  if (!ossData.updatedAt) return '刚刚更新'
+
+  const updatedAt = new Date(ossData.updatedAt)
+  if (Number.isNaN(updatedAt.getTime())) return '刚刚更新'
+
+  const diff = Date.now() - updatedAt.getTime()
+  const days = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)))
+
+  if (days === 0) return '刚刚更新'
+  return `${days}天前更新`
 })
 </script>
 
 <template>
-  <a
-    class="os-card"
-    aria-label="Open Source Projects"
-    :href="ossData.profileUrl || '#'"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
+  <div class="os-card" aria-label="Open Source Projects">
     <div class="top">
       <div class="badge">
         <span class="dot" aria-hidden="true"></span>
         <span>开源作品集</span>
       </div>
 
-      <div class="pill" title="Open Source">
+      <a
+        class="pill"
+        title="Open Source"
+        :href="blogRepoUrl"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <Icon class="icon" icon="lucide:github" />
-        <span>Open Source</span>
-      </div>
+        <span>开源博客</span>
+      </a>
     </div>
 
-    <p class="desc">可复用组件、工具与实验性项目的精选集合。</p>
+    <p class="desc">平时写的一些工具和小项目</p>
 
     <div class="stats" aria-label="Open source stats">
       <div class="stat">
@@ -50,14 +59,19 @@ const metaText = computed(() => {
     </div>
 
     <div class="bottom">
-      <div class="cta">
-        查看开源作品
+      <a
+        class="cta"
+        :href="ossData.profileUrl || 'https://github.com/CoKoii'"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        查看我的作品
         <Icon class="arrow" icon="lucide:arrow-right" />
-      </div>
+      </a>
 
       <div class="meta" aria-label="time meta">{{ metaText }}</div>
     </div>
-  </a>
+  </div>
 </template>
 
 <style scoped lang="scss" src="./style.scss"></style>
