@@ -3,130 +3,71 @@ import { postsMeta } from 'virtual:posts-meta'
 import { formatDateYMD } from './date'
 import { resolveTitleFromSlug } from './strings'
 
-const postComponents = import.meta.glob<MarkdownModule>('/posts/**/*.md')
+const components = import.meta.glob<MarkdownModule>('/posts/**/*.md')
+const cache = new Map<string, MarkdownModule>()
 
-const postModuleCache = new Map<string, MarkdownModule>()
+const getDate = (p: PostMeta): string => p.frontmatter?.date || p.frontmatter?.publishDate || ''
+const getTs = (p: PostMeta) => new Date(getDate(p) || 0).getTime()
 
-const getPostDateValue = (post: PostMeta): string =>
-  post.frontmatter?.date || post.frontmatter?.publishDate || ''
+const sorted = [...postsMeta].sort((a, b) => getTs(b) - getTs(a))
+const byId = new Map(sorted.map((p) => [p.id, p]))
 
-export const parsePostId = (
-  id: string,
-): {
-  category: string
-  slug: string
-} | null => {
+export const parsePostId = (id: string) => {
   if (!id) return null
   const [category, slug] = id.split('/')
-  if (!category || !slug) return null
-  return { category, slug }
+  return category && slug ? { category, slug } : null
 }
 
-/**
- * 从 URL 参数解析文章 ID
- * 支持拼音 slug 反向查找
- */
-export function findPostBySlug(
-  categorySlug: string,
-  slug: string,
-  posts: PostMeta[],
-): PostMeta | null {
-  return posts.find((post) => post.categorySlug === categorySlug && post.slug === slug) || null
-}
+export const findPostBySlug = (catSlug: string, slug: string, posts: PostMeta[]) =>
+  posts.find((p) => p.categorySlug === catSlug && p.slug === slug) || null
 
-export function resolvePostIdBySlug(categorySlug: string, slug: string): string | null {
-  if (!categorySlug || !slug) return null
-  const post = findPostBySlug(categorySlug, slug, getAllPosts())
-  return post?.id || null
-}
+export const resolvePostIdBySlug = (catSlug: string, slug: string) =>
+  catSlug && slug ? findPostBySlug(catSlug, slug, sorted)?.id || null : null
 
-const getPostDateTimestamp = (post: PostMeta): number =>
-  new Date(getPostDateValue(post) || 0).getTime()
+const toModule = (meta: PostMeta | undefined, mod: MarkdownModule): PostModule | null =>
+  mod.default ? { default: mod.default, frontmatter: meta?.frontmatter || {} } : null
 
-const sortedPosts = [...postsMeta].sort((a, b) => getPostDateTimestamp(b) - getPostDateTimestamp(a))
+export const getAllPosts = () => [...sorted]
 
-const postsMetaById = new Map(sortedPosts.map((post) => [post.id, post]))
-
-const resolvePostModule = (
-  meta: PostMeta | undefined,
-  module: MarkdownModule,
-): PostModule | null => {
-  const component = module.default
-  if (!component) return null
-  return {
-    default: component,
-    frontmatter: meta?.frontmatter || {},
-  }
-}
-
-/**
- * 获取所有文章元数据
- * @returns 文章元数据数组，按日期降序排列
- */
-export function getAllPosts(): PostMeta[] {
-  return [...sortedPosts]
-}
-
-/**
- * 根据 ID 获取文章内容
- * @param id 文章 ID（文件夹/文件名，不含 .md）
- * @returns 文章模块或 null
- */
 export function getPostContentSync(id: string): PostModule | null {
-  const meta = postsMetaById.get(id)
+  const meta = byId.get(id)
   const path = meta?.path
-  const loader = path ? postComponents[path] : undefined
-
+  const loader = path ? components[path] : undefined
   if (!path || !loader) {
     console.warn(`[Posts] Article not found: ${id}`)
     return null
   }
-
-  const cached = postModuleCache.get(id)
-  if (!cached) return null
-  return resolvePostModule(meta, cached)
+  const cached = cache.get(id)
+  return cached ? toModule(meta, cached) : null
 }
 
 export async function getPostContent(id: string): Promise<PostModule | null> {
-  const meta = postsMetaById.get(id)
+  const meta = byId.get(id)
   const path = meta?.path
-
-  const loader = path ? postComponents[path] : undefined
+  const loader = path ? components[path] : undefined
 
   if (!path || !loader) {
     console.warn(`[Posts] Article not found: ${id}`)
     return null
   }
 
-  const cached = postModuleCache.get(id)
-  if (cached) {
-    return resolvePostModule(meta, cached)
-  }
+  const cached = cache.get(id)
+  if (cached) return toModule(meta, cached)
 
   try {
     const mod = await loader()
-    postModuleCache.set(id, mod)
-    return resolvePostModule(meta, mod)
+    cache.set(id, mod)
+    return toModule(meta, mod)
   } catch (error) {
     console.error(`[Posts] Failed to load article: ${id}`, error)
     return null
   }
 }
 
-export async function preloadPostContent(id: string): Promise<void> {
-  await getPostContent(id)
-}
-
-export function getPostDate(post: PostMeta): string {
-  return getPostDateValue(post)
-}
-
-export function findPostById(
-  postId: string | number,
-  posts: PostMeta[] = sortedPosts,
-): PostMeta | null {
-  return posts.find((post) => post.id === String(postId)) || null
-}
+export const preloadPostContent = (id: string) => getPostContent(id)
+export const getPostDate = (p: PostMeta) => getDate(p)
+export const findPostById = (id: string | number, posts = sorted) =>
+  posts.find((p) => p.id === String(id)) || null
 
 export interface PostListItem {
   id: string
@@ -139,30 +80,27 @@ export interface PostListItem {
   tags?: string[]
 }
 
-export function formatPostList(posts: PostMeta[], markHotCount = 2): PostListItem[] {
-  return posts.map((post, index) => ({
-    id: post.id,
-    title: post.frontmatter.title ?? resolveTitleFromSlug(parsePostId(post.id)?.slug || ''),
-    category: post.category,
-    time: formatDateYMD(getPostDate(post)),
-    readTime: post.frontmatter.readTime ? `${post.frontmatter.readTime} min` : '5 min',
-    hot: index < markHotCount,
-    cover: post.frontmatter.coverImage ?? '',
-    tags: post.frontmatter.tags,
+export const formatPostList = (posts: PostMeta[], hotCount = 2): PostListItem[] =>
+  posts.map((p, i) => ({
+    id: p.id,
+    title: p.frontmatter.title ?? resolveTitleFromSlug(parsePostId(p.id)?.slug || ''),
+    category: p.category,
+    time: formatDateYMD(getDate(p)),
+    readTime: p.frontmatter.readTime ? `${p.frontmatter.readTime} min` : '5 min',
+    hot: i < hotCount,
+    cover: p.frontmatter.coverImage ?? '',
+    tags: p.frontmatter.tags,
   }))
-}
 
-export function getPostStats(posts: PostMeta[]) {
-  const totalPosts = posts.length
-  const categories = new Set(posts.map((p) => p.category))
-  const totalCategories = categories.size
-  const totalTags = new Set(posts.flatMap((p) => p.frontmatter?.tags || []))
-  const totalWords = posts.reduce((sum, post) => sum + (post.frontmatter?.wordCount || 0), 0)
+export const getPostStats = (posts: PostMeta[]) => {
+  const cats = new Set(posts.map((p) => p.category))
+  const tags = new Set(posts.flatMap((p) => p.frontmatter?.tags || []))
+  const words = posts.reduce((sum, p) => sum + (p.frontmatter?.wordCount || 0), 0)
   return {
-    totalPosts,
-    totalCategories,
-    totalTags: totalTags.size,
-    totalWords,
-    categories: Array.from(categories),
+    totalPosts: posts.length,
+    totalCategories: cats.size,
+    totalTags: tags.size,
+    totalWords: words,
+    categories: Array.from(cats),
   }
 }

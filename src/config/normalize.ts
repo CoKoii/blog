@@ -7,20 +7,18 @@ import {
   type SiteWechat,
 } from './raw'
 
-const normalizeSiteUrl = (url: string): string => url.replace(/\/+$/, '')
+const norm = (url: string) => url.replace(/\/+$/, '')
 
-const siteUrl = siteConfig.url ? normalizeSiteUrl(siteConfig.url) : ''
-const siteName = siteConfig.name || ''
-const siteDescription = siteConfig.description || ''
-const siteImage = siteConfig.image || ''
-const siteLanguage = siteConfig.language || ''
-const siteOwner: SiteOwner = siteConfig.owner || {}
+export const siteUrl = siteConfig.url ? norm(siteConfig.url) : ''
+export const siteName = siteConfig.name || ''
+export const siteDescription = siteConfig.description || ''
+export const siteImage = siteConfig.image || ''
+export const siteLanguage = siteConfig.language || ''
+export const siteOwner: SiteOwner = siteConfig.owner || {}
+export const defaultTagColor = siteConfig.defaultTagColor || ''
+export const brandName = siteConfig.brandName || siteOwner.name || ''
 
-const defaultTagColor = siteConfig.defaultTagColor || ''
-
-const brandName = siteConfig.brandName || siteOwner.name || ''
-
-const ownerProfile: Required<SiteOwner> = {
+export const ownerProfile: Required<SiteOwner> = {
   name: siteOwner.name || '',
   headline: siteOwner.headline || '',
   greeting: siteOwner.greeting || '',
@@ -33,44 +31,38 @@ const ownerProfile: Required<SiteOwner> = {
   githubUsername: siteOwner.githubUsername || '',
 }
 
-const isValidSocialLink = (link: SiteSocialLink): boolean =>
-  Boolean(link.label) && Boolean(link.icon) && Boolean(link.url)
+export const socialLinks: SiteSocialLink[] = (siteConfig.socials || []).filter(
+  (l) => l.label && l.icon && l.url,
+)
 
-const socialLinks: SiteSocialLink[] = (siteConfig.socials || []).filter(isValidSocialLink)
+export const wechatConfig: Required<SiteWechat> = { qrUrl: siteConfig.wechat?.qrUrl || '' }
 
-const wechatConfig: Required<SiteWechat> = {
-  qrUrl: siteConfig.wechat?.qrUrl || '',
-}
+export const statsConfig: Required<SiteStats> = { startDate: siteConfig.stats?.startDate || '' }
 
-const statsConfig: Required<SiteStats> = {
-  startDate: siteConfig.stats?.startDate || '',
-}
-
-const rawGiscus = siteConfig.comments?.giscus
-
+const gis = siteConfig.comments?.giscus
 const giscusConfig: Required<SiteCommentsGiscus> = {
-  host: rawGiscus?.host || '',
-  repo: rawGiscus?.repo || '',
-  repoId: rawGiscus?.repoId || '',
-  category: rawGiscus?.category || '',
-  categoryId: rawGiscus?.categoryId || '',
-  mapping: rawGiscus?.mapping || 'pathname',
-  term: rawGiscus?.term || '',
-  strict: rawGiscus?.strict ?? true,
-  reactionsEnabled: rawGiscus?.reactionsEnabled ?? true,
-  emitMetadata: rawGiscus?.emitMetadata ?? false,
-  inputPosition: rawGiscus?.inputPosition || 'top',
-  theme: rawGiscus?.theme || 'light',
-  lang: rawGiscus?.lang || 'zh-CN',
-  loading: rawGiscus?.loading || 'lazy',
+  host: gis?.host || '',
+  repo: gis?.repo || '',
+  repoId: gis?.repoId || '',
+  category: gis?.category || '',
+  categoryId: gis?.categoryId || '',
+  mapping: gis?.mapping || 'pathname',
+  term: gis?.term || '',
+  strict: gis?.strict ?? true,
+  reactionsEnabled: gis?.reactionsEnabled ?? true,
+  emitMetadata: gis?.emitMetadata ?? false,
+  inputPosition: gis?.inputPosition || 'top',
+  theme: gis?.theme || 'light',
+  lang: gis?.lang || 'zh-CN',
+  loading: gis?.loading || 'lazy',
 }
 
-const commentsConfig = {
+export const commentsConfig = {
   enabled: Boolean(siteConfig.comments?.enabled),
   giscus: giscusConfig,
 }
 
-const hasValidGiscusConfig = Boolean(
+const hasValidGiscus = Boolean(
   giscusConfig.repo && giscusConfig.repoId && giscusConfig.category && giscusConfig.categoryId,
 )
 
@@ -88,38 +80,22 @@ export const normalizedConfig = {
   wechatConfig,
   statsConfig,
   commentsConfig,
-  hasValidGiscusConfig,
+  hasValidGiscusConfig: hasValidGiscus,
   tagMeta: siteConfig.tagMeta,
 }
 
-export {
-  brandName,
-  commentsConfig,
-  defaultTagColor,
-  ownerProfile,
-  siteDescription,
-  siteImage,
-  siteLanguage,
-  siteName,
-  siteOwner,
-  siteUrl,
-  socialLinks,
-  statsConfig,
-  wechatConfig,
-}
-
-export const isGiscusReady = commentsConfig.enabled && hasValidGiscusConfig
+export const isGiscusReady = commentsConfig.enabled && hasValidGiscus
 
 export const getTagMeta = (tag: string): import('./types').TagMeta => {
-  const normalizedTag = tag.replace(/\s+/g, '')
-  const config = normalizedConfig.tagMeta?.[normalizedTag]
-  if (!config) return { color: defaultTagColor }
-  if (typeof config === 'string') return { color: config }
+  const t = tag.replace(/\s+/g, '')
+  const cfg = normalizedConfig.tagMeta?.[t]
+  if (!cfg) return { color: defaultTagColor }
+  if (typeof cfg === 'string') return { color: cfg }
   return {
-    color: config.color || defaultTagColor,
-    cover: config.cover,
-    description: config.description,
+    color: cfg.color || defaultTagColor,
+    cover: cfg.cover,
+    description: cfg.description,
   }
 }
 
-export const getTagColor = (tag: string): string => getTagMeta(tag).color
+export const getTagColor = (tag: string) => getTagMeta(tag).color

@@ -1,12 +1,10 @@
 import type { Directive } from 'vue'
 
-type LazyImageEl = HTMLImageElement & {
-  __vLazyCleanup?: () => void
-}
+type LazyEl = HTMLImageElement & { __cleanup?: () => void }
 
 const schedule = (cb: FrameRequestCallback) => {
   if (typeof window === 'undefined') return
-  const raf = window.requestAnimationFrame?.bind(window)
+  const raf = window.requestAnimationFrame
   if (raf) {
     raf(cb)
   } else {
@@ -14,97 +12,85 @@ const schedule = (cb: FrameRequestCallback) => {
   }
 }
 
-const setLoadingStyles = (el: LazyImageEl) => {
-  if (el.dataset.vLazyStyled === '1') return
-  el.style.opacity = '0'
-  el.style.filter = 'blur(20px)'
-  el.style.transition = 'opacity 0.3s ease, filter 0.3s ease'
-  el.dataset.vLazyStyled = '1'
+const setLoading = (el: LazyEl) => {
+  if (el.dataset.lazy === '1') return
+  Object.assign(el.style, {
+    opacity: '0',
+    filter: 'blur(20px)',
+    transition: 'opacity 0.3s ease, filter 0.3s ease',
+  })
+  el.dataset.lazy = '1'
 }
 
-const setLoadedStyles = (el: LazyImageEl) => {
+const setLoaded = (el: LazyEl) => {
   el.style.opacity = '1'
   el.style.filter = 'blur(0px)'
 }
 
-const createObserver = (el: LazyImageEl, loadImage: () => void) => {
+const createObs = (el: LazyEl, load: () => void) => {
   if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
-    loadImage()
+    load()
     return null
   }
 
-  const observer = new IntersectionObserver(
-    (entries, obs) => {
-      if (entries.some((entry) => entry.isIntersecting)) {
-        loadImage()
-        obs.disconnect()
+  const obs = new IntersectionObserver(
+    (entries, o) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        load()
+        o.disconnect()
       }
     },
     { rootMargin: '0px 0px 200px 0px' },
   )
 
-  observer.observe(el)
-  return observer
+  obs.observe(el)
+  return obs
 }
 
-export const setupLazyImage = (el: HTMLImageElement, src: string): (() => void) => {
-  const lazyEl = el as LazyImageEl
+export const setupLazyImage = (el: HTMLImageElement, src: string) => {
+  const lazy = el as LazyEl
   if (!src) return () => {}
 
-  if (
-    lazyEl.complete &&
-    lazyEl.naturalWidth > 0 &&
-    (lazyEl.currentSrc === src || lazyEl.src === src)
-  ) {
-    schedule(() => setLoadedStyles(lazyEl))
+  if (lazy.complete && lazy.naturalWidth > 0 && (lazy.currentSrc === src || lazy.src === src)) {
+    schedule(() => setLoaded(lazy))
     return () => {}
   }
 
-  setLoadingStyles(lazyEl)
+  setLoading(lazy)
 
-  const onLoad = () => setLoadedStyles(lazyEl)
-  const loadImage = () => {
-    if (lazyEl.src !== src) lazyEl.src = src
+  const onLoad = () => setLoaded(lazy)
+  const load = () => {
+    if (lazy.src !== src) lazy.src = src
   }
 
-  lazyEl.addEventListener('load', onLoad, { once: true })
-
-  const observer = createObserver(lazyEl, loadImage)
+  lazy.addEventListener('load', onLoad, { once: true })
+  const obs = createObs(lazy, load)
 
   return () => {
-    observer?.disconnect()
-    lazyEl.removeEventListener('load', onLoad)
+    obs?.disconnect()
+    lazy.removeEventListener('load', onLoad)
   }
 }
 
-const resolveLazySrc = (el: LazyImageEl, binding: { value: unknown }) => {
-  if (typeof binding.value === 'string' && binding.value.trim()) {
-    return binding.value
-  }
-  const dataSrc = el.getAttribute('data-src')
-  return dataSrc ? dataSrc.trim() : ''
+const getSrc = (el: LazyEl, binding: { value: unknown }) => {
+  if (typeof binding.value === 'string' && binding.value.trim()) return binding.value
+  const ds = el.getAttribute('data-src')
+  return ds ? ds.trim() : ''
 }
 
-export const vLazy: Directive<LazyImageEl, string | boolean> = {
+export const vLazy: Directive<LazyEl, string | boolean> = {
   mounted(el, binding) {
-    const src = resolveLazySrc(el, binding)
-    if (!src) return
-
-    el.__vLazyCleanup = setupLazyImage(el, src)
+    const src = getSrc(el, binding)
+    if (src) el.__cleanup = setupLazyImage(el, src)
   },
   updated(el, binding) {
     if (binding.value === binding.oldValue) return
-    const src = resolveLazySrc(el, binding)
+    const src = getSrc(el, binding)
     if (!src) return
-
-    if (el.__vLazyCleanup) {
-      el.__vLazyCleanup()
-    }
-    el.__vLazyCleanup = setupLazyImage(el, src)
+    el.__cleanup?.()
+    el.__cleanup = setupLazyImage(el, src)
   },
   unmounted(el) {
-    if (el.__vLazyCleanup) {
-      el.__vLazyCleanup()
-    }
+    el.__cleanup?.()
   },
 }

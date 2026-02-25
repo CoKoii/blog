@@ -1,21 +1,19 @@
 <script setup lang="ts">
-import { watch, onUnmounted } from 'vue'
 import { useLayoutStore } from '@/stores/layout'
-const layoutStore = useLayoutStore()
-const preventDefault = (e: Event) => {
-  e.preventDefault()
-}
+import { onUnmounted, watch } from 'vue'
+
+const store = useLayoutStore()
+const prevent = (e: Event) => e.preventDefault()
 
 watch(
-  () => layoutStore.isMobileSideBarOpen,
-  (newVal) => {
+  () => store.isMobileSideBarOpen,
+  (open) => {
     if (typeof document === 'undefined') return
-    if (newVal) {
-      document.body.style.overflow = 'hidden'
-      document.addEventListener('touchmove', preventDefault, { passive: false })
+    document.body.style.overflow = open ? 'hidden' : ''
+    if (open) {
+      document.addEventListener('touchmove', prevent, { passive: false })
     } else {
-      document.body.style.overflow = ''
-      document.removeEventListener('touchmove', preventDefault)
+      document.removeEventListener('touchmove', prevent)
     }
   },
   { immediate: true },
@@ -24,17 +22,13 @@ watch(
 onUnmounted(() => {
   if (typeof document === 'undefined') return
   document.body.style.overflow = ''
-  document.removeEventListener('touchmove', preventDefault)
+  document.removeEventListener('touchmove', prevent)
 })
 </script>
 
 <template>
   <Transition name="fade">
-    <div
-      class="Mask"
-      v-if="layoutStore.isMobileSideBarOpen"
-      @click="layoutStore.toggleSideBar()"
-    ></div>
+    <div class="Mask" v-if="store.isMobileSideBarOpen" @click="store.toggleSideBar()"></div>
   </Transition>
 </template>
 

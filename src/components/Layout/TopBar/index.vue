@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-
 import Search from '@/components/Search/Search.vue'
-import { Dropdown } from 'ant-design-vue'
-import { useLayoutStore } from '@/stores/layout'
 import { brandName } from '@/config'
-const layoutStore = useLayoutStore()
+import { useLayoutStore } from '@/stores/layout'
+import { Icon } from '@iconify/vue'
+import { Dropdown } from 'ant-design-vue'
+
+const store = useLayoutStore()
 </script>
 
 <template>
   <div class="TopBar">
     <div class="title">
-      <div class="icon" @click="layoutStore.toggleSideBar">
+      <div class="icon" @click="store.toggleSideBar">
         <Icon icon="simple-line-icons:menu" />
       </div>
       <router-link to="/">

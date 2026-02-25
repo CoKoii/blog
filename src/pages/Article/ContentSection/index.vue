@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-import type { Component } from 'vue'
 import GiscusComments from '@/components/Comments/GiscusComments.vue'
 import { isGiscusReady } from '@/config'
+import { Icon } from '@iconify/vue'
+import type { Component } from 'vue'
 import type { TocItem } from '../types'
 
 const props = defineProps<{
@@ -40,9 +40,8 @@ const props = defineProps<{
             ]"
             @click.prevent="props.onScrollToHeading(item.id)"
             :href="`#${item.id}`"
+            >{{ item.text }}</a
           >
-            {{ item.text }}
-          </a>
         </nav>
       </div>
     </aside>

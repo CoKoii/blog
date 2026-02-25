@@ -25,7 +25,7 @@ const meta = computed(() => {
       <a
         class="pill"
         title="Open Source"
-        href="https://github.com/CoKoii/blog"
+        :href="`${ossData.profileUrl}/blog`"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -48,12 +48,7 @@ const meta = computed(() => {
     </div>
 
     <div class="bottom">
-      <a
-        class="cta"
-        :href="ossData.profileUrl || 'https://github.com/CoKoii'"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a class="cta" :href="ossData.profileUrl" target="_blank" rel="noopener noreferrer">
         查看我的作品
         <Icon class="arrow" icon="lucide:arrow-right" />
       </a>
