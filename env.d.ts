@@ -12,6 +12,11 @@ declare module 'virtual:posts-meta' {
   export const postsMeta: PostMeta[]
 }
 
+declare module 'virtual:search-index' {
+  import type { SearchIndex } from '@/types/search'
+  export const searchIndex: SearchIndex
+}
+
 declare module '*.json' {
   const value: unknown
   export default value
