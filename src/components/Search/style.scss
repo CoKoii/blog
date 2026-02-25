@@ -149,6 +149,25 @@
   overflow-y: auto;
   min-height: 220px;
   max-height: min(60vh, 560px);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-full);
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
+  }
 }
 
 .SearchState {
@@ -175,15 +194,17 @@
   cursor: pointer;
   border: var(--border-width-1) solid transparent;
   transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease;
+    background-color 0.15s ease,
+    border-color 0.15s ease;
 
   &:hover,
   &.active {
-    background: var(--color-bg-soft);
-    border-color: rgba(59, 130, 246, 0.2);
-    transform: translateY(-1px);
+    background: var(--color-accent-blue-soft);
+    border-color: var(--color-accent-blue-22);
+  }
+
+  &:active {
+    background: var(--color-bg-hover);
   }
 
   .title {
@@ -213,21 +234,50 @@
   }
 
   mark {
-    background: rgba(59, 130, 246, 0.14);
-    color: inherit;
+    background: var(--color-accent-blue-soft);
+    color: var(--color-accent-blue-600);
+    font-weight: 500;
     border-radius: var(--radius-4px);
     padding: 0 var(--space-2px);
   }
 }
 
-.search-panel-enter-active,
-.search-panel-leave-active {
-  transition: opacity 0.2s ease;
+.search-panel-enter-active {
+  transition: opacity 0.25s ease;
+
+  .SearchDialog {
+    transition:
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.25s ease;
+  }
 }
 
-.search-panel-enter-from,
+.search-panel-leave-active {
+  transition: opacity 0.18s ease;
+
+  .SearchDialog {
+    transition:
+      transform 0.18s ease,
+      opacity 0.18s ease;
+  }
+}
+
+.search-panel-enter-from {
+  opacity: 0;
+
+  .SearchDialog {
+    opacity: 0;
+    transform: scale(0.96) translateY(-10px);
+  }
+}
+
 .search-panel-leave-to {
   opacity: 0;
+
+  .SearchDialog {
+    opacity: 0;
+    transform: scale(0.98) translateY(6px);
+  }
 }
 
 @media (max-width: 768px) {

@@ -44,7 +44,16 @@ const helperText = computed(() => {
 
 const lockBodyScroll = (locked: boolean) => {
   if (typeof document === 'undefined') return
-  document.body.style.overflow = locked ? 'hidden' : ''
+  const el = document.documentElement
+  if (locked) {
+    // 补偿真实占位滚动条宽度（Windows 等场景），overlay 滚动条宽度为 0 无需补偿
+    const scrollbarWidth = window.innerWidth - el.clientWidth
+    el.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : ''
+    el.style.overflow = 'hidden'
+  } else {
+    el.style.overflow = ''
+    el.style.paddingRight = ''
+  }
 }
 
 const focusInput = () => {
@@ -105,7 +114,10 @@ const isTextInputElement = (target: EventTarget | null): boolean => {
   if (!(target instanceof HTMLElement)) return false
   const tagName = target.tagName
   return (
-    tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT' || target.isContentEditable
+    tagName === 'INPUT' ||
+    tagName === 'TEXTAREA' ||
+    tagName === 'SELECT' ||
+    target.isContentEditable
   )
 }
 
@@ -175,11 +187,15 @@ watch(activeIndex, () => {
 })
 
 watch(isOpen, (opened) => {
-  lockBodyScroll(opened)
   if (opened) {
+    lockBodyScroll(true)
     activeIndex.value = 0
   }
 })
+
+const onSearchPanelAfterLeave = () => {
+  lockBodyScroll(false)
+}
 
 onMounted(() => {
   window.addEventListener('keydown', handleGlobalKeydown)
@@ -203,7 +219,7 @@ onBeforeUnmount(() => {
   </button>
 
   <Teleport to="body">
-    <Transition name="search-panel">
+    <Transition name="search-panel" @after-leave="onSearchPanelAfterLeave">
       <div v-if="isOpen" class="SearchOverlay" @click.self="closeSearch()">
         <section class="SearchDialog" role="dialog" aria-modal="true" aria-label="站内搜索">
           <div class="SearchDialogInput">
@@ -233,7 +249,9 @@ onBeforeUnmount(() => {
             <div v-else-if="shouldShowEmptyState" class="SearchState">
               没有找到匹配文章，换个关键词试试
             </div>
-            <div v-else-if="!keywordValue" class="SearchState">输入关键词后开始搜索，支持标题与正文。</div>
+            <div v-else-if="!keywordValue" class="SearchState">
+              输入关键词后开始搜索，支持标题与正文。
+            </div>
             <ul v-else ref="listRef" class="SearchList" role="listbox" aria-label="搜索结果">
               <li
                 v-for="(item, index) in results"
@@ -248,7 +266,10 @@ onBeforeUnmount(() => {
               >
                 <p class="title">
                   <template
-                    v-for="(segment, segmentIndex) in splitHighlightSegments(item.title, keywordValue)"
+                    v-for="(segment, segmentIndex) in splitHighlightSegments(
+                      item.title,
+                      keywordValue,
+                    )"
                     :key="`${item.id}-title-${segmentIndex}`"
                   >
                     <mark v-if="segment.match">{{ segment.text }}</mark>
@@ -258,7 +279,10 @@ onBeforeUnmount(() => {
 
                 <p class="snippet">
                   <template
-                    v-for="(segment, segmentIndex) in splitHighlightSegments(item.snippet, keywordValue)"
+                    v-for="(segment, segmentIndex) in splitHighlightSegments(
+                      item.snippet,
+                      keywordValue,
+                    )"
                     :key="`${item.id}-snippet-${segmentIndex}`"
                   >
                     <mark v-if="segment.match">{{ segment.text }}</mark>
