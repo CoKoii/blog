@@ -226,7 +226,7 @@ const createSearchDocuments = (posts: ParsedPostEntry[]): SearchDocument[] => {
       category: post.category,
       categorySlug: post.categorySlug,
       slug: post.slug,
-      url: buildArticlePath(post.category, post.slug),
+      url: `/article/${post.categorySlug}/${post.slug}`,
       description,
       content: `${description} ${content}`.trim().slice(0, MAX_SEARCH_CONTENT_LENGTH),
       tags,
