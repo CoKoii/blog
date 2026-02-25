@@ -12,6 +12,14 @@ import {
 } from './search'
 
 const router = useRouter()
+const RESULT_LIMIT = 12
+const SCROLL_EDGE_GAP = 8
+
+const scrollLockState = {
+  locked: false,
+  originalOverflow: '',
+  originalPaddingRight: '',
+}
 
 const isOpen = ref(false)
 const isLoading = ref(false)
@@ -19,14 +27,14 @@ const isIndexReady = ref(false)
 const keyword = ref('')
 const activeIndex = ref(0)
 const inputRef = ref<HTMLInputElement | null>(null)
-const listRef = ref<HTMLElement | null>(null)
+const listBodyRef = ref<HTMLElement | null>(null)
 const preparedSearchIndex = shallowRef<PreparedSearchIndex>(createEmptyPreparedSearchIndex())
 
 const keywordValue = computed(() => keyword.value.trim())
 
 const results = computed<SearchResult[]>(() => {
   if (!keywordValue.value || !preparedSearchIndex.value.documents.length) return []
-  return searchDocuments(keywordValue.value, preparedSearchIndex.value, 12)
+  return searchDocuments(keywordValue.value, preparedSearchIndex.value, RESULT_LIMIT)
 })
 
 const shouldShowEmptyState = computed(
@@ -35,32 +43,44 @@ const shouldShowEmptyState = computed(
 
 const helperText = computed(() => {
   if (isLoading.value) return '正在构建搜索索引...'
-  if (!keywordValue.value) {
-    if (!isIndexReady.value) return '按 / 快速打开搜索，支持标题和正文内容检索'
-    return `已收录 ${preparedSearchIndex.value.documents.length} 篇文章`
-  }
+  if (!keywordValue.value)
+    return isIndexReady.value
+      ? `已收录 ${preparedSearchIndex.value.documents.length} 篇文章`
+      : '按 / 快速打开搜索，支持标题和正文内容检索'
   return `找到 ${results.value.length} 条结果`
 })
 
-const lockBodyScroll = (locked: boolean) => {
+const applyScrollLockStyles = () => {
   if (typeof document === 'undefined') return
-  const el = document.documentElement
-  if (locked) {
-    // 补偿真实占位滚动条宽度（Windows 等场景），overlay 滚动条宽度为 0 无需补偿
-    const scrollbarWidth = window.innerWidth - el.clientWidth
-    el.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : ''
-    el.style.overflow = 'hidden'
-  } else {
-    el.style.overflow = ''
-    el.style.paddingRight = ''
-  }
+  const html = document.documentElement
+  const scrollbarWidth = Math.max(window.innerWidth - html.clientWidth, 0)
+  html.style.overflow = 'hidden'
+  html.style.paddingRight =
+    scrollbarWidth > 0 ? `${scrollbarWidth}px` : scrollLockState.originalPaddingRight
 }
 
-const focusInput = () => {
-  nextTick(() => {
-    inputRef.value?.focus()
-  })
+const lockBodyScroll = (locked: boolean) => {
+  if (typeof document === 'undefined') return
+  const html = document.documentElement
+
+  if (locked) {
+    if (!scrollLockState.locked) {
+      scrollLockState.originalOverflow = html.style.overflow
+      scrollLockState.originalPaddingRight = html.style.paddingRight
+      scrollLockState.locked = true
+    }
+    applyScrollLockStyles()
+    return
+  }
+
+  if (!scrollLockState.locked) return
+
+  html.style.overflow = scrollLockState.originalOverflow
+  html.style.paddingRight = scrollLockState.originalPaddingRight
+  scrollLockState.locked = false
 }
+
+const focusInput = () => nextTick(() => inputRef.value?.focus())
 
 const ensureSearchIndex = async () => {
   if (isIndexReady.value || isLoading.value) return
@@ -78,9 +98,8 @@ const ensureSearchIndex = async () => {
 }
 
 const openSearch = async () => {
-  if (!isOpen.value) {
-    isOpen.value = true
-  }
+  isOpen.value = true
+  activeIndex.value = 0
   await ensureSearchIndex()
   focusInput()
 }
@@ -97,11 +116,54 @@ const goToResult = async (item: SearchResult) => {
   await router.push(item.url)
 }
 
+const scrollActiveResultIntoView = (behavior: ScrollBehavior = 'smooth') => {
+  nextTick(() => {
+    const scrollContainer = listBodyRef.value
+    if (!scrollContainer) return
+    const activeNode = scrollContainer.querySelector<HTMLElement>(
+      `[data-result-index="${activeIndex.value}"]`,
+    )
+    if (!activeNode) return
+
+    const total = results.value.length
+    const maxScrollTop = scrollContainer.scrollHeight - scrollContainer.clientHeight
+    if (activeIndex.value <= 0) {
+      scrollContainer.scrollTo({ top: 0, behavior })
+      return
+    }
+    if (activeIndex.value >= total - 1) {
+      scrollContainer.scrollTo({ top: maxScrollTop, behavior })
+      return
+    }
+
+    const itemTop = activeNode.offsetTop - SCROLL_EDGE_GAP
+    const itemBottom = activeNode.offsetTop + activeNode.offsetHeight + SCROLL_EDGE_GAP
+    const visibleTop = scrollContainer.scrollTop
+    const visibleBottom = visibleTop + scrollContainer.clientHeight
+
+    if (itemTop < visibleTop) {
+      scrollContainer.scrollTo({
+        top: Math.max(itemTop, 0),
+        behavior,
+      })
+      return
+    }
+
+    if (itemBottom > visibleBottom) {
+      scrollContainer.scrollTo({
+        top: Math.min(itemBottom - scrollContainer.clientHeight, maxScrollTop),
+        behavior,
+      })
+    }
+  })
+}
+
 const activateResultByOffset = (offset: 1 | -1) => {
   const total = results.value.length
   if (!total) return
   const nextIndex = activeIndex.value + offset
   activeIndex.value = (nextIndex + total) % total
+  scrollActiveResultIntoView('smooth')
 }
 
 const goToActiveResult = () => {
@@ -111,13 +173,9 @@ const goToActiveResult = () => {
 }
 
 const isTextInputElement = (target: EventTarget | null): boolean => {
-  if (!(target instanceof HTMLElement)) return false
-  const tagName = target.tagName
   return (
-    tagName === 'INPUT' ||
-    tagName === 'TEXTAREA' ||
-    tagName === 'SELECT' ||
-    target.isContentEditable
+    target instanceof HTMLElement &&
+    (target.matches('input, textarea, select') || target.isContentEditable)
   )
 }
 
@@ -139,27 +197,24 @@ const handleGlobalKeydown = (event: KeyboardEvent) => {
 
   if (!isOpen.value) return
 
-  if (event.key === 'Escape') {
-    event.preventDefault()
-    closeSearch()
-    return
-  }
-
-  if (event.key === 'ArrowDown') {
-    event.preventDefault()
-    activateResultByOffset(1)
-    return
-  }
-
-  if (event.key === 'ArrowUp') {
-    event.preventDefault()
-    activateResultByOffset(-1)
-    return
-  }
-
-  if (event.key === 'Enter' && results.value.length) {
-    event.preventDefault()
-    goToActiveResult()
+  switch (event.key) {
+    case 'Escape':
+      event.preventDefault()
+      closeSearch()
+      break
+    case 'ArrowDown':
+      event.preventDefault()
+      activateResultByOffset(1)
+      break
+    case 'ArrowUp':
+      event.preventDefault()
+      activateResultByOffset(-1)
+      break
+    case 'Enter':
+      if (!results.value.length) break
+      event.preventDefault()
+      goToActiveResult()
+      break
   }
 }
 
@@ -168,42 +223,35 @@ watch(results, (nextResults) => {
     activeIndex.value = 0
     return
   }
-  if (activeIndex.value > nextResults.length - 1) {
-    activeIndex.value = 0
-  }
+  activeIndex.value = Math.min(activeIndex.value, nextResults.length - 1)
 })
 
 watch(keywordValue, () => {
   activeIndex.value = 0
 })
 
-watch(activeIndex, () => {
-  nextTick(() => {
-    const activeNode = listRef.value?.querySelector<HTMLElement>(
-      `[data-result-index="${activeIndex.value}"]`,
-    )
-    activeNode?.scrollIntoView({ block: 'nearest' })
-  })
-})
-
 watch(isOpen, (opened) => {
-  if (opened) {
-    lockBodyScroll(true)
-    activeIndex.value = 0
-  }
+  if (opened) lockBodyScroll(true)
 })
 
 const onSearchPanelAfterLeave = () => {
   lockBodyScroll(false)
 }
 
+const handleWindowResize = () => {
+  if (!isOpen.value || !scrollLockState.locked) return
+  applyScrollLockStyles()
+}
+
 onMounted(() => {
   window.addEventListener('keydown', handleGlobalKeydown)
+  window.addEventListener('resize', handleWindowResize)
 })
 
 onBeforeUnmount(() => {
   lockBodyScroll(false)
   window.removeEventListener('keydown', handleGlobalKeydown)
+  window.removeEventListener('resize', handleWindowResize)
 })
 </script>
 
@@ -244,7 +292,7 @@ onBeforeUnmount(() => {
             </p>
           </div>
 
-          <div class="SearchDialogBody">
+          <div ref="listBodyRef" class="SearchDialogBody">
             <div v-if="isLoading" class="SearchState">正在准备索引...</div>
             <div v-else-if="shouldShowEmptyState" class="SearchState">
               没有找到匹配文章，换个关键词试试
@@ -252,7 +300,7 @@ onBeforeUnmount(() => {
             <div v-else-if="!keywordValue" class="SearchState">
               输入关键词后开始搜索，支持标题与正文。
             </div>
-            <ul v-else ref="listRef" class="SearchList" role="listbox" aria-label="搜索结果">
+            <ul v-else class="SearchList" role="listbox" aria-label="搜索结果">
               <li
                 v-for="(item, index) in results"
                 :key="item.id"
