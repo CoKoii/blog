@@ -52,7 +52,7 @@
       "reactionsEnabled": true,
       "emitMetadata": false,
       "inputPosition": "top",
-      "theme": "https://cdn.jsdelivr.net/gh/CoKoii/blog@7507d69f0d22cf920d9fe45ac12b8b7d46d7a73a/public/giscus-custom.css",
+      "theme": "light",
       "lang": "zh-CN",
       "loading": "lazy"
     }
