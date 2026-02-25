@@ -9,21 +9,21 @@
   --color-accent-fg: #3b82f6;
   --color-accent-muted: rgba(59, 130, 246, 0.22);
   --color-accent-subtle: #f5f6fd;
-  
+
   /* 文字颜色 */
   --color-fg-default: #111827;
   --color-fg-muted: #6b7280;
   --color-fg-subtle: #9ca3af;
-  
+
   /* 背景色 */
   --color-canvas-default: #ffffff;
   --color-canvas-subtle: #f9fafb;
   --color-canvas-inset: #f3f4f6;
-  
+
   /* 边框 */
   --color-border-default: #f0f0f0;
   --color-border-muted: rgba(208, 208, 208, 0.38);
-  
+
   /* 按钮 */
   --color-btn-bg: #ffffff;
   --color-btn-border: #f0f0f0;
@@ -34,7 +34,7 @@
   --color-btn-active-bg: #f3f4f6;
   --color-btn-active-border: #d1d5db;
   --color-btn-selected-bg: #eff6ff;
-  
+
   /* 主色调按钮 */
   --color-btn-primary-bg: #3b82f6;
   --color-btn-primary-border: #3b82f6;
@@ -47,21 +47,21 @@
   --color-btn-primary-disabled-text: rgba(255, 255, 255, 0.5);
   --color-btn-primary-disabled-bg: rgba(59, 130, 246, 0.6);
   --color-btn-primary-disabled-border: rgba(59, 130, 246, 0.6);
-  
+
   /* 输入框 */
   --color-input-bg: #ffffff;
   --color-input-border: #f0f0f0;
   --color-input-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --color-input-contrast-bg: #f9fafb;
-  
+
   /* 链接 */
   --color-prettylights-syntax-markup-inserted-text: #22c55e;
   --color-prettylights-syntax-markup-inserted-bg: rgba(34, 197, 94, 0.15);
-  
+
   /* 圆角 */
   --border-radius: 12px;
   --border-radius-sharp: 8px;
-  
+
   /* 间距 */
   --base-size-4: 4px;
   --base-size-8: 8px;
@@ -293,7 +293,7 @@ main.gsc-main {
   .gsc-comment {
     border-radius: 10px;
   }
-  
+
   .gsc-comment-content {
     font-size: 13px;
   }
