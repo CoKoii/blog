@@ -1,3 +1,4 @@
+import { setupLazyImage } from '@/directives/vLazy'
 import { Icon } from '@iconify/vue'
 import { createApp, defineComponent, h, onMounted, onUnmounted, ref } from 'vue'
 import type { TocItem } from '../types'
@@ -194,6 +195,23 @@ export const useArticleToc = () => {
       })
   }
 
+  const enhanceImages = () => {
+    if (!canUseDOM) return
+    Array.from(document.querySelectorAll('.markdown-content img'))
+      .filter(
+        (img): img is HTMLImageElement =>
+          img instanceof HTMLImageElement && !img.dataset.lazyEnhanced,
+      )
+      .forEach((img) => {
+        const originalSrc = img.src || img.getAttribute('src')
+        if (!originalSrc) return
+        img.dataset.lazyEnhanced = 'true'
+        img.setAttribute('data-original-src', originalSrc)
+        img.removeAttribute('src')
+        setupLazyImage(img, originalSrc)
+      })
+  }
+
   const resetTocState = () => {
     if (canUseDOM && raf) {
       cancelAnimationFrame(raf)
@@ -206,6 +224,7 @@ export const useArticleToc = () => {
   }
 
   const refreshArticleDecorations = () => {
+    enhanceImages()
     enhanceCode()
     refreshToc()
   }
