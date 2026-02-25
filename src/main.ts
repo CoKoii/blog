@@ -1,10 +1,12 @@
 import { preloadPostContent, resolvePostIdBySlug } from '@/utils/posts'
+import NProgress from 'nprogress'
 import { createPinia } from 'pinia'
 import { ViteSSG } from 'vite-ssg'
 import App from './App.vue'
 import { vLazy } from './directives/vLazy'
 import routes from './router'
 import { consumeScroll, queueScroll } from './router/scroll'
+import 'nprogress/nprogress.css'
 import './styles/reset.scss'
 
 const RELOAD_KEY = '__router_import_reload_path__'
@@ -55,6 +57,12 @@ export const createApp = ViteSSG(
 
     if (!isClient) return
 
+    NProgress.configure({
+      showSpinner: false,
+      minimum: 0.1,
+      trickleSpeed: 120,
+    })
+
     const currentPath = getCurrentPath()
     const normalized = buildPath(currentPath)
     if (normalized !== currentPath) {
@@ -80,13 +88,25 @@ export const createApp = ViteSSG(
       handleImportError(event)
     })
 
+    router.beforeEach((to, from) => {
+      const [toPathNoHash] = to.fullPath.split('#')
+      const [fromPathNoHash] = from.fullPath.split('#')
+      if (from.name && toPathNoHash !== fromPathNoHash) {
+        NProgress.start()
+      }
+      return true
+    })
+
     router.onError((error, to) => {
+      NProgress.done()
       if (isImportError(error)) {
         handleImportError(error, to?.fullPath || getCurrentPath())
       }
     })
 
     router.afterEach((to, from) => {
+      NProgress.done()
+
       if (sessionStorage.getItem(RELOAD_KEY) === buildPath(to.fullPath)) {
         sessionStorage.removeItem(RELOAD_KEY)
       }
