@@ -32,6 +32,9 @@ export default defineConfig(async () => {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
     },
+    build: {
+      cssCodeSplit: false,
+    },
     ssgOptions: {
       includedRoutes(paths: string[]) {
         return paths.flatMap((path) => {

@@ -63,10 +63,28 @@ ${urls}
 `
 }
 
-const buildRobots = () => `User-agent: *
-Allow: /
-Sitemap: ${siteUrl}/sitemap.xml
-`
+const buildRobots = () => {
+  const lines = [
+    'User-agent: *',
+    'Allow: /',
+    '',
+    '# Allow search indexing but opt out of known AI training crawlers.',
+    'User-agent: Google-Extended',
+    'Disallow: /',
+    '',
+    'User-agent: GPTBot',
+    'Disallow: /',
+    '',
+    'User-agent: ClaudeBot',
+    'Disallow: /',
+    '',
+    'User-agent: CCBot',
+    'Disallow: /',
+    '',
+    `Sitemap: ${siteUrl}/sitemap.xml`,
+  ]
+  return `${lines.join('\n')}\n`
+}
 
 const escapeXml = (value) =>
   String(value)
