@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { getPostStats } from '@/composables/usePost'
 import { statsConfig } from '@/config'
-import { getAllPosts } from '@/utils/posts'
+import { getAllPosts, getPostStats } from '@/utils/posts'
 import { Icon } from '@iconify/vue'
 import { computed, onMounted, ref } from 'vue'
 

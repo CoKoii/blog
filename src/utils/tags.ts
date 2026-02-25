@@ -1,33 +1,22 @@
-import { pinyin } from 'pinyin-pro'
 import { siteConfig } from '@/config'
+import { pinyin } from 'pinyin-pro'
 
-export type TagEntry = {
-  label: string
-  slug: string
-}
-
-export type TagTab = {
-  label: string
-  value: string
-}
+export type TagEntry = { label: string; slug: string }
+export type TagTab = { label: string; value: string }
 
 export const ALL_TAG_SLUG = 'all'
 export const ALL_TAG_LABEL = 'All'
 
-const configuredTagLabels = Object.keys(siteConfig.tagMeta || {})
-  .map((label) => label.trim())
+const labels = Object.keys(siteConfig.tagMeta || {})
+  .map((l) => l.trim())
   .filter(Boolean)
 
-const toPinyinSlug = (text: string): string =>
+const toSlug = (text: string): string =>
   (text.match(/[\u4e00-\u9fa5]+|[^\u4e00-\u9fa5]+/g) || [])
-    .map((segment) =>
-      /[\u4e00-\u9fa5]/.test(segment)
-        ? pinyin(segment, {
-          pattern: 'pinyin',
-          toneType: 'none',
-          type: 'array',
-        }).join('')
-        : segment.replace(/[^a-zA-Z0-9]/g, ''),
+    .map((s) =>
+      /[\u4e00-\u9fa5]/.test(s)
+        ? pinyin(s, { pattern: 'pinyin', toneType: 'none', type: 'array' }).join('')
+        : s.replace(/[^a-zA-Z0-9]/g, ''),
     )
     .filter(Boolean)
     .join('-')
@@ -35,50 +24,33 @@ const toPinyinSlug = (text: string): string =>
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
 
-const buildTagEntries = (): TagEntry[] => {
-  const seen = new Set<string>()
-  return configuredTagLabels.reduce<TagEntry[]>((acc, label) => {
-    const slug = toPinyinSlug(label)
-    if (!slug || slug === ALL_TAG_SLUG || seen.has(slug)) return acc
-    seen.add(slug)
+const entries = labels.reduce<TagEntry[]>((acc, label) => {
+  const slug = toSlug(label)
+  if (slug && slug !== ALL_TAG_SLUG && !acc.some((e) => e.slug === slug)) {
     acc.push({ label, slug })
-    return acc
-  }, [])
-}
+  }
+  return acc
+}, [])
 
-const tagEntriesCache = buildTagEntries()
-const tagSlugSetCache = new Set(tagEntriesCache.map((tag) => tag.slug))
-const tagEntryByLabel = new Map(tagEntriesCache.map((entry) => [entry.label, entry] as const))
+const slugs = new Set(entries.map((e) => e.slug))
+const byLabel = new Map(entries.map((e) => [e.label, e]))
 
-const buildTagTabs = (): TagTab[] => {
-  const tabs = configuredTagLabels.reduce<TagTab[]>((acc, label) => {
+const tabs = (() => {
+  const list = labels.reduce<TagTab[]>((acc, label) => {
     if (label === ALL_TAG_SLUG) {
       acc.push({ label: ALL_TAG_LABEL, value: ALL_TAG_SLUG })
-      return acc
-    }
-
-    const entry = tagEntryByLabel.get(label)
-    if (entry) {
-      acc.push({ label: entry.label, value: entry.slug })
+    } else {
+      const e = byLabel.get(label)
+      if (e) acc.push({ label: e.label, value: e.slug })
     }
     return acc
   }, [])
-
-  if (!tabs.some((tab) => tab.value === ALL_TAG_SLUG)) {
-    tabs.unshift({ label: ALL_TAG_LABEL, value: ALL_TAG_SLUG })
+  if (!list.some((t) => t.value === ALL_TAG_SLUG)) {
+    list.unshift({ label: ALL_TAG_LABEL, value: ALL_TAG_SLUG })
   }
+  return list
+})()
 
-  return tabs
-}
-
-const tagTabsCache = buildTagTabs()
-
-export const getTagEntries = (): TagEntry[] => {
-  return tagEntriesCache.map((entry) => ({ ...entry }))
-}
-
-export const getTagTabs = (): TagTab[] => {
-  return tagTabsCache.map((tab) => ({ ...tab }))
-}
-
-export const getTagSlugSet = (): Set<string> => new Set(tagSlugSetCache)
+export const getTagEntries = (): TagEntry[] => entries.map((e) => ({ ...e }))
+export const getTagTabs = (): TagTab[] => tabs.map((t) => ({ ...t }))
+export const getTagSlugSet = (): Set<string> => new Set(slugs)

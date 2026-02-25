@@ -1,5 +1,4 @@
-import { formatPostList } from '@/composables/usePost'
-import { getAllPosts } from '@/utils/posts'
+import { formatPostList, getAllPosts } from '@/utils/posts'
 import { ALL_TAG_SLUG, getTagTabs } from '@/utils/tags'
 import { computed, ref } from 'vue'
 import type { Project, Resource } from './types'
@@ -22,31 +21,27 @@ export const useCenterCardData = () => {
     },
   ])
 
-  const activeTab = ref(ALL_TAG_SLUG)
-
-  const tabs = getTagTabs()
-
-  const allPosts = getAllPosts()
-
-  const filteredPosts = computed(() => {
-    if (activeTab.value === ALL_TAG_SLUG) {
-      return allPosts
-    }
-    return allPosts.filter((post) => post.categorySlug === activeTab.value)
-  })
-
-  const latestPosts = computed(() => formatPostList(filteredPosts.value, 2))
-
   const groupedResources: Resource[] = [
     { title: 'Weekly Reads', count: 12, icon: 'lucide:book-open' },
     { title: 'Design Assets', count: 45, icon: 'lucide:palette' },
     { title: 'Code Snippets', count: 128, icon: 'lucide:scissors' },
   ]
 
+  const activeTab = ref(ALL_TAG_SLUG)
+  const allPosts = getAllPosts()
+
+  const latestPosts = computed(() => {
+    const posts =
+      activeTab.value === ALL_TAG_SLUG
+        ? allPosts
+        : allPosts.filter((p) => p.categorySlug === activeTab.value)
+    return formatPostList(posts, 2)
+  })
+
   return {
     projects,
     activeTab,
-    tabs,
+    tabs: getTagTabs(),
     latestPosts,
     groupedResources,
   }

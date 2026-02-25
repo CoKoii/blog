@@ -13,13 +13,10 @@ import {
 
 const router = useRouter()
 const RESULT_LIMIT = 12
-const SCROLL_EDGE_GAP = 8
+const GAP = 8
 
-const scrollLockState = {
-  locked: false,
-  originalOverflow: '',
-  originalPaddingRight: '',
-}
+let originalOverflow = ''
+let originalPadding = ''
 
 const isOpen = ref(false)
 const isLoading = ref(false)
@@ -31,60 +28,41 @@ const listBodyRef = ref<HTMLElement | null>(null)
 const preparedSearchIndex = shallowRef<PreparedSearchIndex>(createEmptyPreparedSearchIndex())
 
 const keywordValue = computed(() => keyword.value.trim())
-
-const results = computed<SearchResult[]>(() => {
-  if (!keywordValue.value || !preparedSearchIndex.value.documents.length) return []
-  return searchDocuments(keywordValue.value, preparedSearchIndex.value, RESULT_LIMIT)
-})
-
+const results = computed<SearchResult[]>(() =>
+  keywordValue.value && preparedSearchIndex.value.docs.length
+    ? searchDocuments(keywordValue.value, preparedSearchIndex.value, RESULT_LIMIT)
+    : [],
+)
 const shouldShowEmptyState = computed(
-  () => Boolean(keywordValue.value) && !isLoading.value && results.value.length === 0,
+  () => Boolean(keywordValue.value) && !isLoading.value && !results.value.length,
 )
 
 const helperText = computed(() => {
   if (isLoading.value) return '正在构建搜索索引...'
   if (!keywordValue.value)
     return isIndexReady.value
-      ? `已收录 ${preparedSearchIndex.value.documents.length} 篇文章`
+      ? `已收录 ${preparedSearchIndex.value.docs.length} 篇文章`
       : '按 / 快速打开搜索，支持标题和正文内容检索'
   return `找到 ${results.value.length} 条结果`
 })
 
-const applyScrollLockStyles = () => {
+const lockScroll = (lock: boolean) => {
   if (typeof document === 'undefined') return
   const html = document.documentElement
-  const scrollbarWidth = Math.max(window.innerWidth - html.clientWidth, 0)
-  html.style.overflow = 'hidden'
-  html.style.paddingRight =
-    scrollbarWidth > 0 ? `${scrollbarWidth}px` : scrollLockState.originalPaddingRight
-}
-
-const lockBodyScroll = (locked: boolean) => {
-  if (typeof document === 'undefined') return
-  const html = document.documentElement
-
-  if (locked) {
-    if (!scrollLockState.locked) {
-      scrollLockState.originalOverflow = html.style.overflow
-      scrollLockState.originalPaddingRight = html.style.paddingRight
-      scrollLockState.locked = true
-    }
-    applyScrollLockStyles()
-    return
+  if (lock) {
+    originalOverflow = html.style.overflow
+    originalPadding = html.style.paddingRight
+    const scrollbarWidth = Math.max(window.innerWidth - html.clientWidth, 0)
+    html.style.overflow = 'hidden'
+    html.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : originalPadding
+  } else {
+    html.style.overflow = originalOverflow
+    html.style.paddingRight = originalPadding
   }
-
-  if (!scrollLockState.locked) return
-
-  html.style.overflow = scrollLockState.originalOverflow
-  html.style.paddingRight = scrollLockState.originalPaddingRight
-  scrollLockState.locked = false
 }
 
-const focusInput = () => nextTick(() => inputRef.value?.focus())
-
-const ensureSearchIndex = async () => {
+const ensureIndex = async () => {
   if (isIndexReady.value || isLoading.value) return
-
   isLoading.value = true
   try {
     const { searchIndex } = await import('virtual:search-index')
@@ -100,15 +78,13 @@ const ensureSearchIndex = async () => {
 const openSearch = async () => {
   isOpen.value = true
   activeIndex.value = 0
-  await ensureSearchIndex()
-  focusInput()
+  await ensureIndex()
+  nextTick(() => inputRef.value?.focus())
 }
 
-const closeSearch = (clearKeyword = false) => {
+const closeSearch = (clear = false) => {
   isOpen.value = false
-  if (clearKeyword) {
-    keyword.value = ''
-  }
+  if (clear) keyword.value = ''
 }
 
 const goToResult = async (item: SearchResult) => {
@@ -116,142 +92,94 @@ const goToResult = async (item: SearchResult) => {
   await router.push(item.url)
 }
 
-const scrollActiveResultIntoView = (behavior: ScrollBehavior = 'smooth') => {
+const scrollIntoView = (behavior: ScrollBehavior = 'smooth') => {
   nextTick(() => {
-    const scrollContainer = listBodyRef.value
-    if (!scrollContainer) return
-    const activeNode = scrollContainer.querySelector<HTMLElement>(
-      `[data-result-index="${activeIndex.value}"]`,
-    )
-    if (!activeNode) return
+    const container = listBodyRef.value
+    if (!container) return
+    const node = container.querySelector<HTMLElement>(`[data-result-index="${activeIndex.value}"]`)
+    if (!node) return
 
     const total = results.value.length
-    const maxScrollTop = scrollContainer.scrollHeight - scrollContainer.clientHeight
+    const maxScroll = container.scrollHeight - container.clientHeight
+
     if (activeIndex.value <= 0) {
-      scrollContainer.scrollTo({ top: 0, behavior })
-      return
-    }
-    if (activeIndex.value >= total - 1) {
-      scrollContainer.scrollTo({ top: maxScrollTop, behavior })
-      return
-    }
+      container.scrollTo({ top: 0, behavior })
+    } else if (activeIndex.value >= total - 1) {
+      container.scrollTo({ top: maxScroll, behavior })
+    } else {
+      const itemTop = node.offsetTop - GAP
+      const itemBottom = itemTop + node.offsetHeight + GAP * 2
+      const visibleTop = container.scrollTop
+      const visibleBottom = visibleTop + container.clientHeight
 
-    const itemTop = activeNode.offsetTop - SCROLL_EDGE_GAP
-    const itemBottom = activeNode.offsetTop + activeNode.offsetHeight + SCROLL_EDGE_GAP
-    const visibleTop = scrollContainer.scrollTop
-    const visibleBottom = visibleTop + scrollContainer.clientHeight
-
-    if (itemTop < visibleTop) {
-      scrollContainer.scrollTo({
-        top: Math.max(itemTop, 0),
-        behavior,
-      })
-      return
-    }
-
-    if (itemBottom > visibleBottom) {
-      scrollContainer.scrollTo({
-        top: Math.min(itemBottom - scrollContainer.clientHeight, maxScrollTop),
-        behavior,
-      })
+      if (itemTop < visibleTop) {
+        container.scrollTo({ top: Math.max(itemTop, 0), behavior })
+      } else if (itemBottom > visibleBottom) {
+        container.scrollTo({
+          top: Math.min(itemBottom - container.clientHeight, maxScroll),
+          behavior,
+        })
+      }
     }
   })
 }
 
-const activateResultByOffset = (offset: 1 | -1) => {
+const moveActive = (offset: 1 | -1) => {
   const total = results.value.length
   if (!total) return
-  const nextIndex = activeIndex.value + offset
-  activeIndex.value = (nextIndex + total) % total
-  scrollActiveResultIntoView('smooth')
+  activeIndex.value = (activeIndex.value + offset + total) % total
+  scrollIntoView('smooth')
 }
 
-const goToActiveResult = () => {
-  const current = results.value[activeIndex.value]
-  if (!current) return
-  void goToResult(current)
+const goToActive = () => {
+  const item = results.value[activeIndex.value]
+  if (item) void goToResult(item)
 }
 
-const isTextInputElement = (target: EventTarget | null): boolean => {
-  return (
-    target instanceof HTMLElement &&
-    (target.matches('input, textarea, select') || target.isContentEditable)
-  )
-}
+const isInput = (target: EventTarget | null): boolean =>
+  target instanceof HTMLElement &&
+  (target.matches('input, textarea, select') || target.isContentEditable)
 
-const handleGlobalKeydown = (event: KeyboardEvent) => {
-  if (event.defaultPrevented || event.isComposing) return
+const handleKeydown = (e: KeyboardEvent) => {
+  if (e.defaultPrevented || e.isComposing) return
 
-  const isSlashKey = event.key === '/'
-  if (
-    isSlashKey &&
-    !event.metaKey &&
-    !event.ctrlKey &&
-    !event.altKey &&
-    !isTextInputElement(event.target)
-  ) {
-    event.preventDefault()
+  if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey && !isInput(e.target)) {
+    e.preventDefault()
     void openSearch()
     return
   }
 
   if (!isOpen.value) return
 
-  switch (event.key) {
-    case 'Escape':
-      event.preventDefault()
-      closeSearch()
-      break
-    case 'ArrowDown':
-      event.preventDefault()
-      activateResultByOffset(1)
-      break
-    case 'ArrowUp':
-      event.preventDefault()
-      activateResultByOffset(-1)
-      break
-    case 'Enter':
-      if (!results.value.length) break
-      event.preventDefault()
-      goToActiveResult()
-      break
+  const actions: Record<string, () => void> = {
+    Escape: () => closeSearch(),
+    ArrowDown: () => moveActive(1),
+    ArrowUp: () => moveActive(-1),
+    Enter: () => results.value.length && goToActive(),
+  }
+
+  const action = actions[e.key]
+  if (action) {
+    e.preventDefault()
+    action()
   }
 }
 
-watch(results, (nextResults) => {
-  if (!nextResults.length) {
-    activeIndex.value = 0
-    return
-  }
-  activeIndex.value = Math.min(activeIndex.value, nextResults.length - 1)
+watch(results, (list) => {
+  activeIndex.value = list.length ? Math.min(activeIndex.value, list.length - 1) : 0
 })
 
-watch(keywordValue, () => {
-  activeIndex.value = 0
-})
-
-watch(isOpen, (opened) => {
-  if (opened) lockBodyScroll(true)
-})
-
-const onSearchPanelAfterLeave = () => {
-  lockBodyScroll(false)
-}
-
-const handleWindowResize = () => {
-  if (!isOpen.value || !scrollLockState.locked) return
-  applyScrollLockStyles()
-}
+watch(keywordValue, () => (activeIndex.value = 0))
+watch(isOpen, (open) => open && lockScroll(true))
 
 onMounted(() => {
-  window.addEventListener('keydown', handleGlobalKeydown)
-  window.addEventListener('resize', handleWindowResize)
+  window.addEventListener('keydown', handleKeydown)
+  window.addEventListener('resize', () => isOpen.value && lockScroll(true))
 })
 
 onBeforeUnmount(() => {
-  lockBodyScroll(false)
-  window.removeEventListener('keydown', handleGlobalKeydown)
-  window.removeEventListener('resize', handleWindowResize)
+  lockScroll(false)
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -267,7 +195,7 @@ onBeforeUnmount(() => {
   </button>
 
   <Teleport to="body">
-    <Transition name="search-panel" @after-leave="onSearchPanelAfterLeave">
+    <Transition name="search-panel" @after-leave="lockScroll(false)">
       <div v-if="isOpen" class="SearchOverlay" @click.self="closeSearch()">
         <section class="SearchDialog" role="dialog" aria-modal="true" aria-label="站内搜索">
           <div class="SearchDialogInput">
@@ -314,11 +242,8 @@ onBeforeUnmount(() => {
               >
                 <p class="title">
                   <template
-                    v-for="(segment, segmentIndex) in splitHighlightSegments(
-                      item.title,
-                      keywordValue,
-                    )"
-                    :key="`${item.id}-title-${segmentIndex}`"
+                    v-for="(segment, si) in splitHighlightSegments(item.title, keywordValue)"
+                    :key="`${item.id}-t-${si}`"
                   >
                     <mark v-if="segment.match">{{ segment.text }}</mark>
                     <span v-else>{{ segment.text }}</span>
@@ -327,11 +252,8 @@ onBeforeUnmount(() => {
 
                 <p class="snippet">
                   <template
-                    v-for="(segment, segmentIndex) in splitHighlightSegments(
-                      item.snippet,
-                      keywordValue,
-                    )"
-                    :key="`${item.id}-snippet-${segmentIndex}`"
+                    v-for="(segment, si) in splitHighlightSegments(item.snippet, keywordValue)"
+                    :key="`${item.id}-s-${si}`"
                   >
                     <mark v-if="segment.match">{{ segment.text }}</mark>
                     <span v-else>{{ segment.text }}</span>

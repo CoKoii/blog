@@ -14,97 +14,83 @@ const emit = defineEmits<{
   'update:activeTab': [value: string]
 }>()
 
-const getTabValue = (tab: TabItem) => (typeof tab === 'string' ? tab : tab.value)
-const getTabLabel = (tab: TabItem) => (typeof tab === 'string' ? tab : tab.label)
+const getVal = (tab: TabItem) => (typeof tab === 'string' ? tab : tab.value)
+const getLbl = (tab: TabItem) => (typeof tab === 'string' ? tab : tab.label)
 
-const activeIndex = computed(() => {
-  const index = props.tabs.findIndex((tab) => getTabValue(tab) === props.activeTab)
-  return index === -1 ? 0 : index
+const activeIdx = computed(() => {
+  const i = props.tabs.findIndex((t) => getVal(t) === props.activeTab)
+  return i === -1 ? 0 : i
 })
 
-const tabsStyle = computed(() => ({
-  '--active-index': activeIndex.value,
-}))
-
 const tabsRef = ref<HTMLDivElement>()
-const tabButtons = ref<HTMLButtonElement[]>([])
-const tabsResizeObserver = ref<ResizeObserver | null>(null)
+const btns = ref<HTMLButtonElement[]>([])
+const observer = ref<ResizeObserver | null>(null)
 
-const setTabButtonRef = (el: Element | ComponentPublicInstance | null) => {
-  if (el && el instanceof HTMLButtonElement) {
-    tabButtons.value.push(el)
-  }
+const setBtnRef = (el: Element | ComponentPublicInstance | null) => {
+  if (el instanceof HTMLButtonElement) btns.value.push(el)
 }
 
-const centerActiveTab = async () => {
+const center = async () => {
   await nextTick()
-  const container = tabsRef.value
-  const button = tabButtons.value[activeIndex.value]
+  const cont = tabsRef.value
+  const btn = btns.value[activeIdx.value]
+  if (!cont || !btn) return
 
-  if (!container || !button) return
+  const cRect = cont.getBoundingClientRect()
+  const bRect = btn.getBoundingClientRect()
+  const pad = Number.parseFloat(getComputedStyle(cont).paddingLeft) || 0
+  const x = bRect.left - cRect.left - pad
+  const w = bRect.width
 
-  const containerRect = container.getBoundingClientRect()
-  const buttonRect = button.getBoundingClientRect()
-  const containerStyles = getComputedStyle(container)
-  const paddingLeft = Number.parseFloat(containerStyles.paddingLeft) || 0
-  const indicatorX = buttonRect.left - containerRect.left - paddingLeft
-  const indicatorWidth = buttonRect.width
+  cont.style.setProperty('--indicator-x', `${Math.max(0, x)}px`)
+  cont.style.setProperty('--indicator-width', `${w}px`)
 
-  container.style.setProperty('--indicator-x', `${Math.max(0, indicatorX)}px`)
-  container.style.setProperty('--indicator-width', `${indicatorWidth}px`)
-  const offset =
-    buttonRect.left + buttonRect.width / 2 - containerRect.left - containerRect.width / 2
-
-  container.scrollTo({
-    left: container.scrollLeft + offset,
-    behavior: 'smooth',
-  })
+  const offset = bRect.left + bRect.width / 2 - cRect.left - cRect.width / 2
+  cont.scrollTo({ left: cont.scrollLeft + offset, behavior: 'smooth' })
 }
 
-const setTab = (tab: TabItem) => {
-  emit('update:activeTab', getTabValue(tab))
-}
+const setTab = (tab: TabItem) => emit('update:activeTab', getVal(tab))
 
 onBeforeUpdate(() => {
-  tabButtons.value = []
+  btns.value = []
 })
 
 onMounted(() => {
-  centerActiveTab()
-  if (!tabsRef.value) return
-  tabsResizeObserver.value = new ResizeObserver(() => {
-    centerActiveTab()
-  })
-  tabsResizeObserver.value.observe(tabsRef.value)
+  center()
+  if (tabsRef.value) {
+    observer.value = new ResizeObserver(center)
+    observer.value.observe(tabsRef.value)
+  }
 })
 
 onBeforeUnmount(() => {
-  tabsResizeObserver.value?.disconnect()
-  tabsResizeObserver.value = null
+  observer.value?.disconnect()
+  observer.value = null
 })
 
-watch(() => props.activeTab, centerActiveTab)
-watch(
-  () => props.tabs,
-  () => centerActiveTab(),
-  { deep: true },
-)
+watch(() => props.activeTab, center)
+watch(() => props.tabs, center, { deep: true })
 </script>
 
 <template>
-  <div ref="tabsRef" class="tabs" :class="{ 'tabs--full': fullWidth }" :style="tabsStyle">
+  <div
+    ref="tabsRef"
+    class="tabs"
+    :class="{ 'tabs--full': fullWidth }"
+    :style="{ '--active-index': activeIdx }"
+  >
     <span class="tab-indicator" aria-hidden="true">
       <span :key="activeTab" class="tab-indicator-inner" />
     </span>
     <button
       v-for="tab in tabs"
-      :key="getTabValue(tab)"
-      :ref="setTabButtonRef"
+      :key="getVal(tab)"
+      :ref="setBtnRef"
       class="tab-btn"
-      :class="{ active: activeTab === getTabValue(tab) }"
+      :class="{ active: activeTab === getVal(tab) }"
       @click="setTab(tab)"
     >
-      {{ getTabLabel(tab) }}
+      {{ getLbl(tab) }}
     </button>
   </div>
 </template>

@@ -29,6 +29,9 @@ type UseArticleContentOptions = {
   onAfterContentReady?: () => void
 }
 
+const canUseDOM = typeof window !== 'undefined'
+const isServer = import.meta.env.SSR
+
 export const useArticleContent = (
   route: RouteLocationNormalizedLoaded,
   options: UseArticleContentOptions = {},
@@ -39,18 +42,12 @@ export const useArticleContent = (
   const loadedArticleId = ref('')
   const loadToken = ref(0)
 
-  const canUseDOM = typeof window !== 'undefined' && typeof document !== 'undefined'
-  const isServer = import.meta.env.SSR
-
-  const runAfterContentReady = () => {
+  const runAfterReady = () => {
     if (!canUseDOM || !options.onAfterContentReady) return
     void nextTick().then(() => {
-      const runNextFrame =
-        window.requestAnimationFrame?.bind(window) ||
-        ((cb: FrameRequestCallback) => window.setTimeout(cb, 0))
-      runNextFrame(() => {
-        options.onAfterContentReady?.()
-      })
+      ;(window.requestAnimationFrame || ((cb: FrameRequestCallback) => setTimeout(cb, 0)))(() =>
+        options.onAfterContentReady?.(),
+      )
     })
   }
 
@@ -59,39 +56,27 @@ export const useArticleContent = (
     ContentComponent.value = module.default
     frontmatter.value = { ...DEFAULT_FRONTMATTER, ...module.frontmatter }
     loadedArticleId.value = id
-    runAfterContentReady()
-  }
-
-  const resolveArticle = (categorySlug: string, articleSlug: string) => {
-    if (!categorySlug || !articleSlug) return null
-
-    const allPosts = getAllPosts()
-    const post = findPostBySlug(categorySlug, articleSlug, allPosts)
-
-    if (!post) {
-      console.warn(`Article not found: ${categorySlug}/${articleSlug}`)
-      return null
-    }
-
-    const id = post.id
-    resolvedTitle.value = resolveTitleFromSlug(parsePostId(post.id)?.slug || '')
-
-    if (loadedArticleId.value === id && ContentComponent.value) return null
-
-    return { id }
+    runAfterReady()
   }
 
   const loadArticle = (categorySlug: string, articleSlug: string) => {
-    const resolved = resolveArticle(categorySlug, articleSlug)
-    if (!resolved) return
+    if (!categorySlug || !articleSlug) return
 
-    const { id } = resolved
+    const post = findPostBySlug(categorySlug, articleSlug, getAllPosts())
+    if (!post) {
+      console.warn(`Article not found: ${categorySlug}/${articleSlug}`)
+      return
+    }
+
+    resolvedTitle.value = resolveTitleFromSlug(parsePostId(post.id)?.slug || '')
+    if (loadedArticleId.value === post.id && ContentComponent.value) return
+
     const currentToken = ++loadToken.value
-    const syncModule = getPostContentSync(id)
+    const syncModule = getPostContentSync(post.id)
 
     if (syncModule) {
       options.onBeforeContentChange?.()
-      applyContent(id, syncModule)
+      applyContent(post.id, syncModule)
       return
     }
 
@@ -99,39 +84,28 @@ export const useArticleContent = (
     frontmatter.value = { ...DEFAULT_FRONTMATTER }
     options.onBeforeContentChange?.()
 
-    void getPostContent(id).then((module) => {
-      if (loadToken.value !== currentToken) return
-      applyContent(id, module)
+    void getPostContent(post.id).then((module) => {
+      if (loadToken.value === currentToken) applyContent(post.id, module)
     })
   }
 
   onServerPrefetch(async () => {
-    const categorySlug =
-      typeof route.params.category === 'string'
-        ? route.params.category
-        : String(route.params.category || '')
-    const articleSlug =
-      typeof route.params.id === 'string' ? route.params.id : String(route.params.id || '')
-    const resolved = resolveArticle(categorySlug, articleSlug)
-    if (!resolved) return
-    const { id } = resolved
-    const module = await getPostContent(id)
-    applyContent(id, module)
+    const categorySlug = String(route.params.category || '')
+    const articleSlug = String(route.params.id || '')
+    const post = findPostBySlug(categorySlug, articleSlug, getAllPosts())
+    if (post) {
+      resolvedTitle.value = resolveTitleFromSlug(parsePostId(post.id)?.slug || '')
+      applyContent(post.id, await getPostContent(post.id))
+    }
   })
 
   if (!isServer) {
     watch(
       () => [route.params.category, route.params.id],
-      ([category, id]) => {
-        loadArticle(String(category || ''), String(id || ''))
-      },
+      ([category, id]) => loadArticle(String(category || ''), String(id || '')),
       { immediate: true },
     )
   }
 
-  return {
-    ContentComponent,
-    frontmatter,
-    resolvedTitle,
-  }
+  return { ContentComponent, frontmatter, resolvedTitle }
 }

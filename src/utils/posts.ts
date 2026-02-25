@@ -1,5 +1,7 @@
-import type { PostMeta, PostModule, MarkdownModule } from '@/types/post'
+import type { MarkdownModule, PostMeta, PostModule } from '@/types/post'
 import { postsMeta } from 'virtual:posts-meta'
+import { formatDateYMD } from './date'
+import { resolveTitleFromSlug } from './strings'
 
 const postComponents = import.meta.glob<MarkdownModule>('/posts/**/*.md')
 
@@ -45,7 +47,10 @@ const sortedPosts = [...postsMeta].sort((a, b) => getPostDateTimestamp(b) - getP
 
 const postsMetaById = new Map(sortedPosts.map((post) => [post.id, post]))
 
-const resolvePostModule = (meta: PostMeta | undefined, module: MarkdownModule): PostModule | null => {
+const resolvePostModule = (
+  meta: PostMeta | undefined,
+  module: MarkdownModule,
+): PostModule | null => {
   const component = module.default
   if (!component) return null
   return {
@@ -60,13 +65,6 @@ const resolvePostModule = (meta: PostMeta | undefined, module: MarkdownModule): 
  */
 export function getAllPosts(): PostMeta[] {
   return [...sortedPosts]
-}
-
-/**
- * 根据分类获取文章
- */
-export function getPostsByCategory(category: string): PostMeta[] {
-  return getAllPosts().filter((post) => post.category === category)
 }
 
 /**
@@ -119,18 +117,52 @@ export async function preloadPostContent(id: string): Promise<void> {
   await getPostContent(id)
 }
 
-/**
- * 获取所有分类
- */
-export function getAllCategories(): string[] {
-  const categories = new Set(getAllPosts().map((post) => post.category))
-  return Array.from(categories)
-}
-
 export function getPostDate(post: PostMeta): string {
   return getPostDateValue(post)
 }
 
-export function findPostById(postId: string | number, posts: PostMeta[] = sortedPosts): PostMeta | null {
+export function findPostById(
+  postId: string | number,
+  posts: PostMeta[] = sortedPosts,
+): PostMeta | null {
   return posts.find((post) => post.id === String(postId)) || null
+}
+
+export interface PostListItem {
+  id: string
+  title: string
+  category: string
+  time: string
+  readTime: string
+  hot: boolean
+  cover: string
+  tags?: string[]
+}
+
+export function formatPostList(posts: PostMeta[], markHotCount = 2): PostListItem[] {
+  return posts.map((post, index) => ({
+    id: post.id,
+    title: post.frontmatter.title ?? resolveTitleFromSlug(parsePostId(post.id)?.slug || ''),
+    category: post.category,
+    time: formatDateYMD(getPostDate(post)),
+    readTime: post.frontmatter.readTime ? `${post.frontmatter.readTime} min` : '5 min',
+    hot: index < markHotCount,
+    cover: post.frontmatter.coverImage ?? '',
+    tags: post.frontmatter.tags,
+  }))
+}
+
+export function getPostStats(posts: PostMeta[]) {
+  const totalPosts = posts.length
+  const categories = new Set(posts.map((p) => p.category))
+  const totalCategories = categories.size
+  const totalTags = new Set(posts.flatMap((p) => p.frontmatter?.tags || []))
+  const totalWords = posts.reduce((sum, post) => sum + (post.frontmatter?.wordCount || 0), 0)
+  return {
+    totalPosts,
+    totalCategories,
+    totalTags: totalTags.size,
+    totalWords,
+    categories: Array.from(categories),
+  }
 }

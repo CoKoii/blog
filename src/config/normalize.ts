@@ -91,3 +91,35 @@ export const normalizedConfig = {
   hasValidGiscusConfig,
   tagMeta: siteConfig.tagMeta,
 }
+
+export {
+  brandName,
+  commentsConfig,
+  defaultTagColor,
+  ownerProfile,
+  siteDescription,
+  siteImage,
+  siteLanguage,
+  siteName,
+  siteOwner,
+  siteUrl,
+  socialLinks,
+  statsConfig,
+  wechatConfig,
+}
+
+export const isGiscusReady = commentsConfig.enabled && hasValidGiscusConfig
+
+export const getTagMeta = (tag: string): import('./types').TagMeta => {
+  const normalizedTag = tag.replace(/\s+/g, '')
+  const config = normalizedConfig.tagMeta?.[normalizedTag]
+  if (!config) return { color: defaultTagColor }
+  if (typeof config === 'string') return { color: config }
+  return {
+    color: config.color || defaultTagColor,
+    cover: config.cover,
+    description: config.description,
+  }
+}
+
+export const getTagColor = (tag: string): string => getTagMeta(tag).color

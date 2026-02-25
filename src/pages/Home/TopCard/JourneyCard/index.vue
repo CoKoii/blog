@@ -2,7 +2,7 @@
 import { Icon } from '@iconify/vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
-const barrageMessages = [
+const msgs = [
   '第一次实习',
   '赚到第一个 W',
   '第一次来杭州独居',
@@ -14,56 +14,43 @@ const barrageMessages = [
   '第一次通宵改稿',
 ]
 
-type BarrageItem = {
-  id: number
-  text: string
-  top: number
-  left: number
-  duration: number
-}
+type Item = { id: number; text: string; top: number; left: number; duration: number }
 
-const barrageItems = ref<BarrageItem[]>([])
-const barrageTimers = new Set<number>()
-let barrageInterval: number | undefined
+const items = ref<Item[]>([])
+const timers = new Set<number>()
+let interval: number | undefined
 
-const randomBetween = (min: number, max: number) => Math.random() * (max - min) + min
+const rand = (min: number, max: number) => Math.random() * (max - min) + min
 
-const spawnBarrage = () => {
+const spawn = () => {
   const id = Date.now() + Math.floor(Math.random() * 1000)
-  const item: BarrageItem = {
+  const item: Item = {
     id,
-    text: barrageMessages[Math.floor(Math.random() * barrageMessages.length)] ?? '',
-    top: randomBetween(10, 90),
-    left: randomBetween(10, 90),
-    duration: randomBetween(2.8, 4.2),
+    text: msgs[Math.floor(Math.random() * msgs.length)] ?? '',
+    top: rand(10, 90),
+    left: rand(10, 90),
+    duration: rand(2.8, 4.2),
   }
 
-  barrageItems.value.push(item)
+  items.value.push(item)
+  if (items.value.length > 10) items.value.shift()
 
-  if (barrageItems.value.length > 10) {
-    barrageItems.value.shift()
-  }
-
-  const timeoutId = window.setTimeout(() => {
-    barrageItems.value = barrageItems.value.filter((dm) => dm.id !== id)
-    barrageTimers.delete(timeoutId)
+  const tid = window.setTimeout(() => {
+    items.value = items.value.filter((d) => d.id !== id)
+    timers.delete(tid)
   }, item.duration * 1000)
-  barrageTimers.add(timeoutId)
+  timers.add(tid)
 }
 
 onMounted(() => {
-  for (let i = 0; i < 3; i += 1) {
-    spawnBarrage()
-  }
-  barrageInterval = window.setInterval(spawnBarrage, 1000)
+  for (let i = 0; i < 3; i++) spawn()
+  interval = window.setInterval(spawn, 1000)
 })
 
 onBeforeUnmount(() => {
-  if (barrageInterval) {
-    window.clearInterval(barrageInterval)
-  }
-  barrageTimers.forEach((timer) => window.clearTimeout(timer))
-  barrageTimers.clear()
+  if (interval) window.clearInterval(interval)
+  timers.forEach((t) => window.clearTimeout(t))
+  timers.clear()
 })
 </script>
 
@@ -79,13 +66,12 @@ onBeforeUnmount(() => {
           <p class="sub">Journey</p>
         </div>
       </div>
-
       <Icon class="arrow" icon="lucide:arrow-right" aria-hidden="true" />
     </div>
 
     <div class="barrage" aria-hidden="true">
       <div
-        v-for="item in barrageItems"
+        v-for="item in items"
         :key="item.id"
         class="dm"
         :style="{

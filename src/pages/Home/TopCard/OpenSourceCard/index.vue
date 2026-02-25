@@ -3,25 +3,15 @@ import ossData from '@/data/opensource.json'
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
 
-const formatCount = (count: number) => {
-  if (count < 1000) return `${count}`
-  const value = count >= 10000 ? count / 1000 : Math.round((count / 1000) * 10) / 10
-  return `${value}k`
-}
+const fmt = (n: number) =>
+  n < 1000 ? `${n}` : `${n >= 10000 ? n / 1000 : Math.round((n / 1000) * 10) / 10}k`
 
-const blogRepoUrl = 'https://github.com/CoKoii/blog'
-
-const metaText = computed(() => {
+const meta = computed(() => {
   if (!ossData.updatedAt) return '刚刚更新'
-
-  const updatedAt = new Date(ossData.updatedAt)
-  if (Number.isNaN(updatedAt.getTime())) return '刚刚更新'
-
-  const diff = Date.now() - updatedAt.getTime()
-  const days = Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)))
-
-  if (days === 0) return '刚刚更新'
-  return `${days}天前更新`
+  const t = new Date(ossData.updatedAt)
+  if (Number.isNaN(t.getTime())) return '刚刚更新'
+  const days = Math.max(0, Math.floor((Date.now() - t.getTime()) / 864e5))
+  return days === 0 ? '刚刚更新' : `${days}天前更新`
 })
 </script>
 
@@ -32,11 +22,10 @@ const metaText = computed(() => {
         <span class="dot" aria-hidden="true"></span>
         <span>开源作品集</span>
       </div>
-
       <a
         class="pill"
         title="Open Source"
-        :href="blogRepoUrl"
+        href="https://github.com/CoKoii/blog"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -54,7 +43,7 @@ const metaText = computed(() => {
       </div>
       <div class="stat">
         <div class="k">Stars</div>
-        <div class="v">{{ formatCount(ossData.stars) }}</div>
+        <div class="v">{{ fmt(ossData.stars) }}</div>
       </div>
     </div>
 
@@ -68,8 +57,7 @@ const metaText = computed(() => {
         查看我的作品
         <Icon class="arrow" icon="lucide:arrow-right" />
       </a>
-
-      <div class="meta" aria-label="time meta">{{ metaText }}</div>
+      <div class="meta" aria-label="time meta">{{ meta }}</div>
     </div>
   </div>
 </template>

@@ -1,9 +1,9 @@
+import { siteImage, siteName, siteOwner, siteUrl } from '@/config'
+import type { PostFrontmatter } from '@/types/post'
 import { useHead } from '@vueuse/head'
 import type { ComputedRef, Ref } from 'vue'
 import { computed } from 'vue'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
-import { siteImage, siteName, siteOwner, siteUrl } from '@/config'
-import type { PostFrontmatter } from '@/types/post'
 import type { ArticleMeta } from '../types'
 
 type UseArticleHeadOptions = {
@@ -12,82 +12,68 @@ type UseArticleHeadOptions = {
   frontmatter: Ref<PostFrontmatter>
 }
 
+const toIso = (d?: string) => (d ? new Date(d).toISOString() : '')
+
 export const useArticleHead = ({ route, article, frontmatter }: UseArticleHeadOptions) => {
-  const articlePath = computed(() => {
-    const categorySlug = String(route.params.category || '')
-    const articleSlug = String(route.params.id || '')
-    if (!categorySlug || !articleSlug) return ''
-
-    return `/article/${categorySlug}/${articleSlug}`
+  const path = computed(() => {
+    const cat = String(route.params.category || '')
+    const id = String(route.params.id || '')
+    return cat && id ? `/article/${cat}/${id}` : ''
   })
 
-  const canonicalUrl = computed(() => {
-    const path = articlePath.value
-    return path ? `${siteUrl}${path}` : siteUrl
-  })
+  const canonical = computed(() => (path.value ? `${siteUrl}${path.value}` : siteUrl))
 
   useHead(() => {
-    const description = frontmatter.value.description || article.value.title
-    const coverImage = article.value.coverImage || siteImage
-    const publishDateRaw = frontmatter.value.publishDate || frontmatter.value.date
-    const modifiedDateRaw =
-      (typeof frontmatter.value.updated === 'string' && frontmatter.value.updated) ||
-      (typeof frontmatter.value.modified === 'string' && frontmatter.value.modified) ||
-      ''
-    const publishDateIso = publishDateRaw ? new Date(publishDateRaw).toISOString() : ''
-    const modifiedDateIso = modifiedDateRaw ? new Date(modifiedDateRaw).toISOString() : ''
-
-    const fullCoverImage = coverImage?.startsWith('http') ? coverImage : `${siteUrl}${coverImage}`
+    const fm = frontmatter.value
+    const art = article.value
+    const desc = fm.description || art.title
+    const cover = art.coverImage || siteImage
+    const pubDate = toIso(fm.publishDate || fm.date)
+    const modDate = toIso(
+      (typeof fm.updated === 'string' && fm.updated) ||
+        (typeof fm.modified === 'string' && fm.modified) ||
+        '',
+    )
+    const fullCover = cover?.startsWith('http') ? cover : `${siteUrl}${cover}`
 
     const meta: Array<Record<string, string>> = [
       { name: 'robots', content: 'index, follow' },
-      { name: 'description', content: description },
-      { property: 'og:title', content: article.value.title },
-      { property: 'og:description', content: description },
+      { name: 'description', content: desc },
+      { name: 'author', content: String(fm.author || siteOwner.name) },
+      { property: 'og:title', content: art.title },
+      { property: 'og:description', content: desc },
       { property: 'og:type', content: 'article' },
-      { property: 'og:url', content: canonicalUrl.value },
+      { property: 'og:url', content: canonical.value },
       { property: 'og:locale', content: 'zh_CN' },
       { property: 'og:site_name', content: siteName },
-      { name: 'twitter:card', content: coverImage ? 'summary_large_image' : 'summary' },
-      { name: 'twitter:title', content: article.value.title },
-      { name: 'twitter:description', content: description },
-      { name: 'author', content: String(frontmatter.value.author || siteOwner.name) },
+      { name: 'twitter:card', content: cover ? 'summary_large_image' : 'summary' },
+      { name: 'twitter:title', content: art.title },
+      { name: 'twitter:description', content: desc },
     ]
 
-    if (coverImage) {
-      meta.push({ property: 'og:image', content: fullCoverImage })
-      meta.push({ property: 'og:image:alt', content: article.value.title })
-      meta.push({ name: 'twitter:image', content: fullCoverImage })
+    if (cover) {
+      meta.push({ property: 'og:image', content: fullCover })
+      meta.push({ property: 'og:image:alt', content: art.title })
+      meta.push({ name: 'twitter:image', content: fullCover })
     }
 
-    if (publishDateIso) {
-      meta.push({ property: 'article:published_time', content: publishDateIso })
+    if (pubDate) meta.push({ property: 'article:published_time', content: pubDate })
+    if (modDate) meta.push({ property: 'article:modified_time', content: modDate })
+
+    if (art.tags.length) {
+      meta.push({ name: 'keywords', content: art.tags.join(', ') })
+      art.tags.forEach((t) => meta.push({ property: 'article:tag', content: t }))
     }
 
-    if (modifiedDateIso) {
-      meta.push({ property: 'article:modified_time', content: modifiedDateIso })
-    }
-
-    if (article.value.tags.length > 0) {
-      meta.push({ name: 'keywords', content: article.value.tags.join(', ') })
-      article.value.tags.forEach((tag) => {
-        meta.push({ property: 'article:tag', content: tag })
-      })
-    }
-
-    if (frontmatter.value.category) {
-      meta.push({ property: 'article:section', content: String(frontmatter.value.category) })
-    }
+    if (fm.category) meta.push({ property: 'article:section', content: String(fm.category) })
 
     return {
-      title: article.value.title,
-      htmlAttrs: {
-        lang: 'zh-CN',
-      },
+      title: art.title,
+      htmlAttrs: { lang: 'zh-CN' },
       link: [
-        { rel: 'canonical', href: canonicalUrl.value },
-        { rel: 'alternate', hreflang: 'zh-CN', href: canonicalUrl.value },
-        { rel: 'alternate', hreflang: 'x-default', href: canonicalUrl.value },
+        { rel: 'canonical', href: canonical.value },
+        { rel: 'alternate', hreflang: 'zh-CN', href: canonical.value },
+        { rel: 'alternate', hreflang: 'x-default', href: canonical.value },
       ],
       meta,
       script: [
@@ -96,18 +82,15 @@ export const useArticleHead = ({ route, article, frontmatter }: UseArticleHeadOp
           children: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'BlogPosting',
-            headline: article.value.title,
-            mainEntityOfPage: {
-              '@type': 'WebPage',
-              '@id': canonicalUrl.value,
-            },
-            ...(coverImage && { image: fullCoverImage }),
-            ...(publishDateIso && { datePublished: publishDateIso }),
-            ...(modifiedDateIso && { dateModified: modifiedDateIso }),
-            ...(article.value.wordCount ? { wordCount: article.value.wordCount } : {}),
-            ...(article.value.tags.length ? { keywords: article.value.tags.join(', ') } : {}),
+            headline: art.title,
+            mainEntityOfPage: { '@type': 'WebPage', '@id': canonical.value },
+            ...(cover && { image: fullCover }),
+            ...(pubDate && { datePublished: pubDate }),
+            ...(modDate && { dateModified: modDate }),
+            ...(art.wordCount && { wordCount: art.wordCount }),
+            ...(art.tags.length && { keywords: art.tags.join(', ') }),
             author: { '@type': 'Person', name: siteOwner.name },
-            description,
+            description: desc,
           }),
         },
       ],

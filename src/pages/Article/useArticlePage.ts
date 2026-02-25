@@ -15,14 +15,11 @@ export const useArticlePage = () => {
     onAfterContentReady: refreshArticleDecorations,
   })
 
-  const fallbackTitle = computed(() =>
-    resolveTitleFromSlug(
-      typeof route.params.id === 'string' ? route.params.id : String(route.params.id || ''),
-    ),
-  )
-
   const article = computed<ArticleMeta>(() => ({
-    title: frontmatter.value.title || resolvedTitle.value || fallbackTitle.value,
+    title:
+      frontmatter.value.title ||
+      resolvedTitle.value ||
+      resolveTitleFromSlug(String(route.params.id || '')),
     coverImage: frontmatter.value.coverImage || '',
     tags: frontmatter.value.tags || [],
     wordCount: frontmatter.value.wordCount || 0,
@@ -34,11 +31,5 @@ export const useArticlePage = () => {
 
   useArticleHead({ route, article, frontmatter })
 
-  return {
-    ContentComponent,
-    toc,
-    activeHeadingId,
-    article,
-    scrollToHeading,
-  }
+  return { ContentComponent, toc, activeHeadingId, article, scrollToHeading }
 }

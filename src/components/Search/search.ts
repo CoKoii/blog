@@ -1,166 +1,131 @@
 import type { SearchDocument, SearchIndex } from '@/types/search'
 
-const MIN_CJK_NGRAM_LENGTH = 2
-const MAX_CJK_NGRAM_LENGTH = 4
-const LATIN_TERM_REGEXP = /[a-z0-9]+/g
-const CJK_TERM_REGEXP = /[\u4e00-\u9fff]+/g
+const MIN_NGRAM = 2
+const MAX_NGRAM = 4
+const LATIN_RE = /[a-z0-9]+/g
+const CJK_RE = /[\u4e00-\u9fff]+/g
 
-const normalizeWhitespace = (value: string): string => value.replace(/\s+/g, ' ').trim()
+const normalize = (s: string) => s.replace(/\s+/g, ' ').trim().toLowerCase()
 
-const normalizeForSearch = (value: string): string => normalizeWhitespace(value).toLowerCase()
+const splitTerms = (s: string) => Array.from(new Set(s.split(' ').filter(Boolean)))
 
-const splitTermsFromNormalized = (normalized: string): string[] =>
-  Array.from(new Set(normalized.split(' ').filter(Boolean)))
-
-const extractQueryTermsFromNormalized = (normalized: string): string[] => {
+const extractQueryTerms = (s: string): string[] => {
   const terms = new Set<string>()
+  for (const t of s.match(LATIN_RE) || []) terms.add(t)
 
-  const latinTerms = normalized.match(LATIN_TERM_REGEXP) || []
-  for (const term of latinTerms) {
-    terms.add(term)
-  }
-
-  const cjkChunks = normalized.match(CJK_TERM_REGEXP) || []
-  for (const chunk of cjkChunks) {
+  for (const chunk of s.match(CJK_RE) || []) {
     const chars = Array.from(chunk)
-    if (chars.length < MIN_CJK_NGRAM_LENGTH) {
-      continue
-    }
-    if (chars.length <= MAX_CJK_NGRAM_LENGTH) {
+    if (chars.length < MIN_NGRAM) continue
+    if (chars.length <= MAX_NGRAM) {
       terms.add(chunk)
-      continue
-    }
-
-    for (let index = 0; index + MAX_CJK_NGRAM_LENGTH <= chars.length; index += 1) {
-      terms.add(chars.slice(index, index + MAX_CJK_NGRAM_LENGTH).join(''))
+    } else {
+      for (let i = 0; i + MAX_NGRAM <= chars.length; i++) {
+        terms.add(chars.slice(i, i + MAX_NGRAM).join(''))
+      }
     }
   }
-
   return Array.from(terms)
 }
 
-const parseKeyword = (keyword: string) => {
-  const normalizedKeyword = normalizeForSearch(keyword)
-  const highlightTerms = splitTermsFromNormalized(normalizedKeyword)
-  const queryTerms = extractQueryTermsFromNormalized(normalizedKeyword)
-
+const parseKeyword = (kw: string) => {
+  const norm = normalize(kw)
   return {
-    normalizedKeyword,
-    highlightTerms,
-    queryTerms,
+    normalized: norm,
+    highlight: splitTerms(norm),
+    query: extractQueryTerms(norm),
   }
 }
 
-const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-const toTimestamp = (value: string): number => {
-  const timestamp = Date.parse(value)
-  return Number.isNaN(timestamp) ? 0 : timestamp
+const toTs = (s: string) => {
+  const ts = Date.parse(s)
+  return Number.isNaN(ts) ? 0 : ts
 }
 
-const intersectSortedPostings = (postings: number[][]): number[] => {
+const intersect = (postings: number[][]): number[] => {
   if (!postings.length) return []
-  const sortedPostings = [...postings].sort((a, b) => a.length - b.length)
-  const [firstPosting, ...restPostings] = sortedPostings
-  if (!firstPosting) return []
-  let result = [...firstPosting]
+  const sorted = [...postings].sort((a, b) => a.length - b.length)
+  const first = sorted[0]
+  if (!first) return []
+  let result = [...first]
 
-  for (const posting of restPostings) {
-    if (!posting.length) return []
+  for (let i = 1; i < sorted.length; i++) {
+    const p = sorted[i]
+    if (!p || !p.length) return []
 
-    const intersection: number[] = []
-    let left = 0
-    let right = 0
-
-    while (left < result.length && right < posting.length) {
-      const leftValue = result[left]
-      const rightValue = posting[right]
-      if (leftValue == null || rightValue == null) break
-
-      if (leftValue === rightValue) {
-        intersection.push(leftValue)
-        left += 1
-        right += 1
-        continue
-      }
-      if (leftValue < rightValue) {
-        left += 1
+    const inter: number[] = []
+    let l = 0,
+      r = 0
+    while (l < result.length && r < p.length) {
+      const lv = result[l]
+      const rv = p[r]
+      if (lv == null || rv == null) break
+      if (lv === rv) {
+        inter.push(lv)
+        l++
+        r++
+      } else if (lv < rv) {
+        l++
       } else {
-        right += 1
+        r++
       }
     }
-
-    result = intersection
-    if (!result.length) {
-      break
-    }
+    result = inter
+    if (!result.length) break
   }
-
   return result
 }
 
-const findBestMatchIndex = (text: string, query: string, terms: string[]): number => {
-  const exactIndex = text.indexOf(query)
-  if (exactIndex >= 0) return exactIndex
+const findMatch = (text: string, query: string, terms: string[]): number => {
+  const exact = text.indexOf(query)
+  if (exact >= 0) return exact
 
-  let firstIndex = -1
-  for (const term of terms) {
-    const index = text.indexOf(term)
-    if (index < 0) continue
-    if (firstIndex < 0 || index < firstIndex) {
-      firstIndex = index
-    }
+  let first = -1
+  for (const t of terms) {
+    const idx = text.indexOf(t)
+    if (idx >= 0 && (first < 0 || idx < first)) first = idx
   }
-
-  return firstIndex
+  return first
 }
 
-const buildSnippet = (document: SearchDocument, query: string, terms: string[]): string => {
-  const source = normalizeWhitespace([document.description, document.content].filter(Boolean).join(' '))
-  if (!source) return '暂无摘要'
+const buildSnippet = (doc: SearchDocument, query: string, terms: string[]): string => {
+  const src = [doc.description, doc.content].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim()
+  if (!src) return '暂无摘要'
 
-  const normalizedSource = source.toLowerCase()
-  const matchIndex = findBestMatchIndex(normalizedSource, query, terms)
-
-  const snippetLength = 96
-  const start = Math.max(0, matchIndex - 28)
-  const end = Math.min(source.length, start + snippetLength)
-  const prefix = start > 0 ? '...' : ''
-  const suffix = end < source.length ? '...' : ''
-
-  return `${prefix}${source.slice(start, end).trim()}${suffix}`
+  const match = findMatch(src.toLowerCase(), query, terms)
+  const len = 96
+  const start = Math.max(0, match - 28)
+  const end = Math.min(src.length, start + len)
+  const pre = start > 0 ? '...' : ''
+  const suf = end < src.length ? '...' : ''
+  return `${pre}${src.slice(start, end).trim()}${suf}`
 }
 
-const buildDefaultDocIndexes = (count: number): number[] => Array.from({ length: count }, (_, index) => index)
-
-const resolveCandidateDocIndexes = (terms: string[], searchIndex: PreparedSearchIndex): number[] => {
-  if (!terms.length) return searchIndex.allDocumentIndexes
+const getCandidates = (terms: string[], idx: PreparedSearchIndex): number[] => {
+  if (!terms.length) return idx.allDocs
 
   const postings: number[][] = []
-  for (const term of terms) {
-    const posting = searchIndex.invertedIndex[term]
-    if (!posting?.length) {
-      // 回退全量候选，避免因为词条未建索引而漏结果
-      return searchIndex.allDocumentIndexes
-    }
-    postings.push(posting)
+  for (const t of terms) {
+    const p = idx.inverted[t]
+    if (!p?.length) return idx.allDocs
+    postings.push(p)
   }
-
-  return intersectSortedPostings(postings)
+  return intersect(postings)
 }
 
 export type PreparedSearchDocument = {
   source: SearchDocument
-  normalizedTitle: string
-  normalizedDescription: string
-  normalizedContent: string
-  normalizedMeta: string
+  normTitle: string
+  normDesc: string
+  normContent: string
+  normMeta: string
 }
 
 export type PreparedSearchIndex = {
-  documents: PreparedSearchDocument[]
-  invertedIndex: Record<string, number[]>
-  allDocumentIndexes: number[]
+  docs: PreparedSearchDocument[]
+  inverted: Record<string, number[]>
+  allDocs: number[]
 }
 
 export interface SearchResult extends SearchDocument {
@@ -174,123 +139,102 @@ export interface HighlightSegment {
 }
 
 export const createEmptyPreparedSearchIndex = (): PreparedSearchIndex => ({
-  documents: [],
-  invertedIndex: {},
-  allDocumentIndexes: [],
+  docs: [],
+  inverted: {},
+  allDocs: [],
 })
 
-export const prepareSearchIndex = (searchIndex: SearchIndex): PreparedSearchIndex => {
-  const documents = searchIndex.documents.map((document) => ({
-    source: document,
-    normalizedTitle: normalizeForSearch(document.title),
-    normalizedDescription: normalizeForSearch(document.description),
-    normalizedContent: normalizeForSearch(document.content),
-    normalizedMeta: normalizeForSearch([document.category, ...document.tags].join(' ')),
+export const prepareSearchIndex = (idx: SearchIndex): PreparedSearchIndex => {
+  const docs = idx.documents.map((d) => ({
+    source: d,
+    normTitle: normalize(d.title),
+    normDesc: normalize(d.description),
+    normContent: normalize(d.content),
+    normMeta: normalize([d.category, ...d.tags].join(' ')),
   }))
 
   return {
-    documents,
-    invertedIndex: searchIndex.invertedIndex,
-    allDocumentIndexes: buildDefaultDocIndexes(documents.length),
+    docs,
+    inverted: idx.invertedIndex,
+    allDocs: Array.from({ length: docs.length }, (_, i) => i),
   }
 }
 
 export const searchDocuments = (
-  keyword: string,
-  searchIndex: PreparedSearchIndex,
+  kw: string,
+  idx: PreparedSearchIndex,
   limit = 12,
 ): SearchResult[] => {
-  const { normalizedKeyword, highlightTerms, queryTerms } = parseKeyword(keyword)
-  if (!normalizedKeyword) return []
+  const { normalized, highlight, query } = parseKeyword(kw)
+  if (!normalized) return []
 
-  const candidateIndexes = resolveCandidateDocIndexes(queryTerms, searchIndex)
-  if (!candidateIndexes.length) return []
+  const candidates = getCandidates(query, idx)
+  if (!candidates.length) return []
 
   const results: SearchResult[] = []
 
-  for (const index of candidateIndexes) {
-    const document = searchIndex.documents[index]
-    if (!document) continue
+  for (const i of candidates) {
+    const doc = idx.docs[i]
+    if (!doc) continue
 
     let score = 0
 
-    const titleExactIndex = document.normalizedTitle.indexOf(normalizedKeyword)
-    if (titleExactIndex >= 0) {
-      score += 180 - Math.min(titleExactIndex, 80)
-    }
+    const titleIdx = doc.normTitle.indexOf(normalized)
+    if (titleIdx >= 0) score += 180 - Math.min(titleIdx, 80)
 
-    const descriptionExactIndex = document.normalizedDescription.indexOf(normalizedKeyword)
-    if (descriptionExactIndex >= 0) {
-      score += 90 - Math.min(descriptionExactIndex, 60)
-    }
+    const descIdx = doc.normDesc.indexOf(normalized)
+    if (descIdx >= 0) score += 90 - Math.min(descIdx, 60)
 
-    const contentExactIndex = document.normalizedContent.indexOf(normalizedKeyword)
-    if (contentExactIndex >= 0) {
-      score += 45 - Math.min(Math.floor(contentExactIndex / 24), 30)
-    }
+    const contentIdx = doc.normContent.indexOf(normalized)
+    if (contentIdx >= 0) score += 45 - Math.min(Math.floor(contentIdx / 24), 30)
 
-    let matchedTermCount = 0
-    for (const term of highlightTerms) {
-      if (document.normalizedTitle.includes(term)) {
+    let matched = 0
+    for (const t of highlight) {
+      if (doc.normTitle.includes(t)) {
         score += 55
-        matchedTermCount += 1
-        continue
-      }
-
-      if (document.normalizedDescription.includes(term)) {
+        matched++
+      } else if (doc.normDesc.includes(t)) {
         score += 30
-        matchedTermCount += 1
-        continue
-      }
-
-      if (document.normalizedContent.includes(term)) {
+        matched++
+      } else if (doc.normContent.includes(t)) {
         score += 14
-        matchedTermCount += 1
-        continue
-      }
-
-      if (document.normalizedMeta.includes(term)) {
+        matched++
+      } else if (doc.normMeta.includes(t)) {
         score += 8
-        matchedTermCount += 1
+        matched++
       }
     }
 
-    if (matchedTermCount === highlightTerms.length) {
-      score += 35
-    }
-
+    if (matched === highlight.length) score += 35
     if (score <= 0) continue
 
     results.push({
-      ...document.source,
+      ...doc.source,
       score,
-      snippet: buildSnippet(document.source, normalizedKeyword, highlightTerms),
+      snippet: buildSnippet(doc.source, normalized, highlight),
     })
   }
 
-  results.sort((a, b) => {
-    if (a.score !== b.score) return b.score - a.score
-    return toTimestamp(b.date) - toTimestamp(a.date)
-  })
-
+  results.sort((a, b) => (a.score !== b.score ? b.score - a.score : toTs(b.date) - toTs(a.date)))
   return results.slice(0, limit)
 }
 
-export const splitHighlightSegments = (text: string, keyword: string): HighlightSegment[] => {
-  const normalizedText = normalizeWhitespace(text)
-  if (!normalizedText) return []
+export const splitHighlightSegments = (text: string, kw: string): HighlightSegment[] => {
+  const norm = text.replace(/\s+/g, ' ').trim()
+  if (!norm) return []
 
-  const terms = splitTermsFromNormalized(normalizeForSearch(keyword))
-  if (!terms.length) {
-    return [{ text: normalizedText, match: false }]
-  }
+  const terms = splitTerms(normalize(kw))
+  if (!terms.length) return [{ text: norm, match: false }]
 
-  const escapedTerms = terms.map(escapeRegExp).sort((a, b) => b.length - a.length)
-  const pattern = new RegExp(`(${escapedTerms.join('|')})`, 'gi')
-  const termSet = new Set(terms)
+  const escaped = terms.map(escapeRe).sort((a, b) => b.length - a.length)
+  const re = new RegExp(`(${escaped.join('|')})`, 'gi')
+  const set = new Set(terms)
 
-  return normalizedText.split(pattern).filter(Boolean).map((segment) => ({
-    text: segment,
-    match: termSet.has(segment.toLowerCase()),
-  }))
+  return norm
+    .split(re)
+    .filter(Boolean)
+    .map((s) => ({
+      text: s,
+      match: set.has(s.toLowerCase()),
+    }))
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PostListItem } from '@/composables/usePost'
+import type { PostListItem } from '@/utils/posts'
 
 const props = defineProps<{
   posts: PostListItem[]

@@ -1,33 +1,26 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted } from 'vue'
-import TopBar from './TopBar/index.vue'
-import SideBar from './SideBar/index.vue'
+import { consumeScroll } from '@/router/scroll'
 import { useLayoutStore } from '@/stores/layout'
+import { onBeforeUnmount, onMounted } from 'vue'
 import Mask from '../Mask/Mask.vue'
 import MobileSideBar from './MobileSideBar/MobileSideBar.vue'
-import { consumeScroll } from '@/router/scroll'
+import SideBar from './SideBar/index.vue'
+import TopBar from './TopBar/index.vue'
+
 const layoutStore = useLayoutStore()
 
-const handleResize = () => {
-  layoutStore.syncSideBarByWidth()
-}
+const handleResize = () => layoutStore.syncSideBarByWidth()
 
 onMounted(() => {
   layoutStore.syncSideBarByWidth()
   window.addEventListener('resize', handleResize)
 })
 
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize)
-})
+onBeforeUnmount(() => window.removeEventListener('resize', handleResize))
 
 const handleBeforeEnter = () => {
-  const position = consumeScroll()
-  window.scrollTo({
-    left: position.left ?? 0,
-    top: position.top ?? 0,
-    behavior: 'auto',
-  })
+  const pos = consumeScroll()
+  window.scrollTo({ left: pos.left ?? 0, top: pos.top ?? 0, behavior: 'auto' })
 }
 </script>
 
@@ -37,17 +30,13 @@ const handleBeforeEnter = () => {
       <MobileSideBar />
     </Teleport>
     <Mask />
-    <!-- 顶部栏 -->
     <div class="topBar">
       <TopBar />
     </div>
-    <!-- 主容器 -->
     <div class="content">
-      <!-- 侧边栏 -->
       <div class="sideBar">
         <SideBar />
       </div>
-      <!-- 内容区 -->
       <div class="main">
         <router-view v-slot="{ Component }">
           <transition name="zoomBlur" mode="out-in" @before-enter="handleBeforeEnter">
