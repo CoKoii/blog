@@ -4,7 +4,7 @@ import { ViteSSG } from 'vite-ssg'
 import App from './App.vue'
 import { vLazy } from './directives/vLazy'
 import routes from './router'
-import { queueScroll } from './router/scroll'
+import { consumeScroll, queueScroll } from './router/scroll'
 import './styles/reset.scss'
 
 const RELOAD_KEY = '__router_import_reload_path__'
@@ -27,6 +27,17 @@ const isImportError = (error: unknown): error is Error =>
 
 const getCurrentPath = () =>
   `${window.location.pathname}${window.location.search}${window.location.hash}`
+
+const restoreQueuedScroll = () => {
+  const pos = consumeScroll()
+  const apply = () =>
+    window.scrollTo({ left: pos.left ?? 0, top: pos.top ?? 0, behavior: 'auto' })
+  if (typeof window.requestAnimationFrame === 'function') {
+    window.requestAnimationFrame(() => apply())
+  } else {
+    setTimeout(() => apply(), 0)
+  }
+}
 
 export const createApp = ViteSSG(
   App,
@@ -75,9 +86,14 @@ export const createApp = ViteSSG(
       }
     })
 
-    router.afterEach((to) => {
+    router.afterEach((to, from) => {
       if (sessionStorage.getItem(RELOAD_KEY) === buildPath(to.fullPath)) {
         sessionStorage.removeItem(RELOAD_KEY)
+      }
+
+      // Same view component with different params/path won't trigger transition enter hooks.
+      if (to.name && from.name && to.name === from.name && to.path !== from.path) {
+        restoreQueuedScroll()
       }
     })
 
