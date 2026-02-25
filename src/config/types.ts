@@ -25,6 +25,28 @@ export type SiteStats = {
   startDate?: string
 }
 
+export type SiteCommentsGiscus = {
+  host?: string
+  repo?: string
+  repoId?: string
+  category?: string
+  categoryId?: string
+  mapping?: 'pathname' | 'url' | 'title' | 'og:title' | 'specific' | 'number'
+  term?: string
+  strict?: boolean
+  reactionsEnabled?: boolean
+  emitMetadata?: boolean
+  inputPosition?: 'top' | 'bottom'
+  theme?: string
+  lang?: string
+  loading?: 'lazy' | 'eager'
+}
+
+export type SiteComments = {
+  enabled?: boolean
+  giscus?: SiteCommentsGiscus
+}
+
 export type TagConfig =
   | string
   | {
@@ -52,4 +74,5 @@ export type SiteConfig = {
   socials?: SiteSocialLink[]
   wechat?: SiteWechat
   stats?: SiteStats
+  comments?: SiteComments
 }

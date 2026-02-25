@@ -9,6 +9,9 @@ export const siteLanguage = normalizedConfig.siteLanguage
 export const siteOwner = normalizedConfig.siteOwner
 
 export const defaultTagColor = normalizedConfig.defaultTagColor
+export const commentsConfig = normalizedConfig.commentsConfig
+export const isGiscusReady =
+  normalizedConfig.commentsConfig.enabled && normalizedConfig.hasValidGiscusConfig
 
 export const getTagMeta = (tag: string): TagMeta => {
   const normalizedTag = tag.replace(/\s+/g, '')

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import type { Component } from 'vue'
+import GiscusComments from '@/components/Comments/GiscusComments.vue'
+import { isGiscusReady } from '@/config'
 import type { TocItem } from '../types'
 
 const props = defineProps<{
@@ -14,9 +16,12 @@ const props = defineProps<{
 
 <template>
   <div class="content" :class="{ is_skeleton: props.loading }">
-    <article class="article markdown-content">
-      <component v-if="!props.loading && props.contentComponent" :is="props.contentComponent" />
-    </article>
+    <div class="main">
+      <article class="article markdown-content">
+        <component v-if="!props.loading && props.contentComponent" :is="props.contentComponent" />
+      </article>
+      <GiscusComments v-if="!props.loading && isGiscusReady" />
+    </div>
     <aside class="menus">
       <div class="toc" v-if="props.loading"></div>
       <div class="toc" v-else-if="props.toc.length > 0">

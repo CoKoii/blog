@@ -68,6 +68,15 @@ comments: 12
 
 主配置在 `site.config.json`，可修改站点信息、作者信息、社交链接、标签封面与颜色等。
 
+评论区（Giscus）可在 `site.config.json > comments.giscus` 配置，关键参数包括：
+
+- `comments.enabled`（是否启用）
+- `repo` / `repoId`
+- `category` / `categoryId`
+- `mapping`（推荐 `pathname`）
+- `strict`（推荐 `true`）
+- `lang` / `theme`
+
 **开源协议**
 
 本项目采用 MIT 协议，详见 `LICENSE`。

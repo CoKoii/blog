@@ -40,6 +40,23 @@
   "stats": {
     "startDate": "2026-01-04"
   },
+  "comments": {
+    "enabled": true,
+    "giscus": {
+      "repo": "CoKoii/blog",
+      "repoId": "1127544129",
+      "category": "Announcements",
+      "categoryId": "DIC_kwDOQzT1Qc4C3Jqy",
+      "mapping": "pathname",
+      "strict": true,
+      "reactionsEnabled": true,
+      "emitMetadata": false,
+      "inputPosition": "top",
+      "theme": "light",
+      "lang": "zh-CN",
+      "loading": "lazy"
+    }
+  },
   "tagMeta": {
     "all": {
       "color": "#9ca3af",
