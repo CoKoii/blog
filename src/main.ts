@@ -90,7 +90,8 @@ export const createApp = ViteSSG(
     router.beforeEach((to, from) => {
       const [toPathNoHash] = to.fullPath.split('#')
       const [fromPathNoHash] = from.fullPath.split('#')
-      if (from.name && toPathNoHash !== fromPathNoHash) {
+      const isTagsTabSwitch = to.name === 'tags' && from.name === 'tags'
+      if (from.name && toPathNoHash !== fromPathNoHash && !isTagsTabSwitch) {
         NProgress.start()
       }
       return true
