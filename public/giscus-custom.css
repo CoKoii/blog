@@ -1,0 +1,305 @@
+/**
+ * Custom Giscus Theme for CaoKai Blog
+ * 根据博客主题风格定制的 Giscus 评论系统样式
+ */
+
+:root {
+  /* 主色调 - 蓝色 */
+  --color-accent-emphasis: #3b82f6;
+  --color-accent-fg: #3b82f6;
+  --color-accent-muted: rgba(59, 130, 246, 0.22);
+  --color-accent-subtle: #f5f6fd;
+  
+  /* 文字颜色 */
+  --color-fg-default: #111827;
+  --color-fg-muted: #6b7280;
+  --color-fg-subtle: #9ca3af;
+  
+  /* 背景色 */
+  --color-canvas-default: #ffffff;
+  --color-canvas-subtle: #f9fafb;
+  --color-canvas-inset: #f3f4f6;
+  
+  /* 边框 */
+  --color-border-default: #f0f0f0;
+  --color-border-muted: rgba(208, 208, 208, 0.38);
+  
+  /* 按钮 */
+  --color-btn-bg: #ffffff;
+  --color-btn-border: #f0f0f0;
+  --color-btn-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --color-btn-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  --color-btn-hover-bg: #f9fafb;
+  --color-btn-hover-border: #e5e7eb;
+  --color-btn-active-bg: #f3f4f6;
+  --color-btn-active-border: #d1d5db;
+  --color-btn-selected-bg: #eff6ff;
+  
+  /* 主色调按钮 */
+  --color-btn-primary-bg: #3b82f6;
+  --color-btn-primary-border: #3b82f6;
+  --color-btn-primary-shadow: 0 1px 2px 0 rgba(59, 130, 246, 0.3);
+  --color-btn-primary-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  --color-btn-primary-hover-bg: #3661df;
+  --color-btn-primary-hover-border: #3661df;
+  --color-btn-primary-selected-bg: #2563eb;
+  --color-btn-primary-selected-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.15);
+  --color-btn-primary-disabled-text: rgba(255, 255, 255, 0.5);
+  --color-btn-primary-disabled-bg: rgba(59, 130, 246, 0.6);
+  --color-btn-primary-disabled-border: rgba(59, 130, 246, 0.6);
+  
+  /* 输入框 */
+  --color-input-bg: #ffffff;
+  --color-input-border: #f0f0f0;
+  --color-input-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --color-input-contrast-bg: #f9fafb;
+  
+  /* 链接 */
+  --color-prettylights-syntax-markup-inserted-text: #22c55e;
+  --color-prettylights-syntax-markup-inserted-bg: rgba(34, 197, 94, 0.15);
+  
+  /* 圆角 */
+  --border-radius: 12px;
+  --border-radius-sharp: 8px;
+  
+  /* 间距 */
+  --base-size-4: 4px;
+  --base-size-8: 8px;
+  --base-size-12: 12px;
+  --base-size-16: 16px;
+}
+
+/* 主容器样式 */
+main.gsc-main {
+  border-radius: 12px;
+  background: transparent;
+}
+
+/* 评论输入区域 */
+.gsc-comment-box {
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(249, 250, 251, 0.95));
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.gsc-comment-box:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* 评论框 textarea */
+.gsc-comment-box-textarea,
+.gsc-comment-box-textarea:focus {
+  border-radius: 8px;
+  background: #ffffff;
+  border-color: #f0f0f0;
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.gsc-comment-box-textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* 头像 */
+.gsc-comment-author-avatar img,
+.gsc-comment-box-avatar img {
+  border-radius: 50%;
+  border: 2px solid #f9fafb;
+}
+
+/* 评论列表 */
+.gsc-comments {
+  gap: 16px;
+}
+
+/* 单个评论 */
+.gsc-comment {
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(249, 250, 251, 0.92));
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.gsc-comment:hover {
+  border-color: #e5e7eb;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(249, 250, 251, 0.98));
+  box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* 评论作者信息 */
+.gsc-comment-author {
+  color: #111827;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.gsc-comment-author a {
+  color: #111827;
+  text-decoration: none;
+}
+
+.gsc-comment-author a:hover {
+  color: #3b82f6;
+}
+
+/* 评论内容 */
+.gsc-comment-content {
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.gsc-comment-content p {
+  margin: 0.75em 0;
+}
+
+.gsc-comment-content a {
+  color: #3b82f6;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.gsc-comment-content a:hover {
+  border-bottom-color: #3b82f6;
+  color: #2563eb;
+}
+
+.gsc-comment-content code {
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.9em;
+  color: #1f2937;
+}
+
+.gsc-comment-content pre {
+  background: #1e1e1e;
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+}
+
+.gsc-comment-content pre code {
+  background: transparent;
+  border: none;
+  color: #d4d4d4;
+  padding: 0;
+}
+
+/* 按钮样式 */
+.gsc-comment-box-buttons button,
+.gsc-comment-reactions-button,
+.gsc-reply-button,
+.gsc-tl-line button {
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  border: 1px solid #f0f0f0;
+}
+
+.gsc-comment-box-buttons button:hover,
+.gsc-comment-reactions-button:hover,
+.gsc-reply-button:hover {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+  transform: translateY(-1px);
+}
+
+/* 主要操作按钮 */
+.gsc-comment-box-submit.btn-primary {
+  background: #3b82f6;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 2px 4px 0 rgba(59, 130, 246, 0.25);
+}
+
+.gsc-comment-box-submit.btn-primary:hover {
+  background: #3661df;
+  box-shadow: 0 4px 8px 0 rgba(59, 130, 246, 0.35);
+  transform: translateY(-2px);
+}
+
+/* 反应按钮 */
+.gsc-emoji-button {
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.gsc-emoji-button:hover {
+  background: rgba(59, 130, 246, 0.08);
+  transform: scale(1.1);
+}
+
+.gsc-emoji-button.has-reacted {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* 时间戳 */
+.gsc-comment-metadata {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* 分页 */
+.gsc-pagination {
+  gap: 8px;
+}
+
+.gsc-pagination-button {
+  border-radius: 8px;
+  border: 1px solid #f0f0f0;
+  background: #ffffff;
+  color: #374151;
+  font-weight: 500;
+}
+
+.gsc-pagination-button:hover {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+.gsc-pagination-button.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* 加载状态 */
+.gsc-loading-image {
+  opacity: 0.6;
+}
+
+/* Markdown 块引用 */
+.gsc-comment-content blockquote {
+  border-left: 3px solid rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.04);
+  padding: 12px 16px;
+  margin: 12px 0;
+  border-radius: 6px;
+  color: #4b5563;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .gsc-comment-box,
+  .gsc-comment {
+    border-radius: 10px;
+  }
+  
+  .gsc-comment-content {
+    font-size: 13px;
+  }
+}
+
+/* 暗色模式适配（预留） */
+@media (prefers-color-scheme: dark) {
+  /* 如果需要支持暗色模式，可以在这里添加样式 */
+}

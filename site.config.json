@@ -52,7 +52,7 @@
       "reactionsEnabled": true,
       "emitMetadata": false,
       "inputPosition": "top",
-      "theme": "light",
+      "theme": "https://blog.caoki.cn/giscus-custom.css",
       "lang": "zh-CN",
       "loading": "lazy"
     }
