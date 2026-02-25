@@ -1,7 +1,7 @@
 import type { PostMeta } from '@/types/post'
 import { formatDateYMD } from '@/utils/date'
 import { getPostDate, parsePostId } from '@/utils/posts'
-import { safeDecodeURIComponent } from '@/utils/strings'
+import { resolveTitleFromSlug } from '@/utils/strings'
 
 /**
  * 转换文章数据为列表显示格式
@@ -17,12 +17,10 @@ export interface PostListItem {
   tags?: string[]
 }
 
-const getTitleFromSlug = (slug: string): string => safeDecodeURIComponent(slug) || 'Untitled'
-
-export function usePostListFormat(posts: PostMeta[], markHotCount = 2): PostListItem[] {
+export function formatPostList(posts: PostMeta[], markHotCount = 2): PostListItem[] {
   return posts.map((post, index) => ({
     id: post.id,
-    title: post.frontmatter.title ?? getTitleFromSlug(parsePostId(post.id)?.slug || ''),
+    title: post.frontmatter.title ?? resolveTitleFromSlug(parsePostId(post.id)?.slug || ''),
     category: post.category,
     time: formatDateYMD(getPostDate(post)),
     readTime: post.frontmatter.readTime ? `${post.frontmatter.readTime} min` : '5 min',
@@ -35,7 +33,7 @@ export function usePostListFormat(posts: PostMeta[], markHotCount = 2): PostList
 /**
  * 获取文章统计信息
  */
-export function usePostStats(posts: PostMeta[]) {
+export function getPostStats(posts: PostMeta[]) {
   const totalPosts = posts.length
   const categories = new Set(posts.map((p) => p.category))
   const totalCategories = categories.size

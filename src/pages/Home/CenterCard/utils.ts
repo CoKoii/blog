@@ -1,7 +1,7 @@
-import { computed, ref } from 'vue'
-import { usePostListFormat } from '@/composables/usePost'
+import { formatPostList } from '@/composables/usePost'
 import { getAllPosts } from '@/utils/posts'
 import { ALL_TAG_SLUG, getTagTabs } from '@/utils/tags'
+import { computed, ref } from 'vue'
 import type { Project, Resource } from './types'
 
 export const useCenterCardData = () => {
@@ -35,7 +35,7 @@ export const useCenterCardData = () => {
     return allPosts.filter((post) => post.categorySlug === activeTab.value)
   })
 
-  const latestPosts = computed(() => usePostListFormat(filteredPosts.value, 2))
+  const latestPosts = computed(() => formatPostList(filteredPosts.value, 2))
 
   const groupedResources: Resource[] = [
     { title: 'Weekly Reads', count: 12, icon: 'lucide:book-open' },

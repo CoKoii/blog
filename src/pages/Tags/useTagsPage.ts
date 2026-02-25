@@ -1,10 +1,10 @@
-import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { formatPostList } from '@/composables/usePost'
 import { getTagMeta } from '@/config'
-import { usePostListFormat } from '@/composables/usePost'
 import { buildArticlePath } from '@/utils/paths'
 import { findPostById, getAllPosts } from '@/utils/posts'
 import { ALL_TAG_LABEL, ALL_TAG_SLUG, getTagTabs } from '@/utils/tags'
+import { computed, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 export const useTagsPage = () => {
   const route = useRoute()
@@ -41,7 +41,7 @@ export const useTagsPage = () => {
       : allPosts.filter((post) => post.categorySlug === activeTab.value),
   )
 
-  const cardPosts = computed(() => usePostListFormat(filteredPosts.value, 0))
+  const cardPosts = computed(() => formatPostList(filteredPosts.value, 0))
 
   const activeTagMeta = computed(() => {
     if (activeTab.value === allTabValue) return getTagMeta(allTabValue)

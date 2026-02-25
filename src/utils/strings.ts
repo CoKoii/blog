@@ -6,3 +6,6 @@ export const safeDecodeURIComponent = (value: string): string => {
     return value
   }
 }
+
+export const resolveTitleFromSlug = (slug?: string): string =>
+  safeDecodeURIComponent(slug || '') || 'Untitled'

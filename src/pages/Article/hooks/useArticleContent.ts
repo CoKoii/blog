@@ -1,6 +1,3 @@
-import type { Component } from 'vue'
-import { nextTick, onServerPrefetch, ref, shallowRef, watch } from 'vue'
-import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import type { PostFrontmatter, PostModule } from '@/types/post'
 import {
   findPostBySlug,
@@ -9,7 +6,12 @@ import {
   getPostContentSync,
   parsePostId,
 } from '@/utils/posts'
-import { safeDecodeURIComponent } from '@/utils/strings'
+import { resolveTitleFromSlug } from '@/utils/strings'
+import type { Component } from 'vue'
+import { nextTick, onServerPrefetch, ref, shallowRef, watch } from 'vue'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
+
+export { resolveTitleFromSlug }
 
 export const DEFAULT_FRONTMATTER: PostFrontmatter = {
   title: '',
@@ -26,9 +28,6 @@ type UseArticleContentOptions = {
   onBeforeContentChange?: () => void
   onAfterContentReady?: () => void
 }
-
-export const resolveTitleFromSlug = (slug?: string): string =>
-  safeDecodeURIComponent(slug || '') || 'Untitled'
 
 export const useArticleContent = (
   route: RouteLocationNormalizedLoaded,
@@ -108,7 +107,9 @@ export const useArticleContent = (
 
   onServerPrefetch(async () => {
     const categorySlug =
-      typeof route.params.category === 'string' ? route.params.category : String(route.params.category || '')
+      typeof route.params.category === 'string'
+        ? route.params.category
+        : String(route.params.category || '')
     const articleSlug =
       typeof route.params.id === 'string' ? route.params.id : String(route.params.id || '')
     const resolved = resolveArticle(categorySlug, articleSlug)

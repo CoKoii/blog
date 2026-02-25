@@ -1,10 +1,10 @@
+import { formatDate } from '@/utils/date'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { formatDate } from '@/utils/date'
-import type { ArticleMeta } from './types'
 import { resolveTitleFromSlug, useArticleContent } from './hooks/useArticleContent'
 import { useArticleHead } from './hooks/useArticleHead'
 import { useArticleToc } from './hooks/useArticleToc'
+import type { ArticleMeta } from './types'
 
 export const useArticlePage = () => {
   const route = useRoute()

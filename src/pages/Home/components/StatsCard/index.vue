@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-import { onMounted, ref, computed } from 'vue'
-import { getAllPosts } from '@/utils/posts'
-import { usePostStats } from '@/composables/usePost'
+import { getPostStats } from '@/composables/usePost'
 import { statsConfig } from '@/config'
+import { getAllPosts } from '@/utils/posts'
+import { Icon } from '@iconify/vue'
+import { computed, onMounted, ref } from 'vue'
 
 const statsDays = ref('—')
 
 // 获取文章统计数据
 const allPosts = getAllPosts()
-const stats = usePostStats(allPosts)
+const stats = getPostStats(allPosts)
 
 const totalArticles = computed(() => stats.totalPosts)
 const totalWords = computed(() => stats.totalWords)
