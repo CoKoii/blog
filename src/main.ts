@@ -1,12 +1,12 @@
 import { preloadPostContent, resolvePostIdBySlug } from '@/utils/posts'
 import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 import { createPinia } from 'pinia'
 import { ViteSSG } from 'vite-ssg'
 import App from './App.vue'
 import { vLazy } from './directives/vLazy'
 import routes from './router'
 import { consumeScroll, queueScroll } from './router/scroll'
-import 'nprogress/nprogress.css'
 import './styles/reset.scss'
 
 const RELOAD_KEY = '__router_import_reload_path__'
@@ -32,8 +32,7 @@ const getCurrentPath = () =>
 
 const restoreQueuedScroll = () => {
   const pos = consumeScroll()
-  const apply = () =>
-    window.scrollTo({ left: pos.left ?? 0, top: pos.top ?? 0, behavior: 'auto' })
+  const apply = () => window.scrollTo({ left: pos.left ?? 0, top: pos.top ?? 0, behavior: 'auto' })
   if (typeof window.requestAnimationFrame === 'function') {
     window.requestAnimationFrame(() => apply())
   } else {
@@ -111,7 +110,6 @@ export const createApp = ViteSSG(
         sessionStorage.removeItem(RELOAD_KEY)
       }
 
-      // Same view component with different params/path won't trigger transition enter hooks.
       if (to.name && from.name && to.name === from.name && to.path !== from.path) {
         restoreQueuedScroll()
       }

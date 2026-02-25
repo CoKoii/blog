@@ -33,3 +33,18 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+#nprogress .bar {
+  background: var(--color-accent-blue);
+}
+
+#nprogress .peg {
+  box-shadow:
+    0 0 10px var(--color-accent-blue),
+    0 0 5px var(--color-accent-blue);
+}
+
+#nprogress .spinner-icon {
+  border-top-color: var(--color-accent-blue);
+  border-left-color: var(--color-accent-blue);
+}
