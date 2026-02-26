@@ -1,6 +1,7 @@
 import {
   siteConfig,
   type SiteCommentsGiscus,
+  type SiteGithub,
   type SiteOwner,
   type SiteSocialLink,
   type SiteStats,
@@ -39,10 +40,16 @@ export const wechatConfig: Required<SiteWechat> = { qrUrl: siteConfig.wechat?.qr
 
 export const statsConfig: Required<SiteStats> = { startDate: siteConfig.stats?.startDate || '' }
 
+export const githubConfig: Required<SiteGithub> = {
+  username: siteConfig.github?.username || ownerProfile.githubUsername || '',
+  repo: siteConfig.github?.repo || '',
+  apiBase: norm(siteConfig.github?.apiBase || 'https://api.github.com'),
+}
+
 const gis = siteConfig.comments?.giscus
 const giscusConfig: Required<SiteCommentsGiscus> = {
   host: gis?.host || '',
-  repo: gis?.repo || '',
+  repo: gis?.repo || githubConfig.repo || '',
   repoId: gis?.repoId || '',
   category: gis?.category || '',
   categoryId: gis?.categoryId || '',
@@ -79,6 +86,7 @@ export const normalizedConfig = {
   socialLinks,
   wechatConfig,
   statsConfig,
+  githubConfig,
   commentsConfig,
   hasValidGiscusConfig: hasValidGiscus,
   tagMeta: siteConfig.tagMeta,

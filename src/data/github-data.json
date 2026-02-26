@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-02-26T08:26:20.890Z",
+  "github": {
+    "username": "CoKoii",
+    "profileUrl": "https://github.com/CoKoii",
+    "repo": "CoKoii/blog",
+    "repoUrl": "https://github.com/CoKoii/blog",
+    "projects": 8,
+    "stars": 3,
+    "updatedAt": "2026-02-26T07:43:26Z"
+  },
+  "comments": {
+    "repo": "CoKoii/blog",
+    "categoryId": "DIC_kwDOQzT1Qc4C3Jqy",
+    "mapping": "pathname",
+    "strict": true,
+    "byPath": {
+      "/article/prompt/vue-xiangmuzhonggouyouhuatishici": 0,
+      "/article/vuejs-shejiyushixian/diyizhang-quanhengdeyishu": 0,
+      "/article/baguwen/javascript-mianshizhenti": 0,
+      "/article/qianduan/tongguozitizijihuatishengwangyejiazaixingneng": 2,
+      "/article/houduan/shiyong-cloudflaretunnel-jinxingqianhouduanyuanchengliantiao": 0
+    }
+  }
+}

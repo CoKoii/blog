@@ -1,14 +1,38 @@
 <script setup lang="ts">
-import ossData from '@/data/opensource.json'
+import { githubConfig } from '@/config'
+import githubData from '@/data/github-data.json'
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
+
+type GithubDataPayload = {
+  github?: {
+    profileUrl?: string
+    repoUrl?: string
+    projects?: number
+    stars?: number
+    updatedAt?: string | null
+  }
+}
 
 const fmt = (n: number) =>
   n < 1000 ? `${n}` : `${n >= 10000 ? n / 1000 : Math.round((n / 1000) * 10) / 10}k`
 
+const payload = githubData as GithubDataPayload
+const profileUrl = computed(() => {
+  if (payload.github?.profileUrl) return payload.github.profileUrl
+  return githubConfig.username ? `https://github.com/${githubConfig.username}` : 'https://github.com'
+})
+const repoUrl = computed(() => {
+  if (payload.github?.repoUrl) return payload.github.repoUrl
+  return githubConfig.repo ? `https://github.com/${githubConfig.repo}` : `${profileUrl.value}/blog`
+})
+const projects = computed(() => Number(payload.github?.projects || 0))
+const stars = computed(() => Number(payload.github?.stars || 0))
+const updatedAt = computed(() => payload.github?.updatedAt || null)
+
 const meta = computed(() => {
-  if (!ossData.updatedAt) return '刚刚更新'
-  const t = new Date(ossData.updatedAt)
+  if (!updatedAt.value) return '构建时更新'
+  const t = new Date(updatedAt.value)
   if (Number.isNaN(t.getTime())) return '刚刚更新'
   const days = Math.max(0, Math.floor((Date.now() - t.getTime()) / 864e5))
   return days === 0 ? '刚刚更新' : `${days}天前更新`
@@ -25,7 +49,7 @@ const meta = computed(() => {
       <a
         class="pill"
         title="Open Source"
-        :href="`${ossData.profileUrl}/blog`"
+        :href="repoUrl"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -39,16 +63,16 @@ const meta = computed(() => {
     <div class="stats" aria-label="Open source stats">
       <div class="stat">
         <div class="k">Projects</div>
-        <div class="v">{{ ossData.projects }}</div>
+        <div class="v">{{ projects }}</div>
       </div>
       <div class="stat">
         <div class="k">Stars</div>
-        <div class="v">{{ fmt(ossData.stars) }}</div>
+        <div class="v">{{ fmt(stars) }}</div>
       </div>
     </div>
 
     <div class="bottom">
-      <a class="cta" :href="ossData.profileUrl" target="_blank" rel="noopener noreferrer">
+      <a class="cta" :href="profileUrl" target="_blank" rel="noopener noreferrer">
         查看我的作品
         <Icon class="arrow" icon="lucide:arrow-right" />
       </a>

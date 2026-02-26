@@ -1,16 +1,6 @@
 /// <reference types="vite/client" />
 /// <reference types="unplugin-vue-markdown/client" />
 
-interface ImportMetaEnv {
-  readonly VITE_GITHUB_TOKEN?: string
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv
-}
-
-declare const __GITHUB_TOKEN__: string
-
 declare module '*.vue' {
   import type { DefineComponent } from 'vue'
   const component: DefineComponent

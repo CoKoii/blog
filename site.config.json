@@ -5,6 +5,10 @@
   "image": "",
   "language": "zh-CN",
   "brandName": "CaoKai",
+  "github": {
+    "username": "CoKoii",
+    "repo": "CoKoii/blog"
+  },
   "owner": {
     "name": "CaoKai",
     "headline": "Full-Stack Developer",
@@ -43,7 +47,6 @@
   "comments": {
     "enabled": true,
     "giscus": {
-      "repo": "CoKoii/blog",
       "repoId": "R_kgDOQzT1QQ",
       "category": "Announcements",
       "categoryId": "DIC_kwDOQzT1Qc4C3Jqy",

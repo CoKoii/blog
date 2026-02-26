@@ -4,18 +4,23 @@ import path from 'node:path'
 const parseEnvLine = (line) => {
   const trimmed = line.trim()
   if (!trimmed || trimmed.startsWith('#')) return null
+
   const eqIndex = trimmed.indexOf('=')
   if (eqIndex === -1) return null
+
   const key = trimmed.slice(0, eqIndex).trim()
   let value = trimmed.slice(eqIndex + 1).trim()
+
   if (value.startsWith('"') && value.endsWith('"')) {
     value = value.slice(1, -1)
   }
+
   return key ? [key, value] : null
 }
 
 const readEnvFile = (filePath) => {
   if (!fs.existsSync(filePath)) return {}
+
   const content = fs.readFileSync(filePath, 'utf-8')
   const env = {}
   for (const line of content.split(/\r?\n/)) {
@@ -24,6 +29,7 @@ const readEnvFile = (filePath) => {
     const [key, value] = parsed
     env[key] = value
   }
+
   return env
 }
 

@@ -68,14 +68,28 @@ comments: 12
 
 主配置在 `site.config.json`，可修改站点信息、作者信息、社交链接、标签封面与颜色等。
 
+GitHub 相关配置建议统一放在 `site.config.json > github`：
+
+- `username`：GitHub 用户名（用于构建期统计）
+- `repo`：主仓库（用于评论区默认仓库）
+- `apiBase`：可选，默认 `https://api.github.com`
+
 评论区（Giscus）可在 `site.config.json > comments.giscus` 配置，关键参数包括：
 
 - `comments.enabled`（是否启用）
-- `repo` / `repoId`
+- `repoId`（`repo` 默认继承 `github.repo`，也可单独覆盖）
 - `category` / `categoryId`
 - `mapping`（推荐 `pathname`）
 - `strict`（推荐 `true`）
 - `lang` / `theme`
+
+仓库统计与文章评论数量在构建时一次性拉取并写入 `src/data/github-data.json`，页面只读取本地 JSON，不做运行时请求。
+
+如需提升 GitHub API 限额，可在本地 `.env`（或 CI 环境变量）配置：
+
+```bash
+GITHUB_TOKEN=your_github_pat
+```
 
 **开源协议**
 

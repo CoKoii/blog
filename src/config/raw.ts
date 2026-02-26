@@ -4,6 +4,7 @@ import type { SiteConfig } from './types'
 export type {
   SiteComments,
   SiteCommentsGiscus,
+  SiteGithub,
   SiteConfig,
   SiteOwner,
   SiteSocialLink,

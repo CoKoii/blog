@@ -25,6 +25,12 @@ export type SiteStats = {
   startDate?: string
 }
 
+export type SiteGithub = {
+  username?: string
+  repo?: string
+  apiBase?: string
+}
+
 export type SiteCommentsGiscus = {
   host?: string
   repo?: string
@@ -74,5 +80,6 @@ export type SiteConfig = {
   socials?: SiteSocialLink[]
   wechat?: SiteWechat
   stats?: SiteStats
+  github?: SiteGithub
   comments?: SiteComments
 }

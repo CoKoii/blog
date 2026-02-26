@@ -1,18 +1,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import matter from 'gray-matter'
-import { loadEnv } from './utils/env.mjs'
 import { buildArticlePath, toPinyinSlug } from './utils/slug.mjs'
 import { resolveSiteMeta } from './utils/site-config.mjs'
 import { listPostFiles } from './utils/posts.mjs'
 
 const rootDir = process.cwd()
 const distDir = path.join(rootDir, 'dist')
-const env = loadEnv(rootDir)
-const { siteUrl, siteName, siteDescription, siteLanguage } = resolveSiteMeta({
-  env,
-  rootDir,
-})
+const { siteUrl, siteName, siteDescription, siteLanguage } = resolveSiteMeta({ rootDir })
 
 const ensureDist = () => {
   if (!fs.existsSync(distDir)) {
