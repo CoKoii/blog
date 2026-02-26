@@ -19,7 +19,6 @@ const success = (message) => console.log(`${color.green}${message}${color.reset}
 const warn = (message) => console.log(`${color.yellow}${message}${color.reset}`)
 const error = (message) => console.log(`${color.red}${message}${color.reset}`)
 
-const GITHUB_DEFAULT_API_BASE = 'https://api.github.com'
 const DISCUSSION_PER_PAGE = 100
 const DISCUSSION_MAX_PAGES = 10
 const ROOT_DIR = process.cwd()
@@ -27,25 +26,23 @@ const ROOT_DIR = process.cwd()
 const env = loadEnv(ROOT_DIR)
 const siteConfig = loadSiteConfig(ROOT_DIR)
 
-const asObject = (value) => (value && typeof value === 'object' ? value : {})
 const toTrimmedString = (value) => String(value || '').trim()
 
-const githubConfig = asObject(siteConfig.github)
-const ownerConfig = asObject(siteConfig.owner)
-const commentsConfig = asObject(siteConfig.comments)
-const giscusConfig = asObject(commentsConfig.giscus)
+const githubConfig = siteConfig.github
+const commentsConfig = siteConfig.comments
+const giscusConfig = siteConfig.comments.giscus
 
-const username = toTrimmedString(githubConfig.username || ownerConfig.githubUsername)
-const repo = toTrimmedString(githubConfig.repo || giscusConfig.repo)
-const apiBase = toTrimmedString(githubConfig.apiBase || GITHUB_DEFAULT_API_BASE).replace(/\/+$/, '')
+const username = toTrimmedString(githubConfig.username)
+const repo = toTrimmedString(giscusConfig.repo)
+const apiBase = toTrimmedString(githubConfig.apiBase).replace(/\/+$/, '')
 const token = toTrimmedString(env.GITHUB_TOKEN)
 const profileUrl = username ? `https://github.com/${username}` : ''
 const repoUrl = repo ? `https://github.com/${repo}` : profileUrl
-const commentsEnabled = Boolean(commentsConfig.enabled)
+const commentsEnabled = commentsConfig.enabled
 const categoryId = toTrimmedString(giscusConfig.categoryId)
-const mapping = toTrimmedString(giscusConfig.mapping || 'pathname')
+const mapping = toTrimmedString(giscusConfig.mapping)
 const term = toTrimmedString(giscusConfig.term)
-const strict = giscusConfig.strict === undefined ? true : Boolean(giscusConfig.strict)
+const strict = giscusConfig.strict
 
 const decodeSafe = (value) => {
   try {
@@ -124,11 +121,6 @@ const createRepoStats = ({ projects = 0, stars = 0, updatedAt = null } = {}) => 
 })
 
 const fetchRepoStats = async () => {
-  if (!username) {
-    warn('未配置 github.username，仓库统计将为空。')
-    return createRepoStats()
-  }
-
   const apiUrl = `${apiBase}/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated`
   const repos = await requestJson(apiUrl)
   if (!Array.isArray(repos)) {
@@ -185,23 +177,18 @@ const resolveCommentCounts = async (paths) => {
   if (!commentsEnabled) return byPath
 
   const repoInfo = parseRepo(repo)
-  if (!repoInfo) {
-    warn('comments.giscus.repo 与 github.repo 均未配置有效仓库，评论统计将为空。')
-    return byPath
-  }
+  if (!repoInfo) throw new Error('GitHub 仓库配置无效，必须为 owner/repo 格式。')
 
   if (mapping === 'number') {
     if (!/^\d+$/.test(term)) {
-      warn('giscus.mapping=number 但 term 非数字，评论统计将为空。')
-      return byPath
+      throw new Error('评论映射为 number 时，「评论.giscus.指定词」必须为数字。')
     }
     const count = await fetchCommentsByNumber(repoInfo, term)
     return toPathCommentsMap(paths, count)
   }
 
   if (mapping !== 'pathname' && mapping !== 'specific') {
-    warn(`当前 mapping=${mapping} 不支持构建期批量统计，评论数将默认为 0。`)
-    return byPath
+    throw new Error(`评论映射值「${mapping}」不支持构建期统计，请使用 pathname / specific / number。`)
   }
 
   const discussions = await fetchDiscussions(repoInfo)
@@ -258,8 +245,8 @@ const resolveCommentCounts = async (paths) => {
 const main = async () => {
   const startedAt = Date.now()
   info(`开始生成 GitHub 数据，文章评论将进行构建期汇总。`)
-  info(`GitHub 用户：${username || '未配置'}`)
-  info(`GitHub 仓库：${repo || '未配置'}`)
+  info(`GitHub 用户：${username}`)
+  info(`GitHub 仓库：${repo}`)
   if (!token) {
     warn('未检测到 GITHUB_TOKEN，将使用匿名请求（可能触发限流）。')
   }

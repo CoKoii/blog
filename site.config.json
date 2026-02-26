@@ -1,95 +1,92 @@
 {
-  "url": "https://blog.caoki.cn",
-  "name": "CaoKai - 技术博客",
-  "description": "专注前端、SSG、Vue、工程化实践等技术领域的分享",
-  "image": "",
-  "language": "zh-CN",
-  "brandName": "CaoKai",
-  "github": {
-    "username": "CoKoii",
-    "repo": "CoKoii/blog"
+  "站点": {
+    "地址": "https://blog.caoki.cn",
+    "名称": "CaoKai - 技术博客",
+    "描述": "专注前端、SSG、Vue、工程化实践等技术领域的分享",
+    "分享图": "",
+    "语言": "zh-CN",
+    "品牌名": "CaoKai"
   },
-  "owner": {
-    "name": "CaoKai",
-    "headline": "Full-Stack Developer",
-    "greeting": "Hi, I'm CaoKai",
-    "greetingEmoji": "👋",
-    "bio": "欢迎来到我的博客 😝，这里是我记笔记的地方 🙌，目前在杭州实习",
-    "bioEmphasis": "— 花名: 陳平安",
-    "quote": "我见青山多妩媚，料青山见我应如是",
-    "avatar": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/avatar.webp",
-    "tags": ["大三在读", "实习ing", "开发博客", "上班摸鱼中", "理财小白"],
-    "githubUsername": "CoKoii"
+  "作者": {
+    "姓名": "CaoKai",
+    "头衔": "Full-Stack Developer",
+    "问候语": "Hi, I'm CaoKai",
+    "问候表情": "👋",
+    "简介": "欢迎来到我的博客 😝，这里是我记笔记的地方 🙌，目前在杭州实习",
+    "简介强调": "— 花名: 陳平安",
+    "签名": "我见青山多妩媚，料青山见我应如是",
+    "头像": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/avatar.webp",
+    "标签": ["大三在读", "实习ing", "开发博客", "上班摸鱼中", "理财小白"]
   },
-  "socials": [
+  "社交链接": [
     {
-      "label": "GitHub",
-      "icon": "lucide:github",
-      "url": "https://github.com/CoKoii"
+      "名称": "GitHub",
+      "图标": "lucide:github",
+      "链接": "https://github.com/CoKoii"
     },
     {
-      "label": "Twitter / X",
-      "icon": "meteor-icons:telegram",
-      "url": "https://t.me/CaoK_ai"
+      "名称": "Twitter / X",
+      "图标": "meteor-icons:telegram",
+      "链接": "https://t.me/CaoK_ai"
     },
     {
-      "label": "Dribbble",
-      "icon": "codicon:twitter",
-      "url": "https://x.com/CaoKaiii"
+      "名称": "Dribbble",
+      "图标": "codicon:twitter",
+      "链接": "https://x.com/CaoKaiii"
     }
   ],
-  "wechat": {
-    "qrUrl": "/wechat-qr.png"
+  "微信": {
+    "二维码": "/wechat-qr.png"
   },
-  "stats": {
-    "startDate": "2026-01-04"
+  "统计": {
+    "建站日期": "2026-01-04"
   },
-  "comments": {
-    "enabled": true,
+  "GitHub": {
+    "用户名": "CoKoii",
+    "仓库": "CoKoii/blog",
+    "接口地址": "https://api.github.com"
+  },
+  "评论": {
+    "启用": true,
     "giscus": {
-      "repoId": "R_kgDOQzT1QQ",
-      "category": "Announcements",
-      "categoryId": "DIC_kwDOQzT1Qc4C3Jqy",
-      "mapping": "pathname",
-      "strict": true,
-      "reactionsEnabled": true,
-      "emitMetadata": false,
-      "inputPosition": "top",
-      "theme": "light",
-      "lang": "zh-CN",
-      "loading": "lazy"
+      "仓库ID": "R_kgDOQzT1QQ",
+      "分类": "Announcements",
+      "分类ID": "DIC_kwDOQzT1Qc4C3Jqy"
     }
   },
-  "tagMeta": {
-    "all": {
-      "color": "#9ca3af",
-      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
-      "description": "全站内容聚合区，集中展示前端、工程化、性能与日常实践的文章与记录，方便快速浏览与系统回顾。"
-    },
-    "前端": {
-      "color": "#f6ad55",
-      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
-      "description": "前端技术与实战记录，涵盖工程化实践、性能优化、体验打磨与常见问题的解决方案沉淀。"
-    },
-    "后端": {
-      "color": "#4380E7",
-      "description": "后端技术与实践记录，涵盖服务端开发、数据库优化、系统架构与部署运维等领域的知识沉淀。"
-    },
-    "Prompt": {
-      "color": "#6245FB",
-      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/Prompt.webp",
-      "description": "Prompt工程与实践记录，涵盖提示词设计原则、优化策略与实际应用案例的总结与分享。"
-    },
-    "VueJS设计与实现": {
-      "color": "#42b883",
-      "cover": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/vuejssjysx.webp",
-      "description": "围绕《Vue.js 设计与实现》的读书笔记与源码解析，记录关键设计思路、实现细节与个人理解的延伸整理。"
-    },
-    "八股文": {
-      "color": "#f87171",
-      "cover": "",
-      "description": "高频面试题与基础知识梳理，覆盖核心概念、易错点与答题思路，适合阶段复盘与系统查缺补漏。"
+  "标签": {
+    "默认颜色": "#9ca3af",
+    "元信息": {
+      "all": {
+        "颜色": "#9ca3af",
+        "封面": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
+        "描述": "全站内容聚合区，集中展示前端、工程化、性能与日常实践的文章与记录，方便快速浏览与系统回顾。"
+      },
+      "前端": {
+        "颜色": "#f6ad55",
+        "封面": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
+        "描述": "前端技术与实战记录，涵盖工程化实践、性能优化、体验打磨与常见问题的解决方案沉淀。"
+      },
+      "后端": {
+        "颜色": "#4380E7",
+        "封面": "",
+        "描述": "后端技术与实践记录，涵盖服务端开发、数据库优化、系统架构与部署运维等领域的知识沉淀。"
+      },
+      "Prompt": {
+        "颜色": "#6245FB",
+        "封面": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/Prompt.webp",
+        "描述": "Prompt工程与实践记录，涵盖提示词设计原则、优化策略与实际应用案例的总结与分享。"
+      },
+      "VueJS设计与实现": {
+        "颜色": "#42b883",
+        "封面": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/vuejssjysx.webp",
+        "描述": "围绕《Vue.js 设计与实现》的读书笔记与源码解析，记录关键设计思路、实现细节与个人理解的延伸整理。"
+      },
+      "八股文": {
+        "颜色": "#f87171",
+        "封面": "",
+        "描述": "高频面试题与基础知识梳理，覆盖核心概念、易错点与答题思路，适合阶段复盘与系统查缺补漏。"
+      }
     }
-  },
-  "defaultTagColor": "#9ca3af"
+  }
 }

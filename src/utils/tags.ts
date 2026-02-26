@@ -7,7 +7,7 @@ export type TagTab = { label: string; value: string }
 export const ALL_TAG_SLUG = 'all'
 export const ALL_TAG_LABEL = 'All'
 
-const labels = Object.keys(siteConfig.tagMeta || {})
+const labels = Object.keys(siteConfig.tags.meta)
   .map((l) => l.trim())
   .filter(Boolean)
 

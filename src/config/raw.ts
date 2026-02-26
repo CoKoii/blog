@@ -1,5 +1,6 @@
 import rawConfig from '../../site.config.json'
 import type { SiteConfig } from './types'
+import { validateSiteConfig } from './validator'
 
 export type {
   SiteComments,
@@ -12,7 +13,4 @@ export type {
   SiteWechat,
 } from './types'
 
-const isSiteConfig = (value: unknown): value is SiteConfig =>
-  typeof value === 'object' && value !== null
-
-export const siteConfig: SiteConfig = isSiteConfig(rawConfig) ? rawConfig : {}
+export const siteConfig: SiteConfig = validateSiteConfig(rawConfig)
