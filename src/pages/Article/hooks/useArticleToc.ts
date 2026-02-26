@@ -15,6 +15,7 @@ export const useArticleToc = () => {
   let headings: Heading[] = []
   let raf = 0
   let forceSync = false
+  const getConnectedHeadings = () => headings.filter((h) => h.el.isConnected)
 
   const normalizeText = (text: string) =>
     text
@@ -63,10 +64,12 @@ export const useArticleToc = () => {
 
   const getActiveId = () => {
     if (!canUseDOM || !headings.length) return ''
-    if (isBottom()) return headings[headings.length - 1]?.id || ''
+    const connectedHeadings = getConnectedHeadings()
+    if (!connectedHeadings.length) return ''
+    if (isBottom()) return connectedHeadings[connectedHeadings.length - 1]?.id || ''
     const target = window.scrollY + getOffset()
-    let id = headings[0]?.id || ''
-    for (const h of headings) {
+    let id = connectedHeadings[0]?.id || ''
+    for (const h of connectedHeadings) {
       if (h.el.getBoundingClientRect().top + window.scrollY <= target) {
         id = h.id
       } else {
@@ -99,7 +102,7 @@ export const useArticleToc = () => {
   const handleHashChange = () => {
     if (!canUseDOM || !headings.length) return
     const id = getHashId()
-    if (id && headings.some((h) => h.id === id)) {
+    if (id && getConnectedHeadings().some((h) => h.id === id)) {
       activeHeadingId.value = id
     } else {
       scheduleSync(true)
@@ -239,22 +242,22 @@ export const useArticleToc = () => {
     window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
   }
 
+  const handleScroll = () => scheduleSync()
+  const handleResize = () => scheduleSync(true)
+
   onMounted(() => {
     if (!canUseDOM) return
-    window.addEventListener('scroll', () => scheduleSync(), { passive: true })
-    window.addEventListener('resize', () => scheduleSync(true))
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', handleResize)
     window.addEventListener('hashchange', handleHashChange)
   })
 
   onUnmounted(() => {
     if (!canUseDOM) return
-    window.removeEventListener('scroll', () => scheduleSync())
-    window.removeEventListener('resize', () => scheduleSync(true))
+    window.removeEventListener('scroll', handleScroll)
+    window.removeEventListener('resize', handleResize)
     window.removeEventListener('hashchange', handleHashChange)
-    if (raf) {
-      cancelAnimationFrame(raf)
-      raf = 0
-    }
+    resetTocState()
   })
 
   return { toc, activeHeadingId, resetTocState, refreshArticleDecorations, scrollToHeading }
