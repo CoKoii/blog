@@ -6,7 +6,6 @@ coverImage: https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/javascript.svg
 wordCount: 1800
 readTime: 8
 location: 杭州
-comments: 3
 ---
 
 ## 说说 JavaScript 中的数据类型? 存储上的差别?

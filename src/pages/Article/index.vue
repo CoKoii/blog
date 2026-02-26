@@ -9,7 +9,7 @@ const isLoading = computed(() => !ContentComponent.value)
 </script>
 
 <template>
-  <main class="Article">
+  <main>
     <CoverSection :article="article" :loading="isLoading" />
     <ContentSection
       :content-component="ContentComponent"
@@ -20,7 +20,5 @@ const isLoading = computed(() => !ContentComponent.value)
     />
   </main>
 </template>
-
-<style scoped lang="scss" src="./style.scss"></style>
 
 <style lang="scss" src="@/styles/markdown.scss"></style>

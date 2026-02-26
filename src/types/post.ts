@@ -14,7 +14,6 @@ export interface PostFrontmatter {
   readTime?: number
   views?: number
   location?: string
-  comments?: number
   author?: string
   category?: string
   [key: string]: unknown

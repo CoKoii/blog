@@ -21,7 +21,6 @@ export const DEFAULT_FRONTMATTER: PostFrontmatter = {
   readTime: 0,
   publishDate: '',
   location: '',
-  comments: 0,
 }
 
 type UseArticleContentOptions = {

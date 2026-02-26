@@ -215,6 +215,22 @@ export const useArticleToc = () => {
       })
   }
 
+  const enhanceLinks = () => {
+    if (!canUseDOM) return
+    Array.from(document.querySelectorAll('.markdown-content a'))
+      .filter((link): link is HTMLAnchorElement => link instanceof HTMLAnchorElement)
+      .forEach((link) => {
+        const href = (link.getAttribute('href') || '').trim()
+        if (!href || href.startsWith('#')) return
+        link.setAttribute('target', '_blank')
+        const rel = (link.getAttribute('rel') || '').trim()
+        const relSet = new Set(rel.split(/\s+/).filter(Boolean))
+        relSet.add('noopener')
+        relSet.add('noreferrer')
+        link.setAttribute('rel', Array.from(relSet).join(' '))
+      })
+  }
+
   const resetTocState = () => {
     if (canUseDOM && raf) {
       cancelAnimationFrame(raf)
@@ -227,6 +243,7 @@ export const useArticleToc = () => {
   }
 
   const refreshArticleDecorations = () => {
+    enhanceLinks()
     enhanceImages()
     enhanceCode()
     refreshToc()

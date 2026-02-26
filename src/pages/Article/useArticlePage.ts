@@ -26,7 +26,6 @@ export const useArticlePage = () => {
     readTime: frontmatter.value.readTime || 0,
     publishDate: formatDate(frontmatter.value.publishDate || frontmatter.value.date),
     location: frontmatter.value.location || '',
-    comments: frontmatter.value.comments || 0,
   }))
 
   useArticleHead({ route, article, frontmatter })

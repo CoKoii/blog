@@ -35,9 +35,6 @@ defineProps<{ article: ArticleMeta; loading: boolean }>()
         <span class="meta_item" v-if="article.location">
           <Icon class="icon" icon="lucide:map-pin" />{{ article.location }}
         </span>
-        <span class="meta_item" v-if="article.comments">
-          <Icon class="icon" icon="lucide:message-circle" />{{ article.comments }}
-        </span>
       </div>
     </div>
   </div>
