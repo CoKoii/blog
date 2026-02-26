@@ -1,6 +1,7 @@
 import { formatDate } from '@/utils/date'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useArticleComments } from './hooks/useArticleComments'
 import { resolveTitleFromSlug, useArticleContent } from './hooks/useArticleContent'
 import { useArticleHead } from './hooks/useArticleHead'
 import { useArticleToc } from './hooks/useArticleToc'
@@ -8,6 +9,7 @@ import type { ArticleMeta } from './types'
 
 export const useArticlePage = () => {
   const route = useRoute()
+  const { comments } = useArticleComments(route)
   const { toc, activeHeadingId, resetTocState, refreshArticleDecorations, scrollToHeading } =
     useArticleToc()
   const { ContentComponent, frontmatter, resolvedTitle } = useArticleContent(route, {
@@ -26,6 +28,7 @@ export const useArticlePage = () => {
     readTime: frontmatter.value.readTime || 0,
     publishDate: formatDate(frontmatter.value.publishDate || frontmatter.value.date),
     location: frontmatter.value.location || '',
+    comments: comments.value,
   }))
 
   useArticleHead({ route, article, frontmatter })

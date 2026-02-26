@@ -260,58 +260,61 @@
 
   table {
     width: 100%;
-    display: block;
-    overflow-x: auto;
-    margin: 2.1em 0;
+    margin: 1.88em 0;
     border-collapse: separate;
     border-spacing: 0;
-    border-radius: var(--radius-2xl);
-    border: var(--border-width-1) solid rgba(21, 24, 31, 0.14);
-    background: linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
-    box-shadow:
-      0 8px 20px rgba(15, 23, 42, 0.06),
-      inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    border-radius: var(--radius-xl);
+    border: var(--border-width-1) solid var(--color-gray-150);
+    background: var(--color-white);
     overflow: hidden;
+    display: table;
+    table-layout: auto;
 
     th,
     td {
-      padding: 12px 14px;
-      border-bottom: var(--border-width-1) solid rgba(21, 24, 31, 0.1);
+      padding: 11px 14px;
+      border-bottom: var(--border-width-1) solid var(--color-gray-150);
       text-align: left;
-      white-space: nowrap;
+      white-space: normal;
+      word-break: break-word;
     }
 
     th + th,
     td + td {
-      border-left: var(--border-width-1) dashed rgba(21, 24, 31, 0.1);
+      border-left: var(--border-width-1) solid var(--color-gray-150);
     }
 
     th {
-      color: #1f2531;
-      font-weight: 680;
-      letter-spacing: 0.01em;
-      background: linear-gradient(
-        180deg,
-        rgba(233, 241, 255, 0.95) 0%,
-        rgba(245, 249, 255, 0.92) 100%
-      );
+      color: var(--color-gray-700);
+      font-weight: 700;
+      background: var(--color-gray-50);
     }
 
     td {
       color: var(--md-ink-soft);
-      background: rgba(255, 255, 255, 0.88);
+      background: var(--color-white);
     }
 
     tbody tr:nth-child(even) td {
-      background: rgba(242, 247, 255, 0.78);
-    }
-
-    tbody tr:hover td {
-      background: rgba(0, 98, 255, 0.08);
+      background: var(--color-gray-25);
     }
 
     tr:last-child td {
       border-bottom: 0;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      tbody tr:hover td {
+        background: rgba(17, 24, 39, 0.04);
+      }
+    }
+
+    @media (hover: none) {
+      -webkit-tap-highlight-color: transparent;
+
+      tbody tr:active td {
+        background: rgba(17, 24, 39, 0.06);
+      }
     }
   }
 

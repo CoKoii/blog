@@ -2,7 +2,7 @@
 
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { createMarkdownPlugin, createShikiHighlighter } from './scripts/plugins/markdown'
 import { createPostsMetaPlugin, getPostRoutes, getTagRoutes } from './scripts/plugins/posts-meta'
@@ -13,10 +13,15 @@ const FRAMEWORK_RE =
   /\/node_modules\/(?:vue\/|@vue\/|vue-router\/|pinia\/|vite-ssg\/|@unhead\/|unhead\/)/
 
 // https://vite.dev/config/
-export default defineConfig(async () => {
+export default defineConfig(async ({ mode }) => {
+  const env = loadEnv(mode, __dirname, '')
+  const githubToken = (env.VITE_GITHUB_TOKEN || env.GITHUB_TOKEN || '').trim()
   const highlighter = await createShikiHighlighter()
 
   return {
+    define: {
+      __GITHUB_TOKEN__: JSON.stringify(githubToken),
+    },
     server: {
       open: true,
     },

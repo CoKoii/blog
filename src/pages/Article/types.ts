@@ -12,4 +12,5 @@ export type ArticleMeta = {
   readTime: number
   publishDate: string
   location: string
+  comments: number | null
 }
