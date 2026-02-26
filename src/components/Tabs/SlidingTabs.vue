@@ -106,6 +106,9 @@ watch(() => props.tabs, center, { deep: true })
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
 
   &.tabs--full {
     width: 100%;

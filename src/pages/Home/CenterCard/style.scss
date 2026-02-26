@@ -4,15 +4,19 @@
 
 .main-content {
   display: grid;
-  grid-template-columns: 1fr calc(25% - var(--space-32px));
+  grid-template-columns: minmax(0, 1fr) minmax(0, calc(25% - var(--space-32px)));
   gap: var(--space-5);
 
+  > * {
+    min-width: 0;
+  }
+
   @media (max-width: 1800px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
