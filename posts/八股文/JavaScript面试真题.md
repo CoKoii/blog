@@ -3,8 +3,6 @@ description: '精选 JavaScript 高频面试真题，涵盖作用域、闭包、
 tags: [JavaScript面试, 前端面试题, JS面试真题, 前端校招, 前端八股文]
 date: 2026-01-15
 coverImage: https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/javascript.svg
-wordCount: 1800
-readTime: 8
 location: 杭州
 ---
 

@@ -11,8 +11,6 @@ tags:
   - 重构实践
 date: 2026-02-24
 coverImage: https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/Prompt.webp
-wordCount: 2200
-readTime: 10
 location: 杭州
 ---
 

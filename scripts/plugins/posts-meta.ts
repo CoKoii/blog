@@ -1,11 +1,11 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import type { HmrContext, ViteDevServer } from 'vite'
 import matter from 'gray-matter'
+import type { HmrContext, ViteDevServer } from 'vite'
 
-import { buildArticlePath, toPinyinSlug } from '../utils/slug.mjs'
 import { listPostFiles } from '../utils/posts.mjs'
+import { buildArticlePath, toPinyinSlug } from '../utils/slug.mjs'
 
 const POSTS_META_VIRTUAL_MODULE_ID = 'virtual:posts-meta'
 const SEARCH_INDEX_VIRTUAL_MODULE_ID = 'virtual:search-index'
@@ -18,6 +18,10 @@ const MIN_CJK_NGRAM_LENGTH = 2
 const MAX_CJK_NGRAM_LENGTH = 4
 const LATIN_TERM_REGEXP = /[a-z0-9]+/g
 const CJK_TERM_REGEXP = /[\u4e00-\u9fff]+/g
+const CJK_CHAR_REGEXP = /[\u3400-\u9fff]/g
+const LATIN_WORD_REGEXP = /[a-z0-9]+(?:[._-][a-z0-9]+)*/gi
+const CJK_CHARS_PER_MINUTE = 200
+const LATIN_WORDS_PER_MINUTE = 180
 
 type PostFileEntry = {
   category: string
@@ -37,6 +41,8 @@ type ParsedPostEntry = {
   fileName: string
   frontmatter: PostFrontmatter
   markdownContent: string
+  wordCount: number
+  readTime: number
 }
 
 type SearchDocument = {
@@ -127,6 +133,24 @@ const stripMarkdown = (value: string): string => {
   return collapseWhitespace(text)
 }
 
+const estimateReadingMetrics = (markdownContent: string) => {
+  const text = stripMarkdown(markdownContent)
+  const cjkChars = text.match(CJK_CHAR_REGEXP)?.length || 0
+  const latinWords = text.replace(CJK_CHAR_REGEXP, ' ').match(LATIN_WORD_REGEXP)?.length || 0
+  const wordCount = cjkChars + latinWords
+
+  if (!wordCount) {
+    return { wordCount: 0, readTime: 0 }
+  }
+
+  const readTime = Math.max(
+    1,
+    Math.ceil(cjkChars / CJK_CHARS_PER_MINUTE + latinWords / LATIN_WORDS_PER_MINUTE),
+  )
+
+  return { wordCount, readTime }
+}
+
 const addLatinTokenTerms = (token: string, terms: Set<string>, maxTerms: number): boolean => {
   if (!token) return false
 
@@ -160,7 +184,10 @@ const addCjkChunkTerms = (chunk: string, terms: Set<string>, maxTerms: number): 
   return false
 }
 
-const extractSearchTerms = (value: string, maxTerms = MAX_INDEX_TERMS_PER_DOCUMENT): Set<string> => {
+const extractSearchTerms = (
+  value: string,
+  maxTerms = MAX_INDEX_TERMS_PER_DOCUMENT,
+): Set<string> => {
   const normalized = normalizeForSearch(value)
   const terms = new Set<string>()
 
@@ -187,6 +214,7 @@ const collectParsedPosts = (rootDir: string): ParsedPostEntry[] => {
   return postFiles.map((post) => {
     const source = fs.readFileSync(post.filePath, 'utf-8')
     const { data, content } = matter(source)
+    const metrics = estimateReadingMetrics(content)
 
     return {
       id: `${post.category}/${post.slug}`,
@@ -197,6 +225,8 @@ const collectParsedPosts = (rootDir: string): ParsedPostEntry[] => {
       fileName: post.fileName,
       frontmatter: data as PostFrontmatter,
       markdownContent: content,
+      wordCount: metrics.wordCount,
+      readTime: metrics.readTime,
     }
   })
 }
@@ -208,7 +238,11 @@ const createPostsMetaData = (posts: ParsedPostEntry[]) => {
     categorySlug: post.categorySlug,
     slug: post.slug,
     path: `/posts/${post.category}/${post.fileName}`,
-    frontmatter: post.frontmatter,
+    frontmatter: {
+      ...post.frontmatter,
+      wordCount: post.wordCount,
+      readTime: post.readTime,
+    },
   }))
 }
 
