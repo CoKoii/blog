@@ -14,11 +14,9 @@ export const createSiteHeadPlugin = (rootDir: string) => {
   return {
     name: 'site-config-index-html',
     transformIndexHtml(html: string) {
-      const title = escapeHtml(siteName || 'CaoKai - 技术博客')
-      const description = escapeHtml(
-        siteDescription || '专注前端、SSG、Vue、工程化实践等技术领域的分享',
-      )
-      const language = escapeHtml(siteLanguage || 'zh-CN')
+      const title = escapeHtml(siteName)
+      const description = escapeHtml(siteDescription)
+      const language = escapeHtml(siteLanguage)
 
       let nextHtml = html.replace(/<title>.*<\/title>/, `<title>${title}</title>`)
       if (nextHtml.includes('name="description"')) {

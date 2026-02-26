@@ -1,34 +1,23 @@
 <script setup lang="ts">
 import { githubConfig } from '@/config'
-import githubData from '@/data/github-data.json'
+import { githubRepoStats } from '@/data/github'
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
-
-type GithubDataPayload = {
-  github?: {
-    profileUrl?: string
-    repoUrl?: string
-    projects?: number
-    stars?: number
-    updatedAt?: string | null
-  }
-}
 
 const fmt = (n: number) =>
   n < 1000 ? `${n}` : `${n >= 10000 ? n / 1000 : Math.round((n / 1000) * 10) / 10}k`
 
-const payload = githubData as GithubDataPayload
 const profileUrl = computed(() => {
-  if (payload.github?.profileUrl) return payload.github.profileUrl
+  if (githubRepoStats.profileUrl) return githubRepoStats.profileUrl
   return githubConfig.username ? `https://github.com/${githubConfig.username}` : 'https://github.com'
 })
 const repoUrl = computed(() => {
-  if (payload.github?.repoUrl) return payload.github.repoUrl
+  if (githubRepoStats.repoUrl) return githubRepoStats.repoUrl
   return githubConfig.repo ? `https://github.com/${githubConfig.repo}` : `${profileUrl.value}/blog`
 })
-const projects = computed(() => Number(payload.github?.projects || 0))
-const stars = computed(() => Number(payload.github?.stars || 0))
-const updatedAt = computed(() => payload.github?.updatedAt || null)
+const projects = computed(() => Number(githubRepoStats.projects || 0))
+const stars = computed(() => Number(githubRepoStats.stars || 0))
+const updatedAt = computed(() => githubRepoStats.updatedAt || null)
 
 const meta = computed(() => {
   if (!updatedAt.value) return '构建时更新'

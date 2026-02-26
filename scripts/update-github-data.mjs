@@ -27,22 +27,24 @@ const ROOT_DIR = process.cwd()
 const env = loadEnv(ROOT_DIR)
 const siteConfig = loadSiteConfig(ROOT_DIR)
 
-const githubConfig =
-  siteConfig.github && typeof siteConfig.github === 'object' ? siteConfig.github : {}
-const ownerConfig = siteConfig.owner && typeof siteConfig.owner === 'object' ? siteConfig.owner : {}
-const commentsConfig =
-  siteConfig.comments && typeof siteConfig.comments === 'object' ? siteConfig.comments : {}
-const giscusConfig =
-  commentsConfig.giscus && typeof commentsConfig.giscus === 'object' ? commentsConfig.giscus : {}
+const asObject = (value) => (value && typeof value === 'object' ? value : {})
+const toTrimmedString = (value) => String(value || '').trim()
 
-const username = String(githubConfig.username || ownerConfig.githubUsername || '').trim()
-const repo = String(githubConfig.repo || giscusConfig.repo || '').trim()
-const apiBase = String(githubConfig.apiBase || GITHUB_DEFAULT_API_BASE).replace(/\/+$/, '')
-const token = String(env.GITHUB_TOKEN || '').trim()
+const githubConfig = asObject(siteConfig.github)
+const ownerConfig = asObject(siteConfig.owner)
+const commentsConfig = asObject(siteConfig.comments)
+const giscusConfig = asObject(commentsConfig.giscus)
+
+const username = toTrimmedString(githubConfig.username || ownerConfig.githubUsername)
+const repo = toTrimmedString(githubConfig.repo || giscusConfig.repo)
+const apiBase = toTrimmedString(githubConfig.apiBase || GITHUB_DEFAULT_API_BASE).replace(/\/+$/, '')
+const token = toTrimmedString(env.GITHUB_TOKEN)
+const profileUrl = username ? `https://github.com/${username}` : ''
+const repoUrl = repo ? `https://github.com/${repo}` : profileUrl
 const commentsEnabled = Boolean(commentsConfig.enabled)
-const categoryId = String(giscusConfig.categoryId || '').trim()
-const mapping = String(giscusConfig.mapping || 'pathname').trim()
-const term = String(giscusConfig.term || '').trim()
+const categoryId = toTrimmedString(giscusConfig.categoryId)
+const mapping = toTrimmedString(giscusConfig.mapping || 'pathname')
+const term = toTrimmedString(giscusConfig.term)
 const strict = giscusConfig.strict === undefined ? true : Boolean(giscusConfig.strict)
 
 const decodeSafe = (value) => {
@@ -111,32 +113,26 @@ const matchTitle = (discussionTitle, expectedTitle, strictMode) => {
   return strictMode ? left === right : left.includes(right)
 }
 
+const createRepoStats = ({ projects = 0, stars = 0, updatedAt = null } = {}) => ({
+  username,
+  profileUrl,
+  repo,
+  repoUrl,
+  projects,
+  stars,
+  updatedAt,
+})
+
 const fetchRepoStats = async () => {
   if (!username) {
     warn('未配置 github.username，仓库统计将为空。')
-    return {
-      username: '',
-      profileUrl: '',
-      repo,
-      repoUrl: repo ? `https://github.com/${repo}` : '',
-      projects: 0,
-      stars: 0,
-      updatedAt: null,
-    }
+    return createRepoStats()
   }
 
   const apiUrl = `${apiBase}/users/${encodeURIComponent(username)}/repos?per_page=100&sort=updated`
   const repos = await requestJson(apiUrl)
   if (!Array.isArray(repos)) {
-    return {
-      username,
-      profileUrl: `https://github.com/${username}`,
-      repo,
-      repoUrl: repo ? `https://github.com/${repo}` : `https://github.com/${username}`,
-      projects: 0,
-      stars: 0,
-      updatedAt: null,
-    }
+    return createRepoStats()
   }
 
   const filtered = repos.filter((item) => !item.fork)
@@ -147,15 +143,11 @@ const fetchRepoStats = async () => {
     .sort()
   const latestUpdatedAt = updatedList[updatedList.length - 1] ?? null
 
-  return {
-    username,
-    profileUrl: `https://github.com/${username}`,
-    repo,
-    repoUrl: repo ? `https://github.com/${repo}` : `https://github.com/${username}`,
+  return createRepoStats({
     projects: filtered.length,
     stars,
     updatedAt: latestUpdatedAt,
-  }
+  })
 }
 
 const fetchDiscussions = async (repoInfo) => {
@@ -231,14 +223,19 @@ const resolveCommentCounts = async (paths) => {
     return toPathCommentsMap(paths, count)
   }
 
+  const normalizedDiscussions = filteredDiscussions
+    .map((discussion) => ({
+      title: normalizeTitle(discussion.title || ''),
+      comments: Number(discussion.comments || 0),
+    }))
+    .filter((discussion) => discussion.title)
+
   const titleMap = new Map()
-  filteredDiscussions.forEach((discussion) => {
-    const title = normalizeTitle(discussion.title || '')
-    if (!title) return
-    if (!titleMap.has(title)) {
-      titleMap.set(title, Number(discussion.comments || 0))
+  for (const discussion of normalizedDiscussions) {
+    if (!titleMap.has(discussion.title)) {
+      titleMap.set(discussion.title, discussion.comments)
     }
-  })
+  }
 
   for (const path of paths) {
     const lookupTitle = normalizeTitle(normalizePathnameTerm(path))
@@ -249,10 +246,10 @@ const resolveCommentCounts = async (paths) => {
       continue
     }
 
-    const matched = filteredDiscussions.find((discussion) =>
-      matchTitle(discussion.title || '', lookupTitle, false),
+    const matched = normalizedDiscussions.find((discussion) =>
+      discussion.title.includes(lookupTitle),
     )
-    byPath[path] = Number(matched?.comments || 0)
+    byPath[path] = matched?.comments || 0
   }
 
   return byPath
