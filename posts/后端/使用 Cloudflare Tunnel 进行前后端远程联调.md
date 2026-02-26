@@ -10,7 +10,7 @@ tags:
   - 内网穿透
   - 本地接口调试
 date: 2026-02-11
-coverImage: https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/cloudflare-tunnel.svg
+coverImage: https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/cloudflare-tunnel.webp
 location: 杭州
 ---
 
