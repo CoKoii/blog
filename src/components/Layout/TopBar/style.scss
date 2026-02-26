@@ -60,5 +60,28 @@
     .search {
       margin-left: auto;
     }
+
+    :deep(.Search),
+    .avatar {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      border: var(--border-width-1) solid var(--color-border-subtle);
+      background-color: var(--color-bg-hover);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    :deep(.Search .text svg) {
+      width: 14px;
+      height: 14px;
+    }
+
+    .avatar svg {
+      width: var(--size-icon-sm);
+      height: var(--size-icon-sm);
+    }
   }
 }

@@ -15,8 +15,10 @@ const router = useRouter()
 const RESULT_LIMIT = 12
 const GAP = 8
 
-let originalOverflow = ''
-let originalPadding = ''
+let locked = false
+let originalHtmlOverflow = ''
+let originalHtmlPadding = ''
+let originalBodyOverflow = ''
 
 const isOpen = ref(false)
 const isLoading = ref(false)
@@ -49,16 +51,31 @@ const helperText = computed(() => {
 const lockScroll = (lock: boolean) => {
   if (typeof document === 'undefined') return
   const html = document.documentElement
+  const body = document.body
+
   if (lock) {
-    originalOverflow = html.style.overflow
-    originalPadding = html.style.paddingRight
+    if (!locked) {
+      originalHtmlOverflow = html.style.overflow
+      originalHtmlPadding = html.style.paddingRight
+      originalBodyOverflow = body.style.overflow
+      html.style.overflow = 'hidden'
+      body.style.overflow = 'hidden'
+      locked = true
+    }
+
     const scrollbarWidth = Math.max(window.innerWidth - html.clientWidth, 0)
-    html.style.overflow = 'hidden'
-    html.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : originalPadding
+    html.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : originalHtmlPadding
   } else {
-    html.style.overflow = originalOverflow
-    html.style.paddingRight = originalPadding
+    if (!locked) return
+    html.style.overflow = originalHtmlOverflow
+    html.style.paddingRight = originalHtmlPadding
+    body.style.overflow = originalBodyOverflow
+    locked = false
   }
+}
+
+const handleResize = () => {
+  if (isOpen.value) lockScroll(true)
 }
 
 const ensureIndex = async () => {
@@ -170,23 +187,24 @@ watch(results, (list) => {
 })
 
 watch(keywordValue, () => (activeIndex.value = 0))
-watch(isOpen, (open) => open && lockScroll(true))
+watch(isOpen, (open) => lockScroll(open))
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
-  window.addEventListener('resize', () => isOpen.value && lockScroll(true))
+  window.addEventListener('resize', handleResize)
 })
 
 onBeforeUnmount(() => {
   lockScroll(false)
   window.removeEventListener('keydown', handleKeydown)
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
 <template>
   <button class="Search" type="button" aria-label="打开搜索" @click="openSearch">
     <div class="text">
-      <Icon icon="fe:search" />
+      <Icon icon="lucide:search" />
       <p>Search</p>
     </div>
     <div class="icon">
@@ -195,11 +213,11 @@ onBeforeUnmount(() => {
   </button>
 
   <Teleport to="body">
-    <Transition name="search-panel" @after-leave="lockScroll(false)">
+    <Transition name="search-panel">
       <div v-if="isOpen" class="SearchOverlay" @click.self="closeSearch()">
         <section class="SearchDialog" role="dialog" aria-modal="true" aria-label="站内搜索">
           <div class="SearchDialogInput">
-            <Icon class="searchIcon" icon="fe:search" />
+            <Icon class="searchIcon" icon="lucide:search" />
             <input
               ref="inputRef"
               v-model="keyword"

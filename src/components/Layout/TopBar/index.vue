@@ -24,7 +24,7 @@ const store = useLayoutStore()
     <div class="user">
       <Dropdown :placement="'bottomRight'">
         <div class="avatar">
-          <Icon icon="la:user" />
+          <Icon icon="lucide:user" />
         </div>
         <template #overlay>
           <div class="avatar_dropdown">
