@@ -2,9 +2,11 @@ import Markdown from 'unplugin-vue-markdown/vite'
 import { fromHighlighter } from '@shikijs/markdown-it'
 import { bundledLanguages, createHighlighter } from 'shiki'
 
+const SHIKI_THEME = 'github-dark-high-contrast'
+
 export const createShikiHighlighter = async () => {
   return createHighlighter({
-    themes: ['github-dark'],
+    themes: [SHIKI_THEME],
     langs: Object.keys(bundledLanguages),
   })
 }
@@ -20,7 +22,7 @@ export const createMarkdownPlugin = (
       typographer: true,
     },
     markdownItSetup(md) {
-      md.use(fromHighlighter(highlighter, { theme: 'github-dark' }))
+      md.use(fromHighlighter(highlighter, { theme: SHIKI_THEME }))
       const defaultImage =
         md.renderer.rules.image ||
         ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options))

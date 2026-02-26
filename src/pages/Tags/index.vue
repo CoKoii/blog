@@ -17,7 +17,7 @@ const {
 </script>
 
 <template>
-  <div class="Tags" :style="{ '--tags-accent': activeTagColor }">
+  <main class="Tags" :style="{ '--tags-accent': activeTagColor }">
     <TabsSection v-model:activeTab="activeTab" :tabs="categories" />
     <HeroSection
       :post-count="cardPosts.length"
@@ -32,7 +32,7 @@ const {
       </div>
       <PostsGrid :posts="cardPosts" @select="goToArticle" />
     </section>
-  </div>
+  </main>
 </template>
 
 <style scoped lang="scss" src="./style.scss"></style>

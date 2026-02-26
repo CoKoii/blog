@@ -9,7 +9,7 @@ const isLoading = computed(() => !ContentComponent.value)
 </script>
 
 <template>
-  <div class="Article">
+  <main class="Article">
     <CoverSection :article="article" :loading="isLoading" />
     <ContentSection
       :content-component="ContentComponent"
@@ -18,7 +18,7 @@ const isLoading = computed(() => !ContentComponent.value)
       :loading="isLoading"
       :on-scroll-to-heading="scrollToHeading"
     />
-  </div>
+  </main>
 </template>
 
 <style scoped lang="scss" src="./style.scss"></style>
