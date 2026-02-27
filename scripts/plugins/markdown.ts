@@ -1,6 +1,6 @@
-import Markdown from 'unplugin-vue-markdown/vite'
 import { fromHighlighter } from '@shikijs/markdown-it'
 import { bundledLanguages, createHighlighter } from 'shiki'
+import Markdown from 'unplugin-vue-markdown/vite'
 
 const SHIKI_THEME = 'github-dark-high-contrast'
 
