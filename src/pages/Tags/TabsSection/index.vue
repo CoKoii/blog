@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import SlidingTabs from '@/components/Tabs/SlidingTabs.vue'
+import type { TagTab } from '@/types/tag'
 import { computed } from 'vue'
 
-type TabItem = {
-  value: string
-  label: string
-}
-
 const props = defineProps<{
-  tabs: TabItem[]
+  tabs: TagTab[]
   activeTab: string
 }>()
 
@@ -24,7 +20,7 @@ const activeTabModel = computed({
 
 <template>
   <div class="tags-tabs">
-    <SlidingTabs v-model:activeTab="activeTabModel" :tabs="tabs" full-width />
+    <SlidingTabs v-model:activeTab="activeTabModel" :tabs="tabs" />
   </div>
 </template>
 

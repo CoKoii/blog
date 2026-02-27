@@ -48,7 +48,6 @@
 
   :deep(giscus-widget) {
     display: block;
-    width: 100%;
   }
 
   :deep(giscus-widget::part(iframe)) {

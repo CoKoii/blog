@@ -5,5 +5,4 @@
     </Transition>
   </router-view>
 </template>
-
 <style src="@/styles/transitions.scss"></style>

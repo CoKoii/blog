@@ -6,6 +6,11 @@ const posts = getAllPosts()
 const catSlugs = getTagSlugSet()
 const artIds = new Set(posts.map((p) => `${p.categorySlug}/${p.slug}`))
 
+const isValidArticle = (category: string, id: string) =>
+  !!category && !!id && artIds.has(`${category}/${id}`)
+const isValidTag = (category: string) =>
+  !!category && (catSlugs.has(category) || category === ALL_TAG_SLUG)
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -19,7 +24,7 @@ const routes: RouteRecordRaw[] = [
         beforeEnter: (to) => {
           const cat = String(to.params.category ?? '')
           const id = String(to.params.id ?? '')
-          if (!cat || !id || !artIds.has(`${cat}/${id}`)) return { name: 'not-found' }
+          if (!isValidArticle(cat, id)) return { name: 'not-found' }
         },
       },
       {
@@ -28,7 +33,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../pages/Tags/index.vue'),
         beforeEnter: (to) => {
           const cat = String(to.params.category ?? '')
-          if (!cat || (!catSlugs.has(cat) && cat !== ALL_TAG_SLUG)) return { name: 'not-found' }
+          if (!isValidTag(cat)) return { name: 'not-found' }
         },
       },
     ],

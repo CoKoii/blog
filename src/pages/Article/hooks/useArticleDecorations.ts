@@ -2,6 +2,9 @@ import { setupLazyImage } from '@/directives/vLazy'
 import { Icon } from '@iconify/vue'
 import { createApp, defineComponent, h, ref } from 'vue'
 
+const queryAll = <T extends Element>(selector: string) =>
+  Array.from(document.querySelectorAll<T>(selector))
+
 const CopyButton = defineComponent({
   props: { text: { type: String, required: true } },
   setup(props) {
@@ -47,7 +50,7 @@ const CopyButton = defineComponent({
 })
 
 const enhanceCode = () => {
-  Array.from(document.querySelectorAll('.markdown-content pre'))
+  queryAll<HTMLElement>('.markdown-content pre')
     .filter((b): b is HTMLElement => b instanceof HTMLElement && b.dataset.codeEnhanced !== 'true')
     .forEach((block) => {
       const code = block.querySelector('code')
@@ -61,7 +64,7 @@ const enhanceCode = () => {
 }
 
 const enhanceImages = () => {
-  Array.from(document.querySelectorAll('.markdown-content img'))
+  queryAll<HTMLImageElement>('.markdown-content img')
     .filter(
       (img): img is HTMLImageElement =>
         img instanceof HTMLImageElement && !img.dataset.lazyEnhanced,
@@ -77,7 +80,7 @@ const enhanceImages = () => {
 }
 
 const enhanceLinks = () => {
-  Array.from(document.querySelectorAll('.markdown-content a'))
+  queryAll<HTMLAnchorElement>('.markdown-content a')
     .filter((link): link is HTMLAnchorElement => link instanceof HTMLAnchorElement)
     .forEach((link) => {
       const href = (link.getAttribute('href') ?? '').trim()

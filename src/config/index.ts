@@ -1,3 +1,3 @@
 export * from './constants'
-export * from './loader'
+export { siteConfig } from './loader'
 export * from './types'

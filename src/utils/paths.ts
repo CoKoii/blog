@@ -1,4 +1,4 @@
 import type { PostMeta } from '@/types/post'
 
-export const buildArticlePath = (post: PostMeta): string =>
-  `/article/${post.categorySlug}/${post.slug}`
+export const buildArticlePath = ({ categorySlug, slug }: PostMeta): string =>
+  `/article/${categorySlug}/${slug}`

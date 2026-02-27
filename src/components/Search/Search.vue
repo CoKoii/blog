@@ -34,14 +34,15 @@ const shouldShowEmptyState = computed(
   () => !!keywordValue.value && !isLoading.value && !results.value.length,
 )
 
-const helperText = computed(() => {
-  if (isLoading.value) return '正在构建搜索索引...'
-  if (!keywordValue.value)
-    return isIndexReady.value
-      ? `已收录 ${preparedSearchIndex.value.docs.length} 篇文章`
-      : '按 / 快速打开搜索，支持标题和正文内容检索'
-  return `找到 ${results.value.length} 条结果`
-})
+const helperText = computed(() =>
+  isLoading.value
+    ? '正在构建搜索索引...'
+    : !keywordValue.value
+      ? isIndexReady.value
+        ? `已收录 ${preparedSearchIndex.value.docs.length} 篇文章`
+        : '按 / 快速打开搜索，支持标题和正文内容检索'
+      : `找到 ${results.value.length} 条结果`,
+)
 
 const ensureIndex = async () => {
   if (isIndexReady.value || isLoading.value) return

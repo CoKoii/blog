@@ -1,5 +1,3 @@
-/// <reference types="./types/index" />
-
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'

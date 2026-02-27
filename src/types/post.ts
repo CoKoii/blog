@@ -25,8 +25,8 @@ export interface PostMeta {
 }
 
 export interface PostModule {
-  default: Component
   frontmatter: PostFrontmatter
+  default: Component
 }
 
 export type MarkdownModule = Record<string, unknown> & {

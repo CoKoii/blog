@@ -7,6 +7,6 @@ export interface MenuItem {
 
 export interface MenuType {
   title?: string
-  showTitle?: boolean
   children: MenuItem[]
+  showTitle?: boolean
 }

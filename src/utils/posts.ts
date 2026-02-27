@@ -1,7 +1,10 @@
 import type { MarkdownModule, PostMeta, PostModule } from '@/types/post'
+import type { PostListItem } from '@/types/post-list'
 import { postsMeta } from 'virtual:posts-meta'
 import { formatDateYMD } from './date'
 import { resolveTitleFromSlug } from './strings'
+
+export type { PostListItem } from '@/types/post-list'
 
 const components = import.meta.glob<MarkdownModule>('/posts/**/*.md')
 const cache = new Map<string, MarkdownModule>()
@@ -15,7 +18,8 @@ const byId = new Map(sorted.map((p) => [p.id, p]))
 export const parsePostId = (id: string) => {
   if (!id) return null
   const [category, slug] = id.split('/')
-  return category && slug ? { category, slug } : null
+  if (!category || !slug) return null
+  return { category, slug }
 }
 
 export const findPostBySlug = (catSlug: string, slug: string, posts: PostMeta[]) =>
@@ -66,21 +70,10 @@ export async function getPostContent(id: string): Promise<PostModule | null> {
   }
 }
 
-export const preloadPostContent = (id: string) => getPostContent(id)
+export const preloadPostContent = getPostContent
 export const getPostDate = (p: PostMeta) => getDate(p)
 export const findPostById = (id: string | number, posts = sorted) =>
   posts.find((p) => p.id === String(id)) ?? null
-
-export interface PostListItem {
-  id: string
-  title: string
-  category: string
-  time: string
-  readTime: string
-  hot: boolean
-  cover: string
-  tags?: string[]
-}
 
 export const formatPostList = (posts: PostMeta[], hotCount = 2): PostListItem[] =>
   posts.map((p, i) => ({

@@ -14,6 +14,6 @@ export interface SearchDocument {
 export type InvertedIndex = Record<string, number[]>
 
 export interface SearchIndex {
-  documents: SearchDocument[]
   invertedIndex: InvertedIndex
+  documents: SearchDocument[]
 }

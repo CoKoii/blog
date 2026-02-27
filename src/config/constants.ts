@@ -1,30 +1,31 @@
 import { siteConfig } from './loader'
 
 const norm = (url: string) => url.replace(/\/+$/, '')
+const { site, owner, tags, socials, wechat, stats, github, comments } = siteConfig
 
-export const siteUrl = norm(siteConfig.site.url)
-export const siteName = siteConfig.site.name
-export const siteDescription = siteConfig.site.description
-export const siteImage = siteConfig.site.image
-export const siteLanguage = siteConfig.site.language
-export const siteOwner = siteConfig.owner
-export const defaultTagColor = siteConfig.tags.defaultColor
-export const brandName = siteConfig.site.brandName
+export const siteUrl = norm(site.url)
+export const siteName = site.name
+export const siteDescription = site.description
+export const siteImage = site.image
+export const siteLanguage = site.language
+export const siteOwner = owner
+export const defaultTagColor = tags.defaultColor
+export const brandName = site.brandName
 
-export const socialLinks = siteConfig.socials
+export const socialLinks = socials
 
-export const wechatConfig = siteConfig.wechat
+export const wechatConfig = wechat
 
-export const statsConfig = siteConfig.stats
+export const statsConfig = stats
 
 export const githubConfig = {
-  ...siteConfig.github,
-  apiBase: norm(siteConfig.github.apiBase),
+  ...github,
+  apiBase: norm(github.apiBase),
 }
 
-const giscusConfig = siteConfig.comments.giscus
+const giscusConfig = comments.giscus
 
-export const commentsConfig = siteConfig.comments
+export const commentsConfig = comments
 
 const hasValidGiscus =
   !!giscusConfig.repo &&
@@ -36,6 +37,6 @@ export const isGiscusReady = commentsConfig.enabled && hasValidGiscus
 
 export const getTagMeta = (tag: string): import('./types').TagMeta => {
   const t = tag.replace(/\s+/g, '')
-  const cfg = siteConfig.tags.meta[t]
+  const cfg = tags.meta[t]
   return !cfg ? { color: defaultTagColor } : typeof cfg === 'string' ? { color: cfg } : cfg
 }

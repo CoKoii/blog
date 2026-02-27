@@ -1,5 +1,5 @@
 <template>
-  <main class="index"></main>
+  <main></main>
 </template>
 
 <style scoped lang="scss" src="./style.scss"></style>

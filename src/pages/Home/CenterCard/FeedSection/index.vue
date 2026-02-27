@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import SlidingTabs from '@/components/Tabs/SlidingTabs.vue'
+import type { TabItem } from '@/types/tab'
 import { buildArticlePath } from '@/utils/paths'
-import type { PostListItem } from '@/utils/posts'
-import { findPostById } from '@/utils/posts'
+import { findPostById, type PostListItem } from '@/utils/posts'
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-
-type TabItem = string | { label: string; value: string }
 
 const props = defineProps<{
   tabs: TabItem[]

@@ -27,10 +27,15 @@ export const setupRouterGuards = async (router: Router) => {
   router.beforeEach((to, from) => {
     const [toPathNoHash] = to.fullPath.split('#')
     const [fromPathNoHash] = from.fullPath.split('#')
-    const isTagsTabSwitch = to.name === 'tags' && from.name === 'tags'
-    if (from.name && toPathNoHash !== fromPathNoHash && !isTagsTabSwitch) {
+    const shouldStartProgress =
+      !!from.name &&
+      toPathNoHash !== fromPathNoHash &&
+      !(to.name === 'tags' && from.name === 'tags')
+
+    if (shouldStartProgress) {
       NProgress.start()
     }
+
     return true
   })
 

@@ -5,14 +5,13 @@ import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const giscus = commentsConfig.giscus
+const { mapping } = giscus
 const repo = giscus.repo as `${string}/${string}`
-const strict: '0' | '1' = giscus.strict ? '1' : '0'
-const reactionsEnabled: '0' | '1' = giscus.reactionsEnabled ? '1' : '0'
-const emitMetadata: '0' | '1' = giscus.emitMetadata ? '1' : '0'
-const term =
-  giscus.mapping === 'specific' || giscus.mapping === 'number'
-    ? (giscus.term ?? undefined)
-    : undefined
+const mapBool = (value: boolean): '0' | '1' => (value ? '1' : '0')
+const strict = mapBool(giscus.strict)
+const reactionsEnabled = mapBool(giscus.reactionsEnabled)
+const emitMetadata = mapBool(giscus.emitMetadata)
+const term = mapping === 'specific' || mapping === 'number' ? giscus.term : undefined
 </script>
 
 <template>

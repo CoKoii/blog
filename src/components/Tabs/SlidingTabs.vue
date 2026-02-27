@@ -1,8 +1,7 @@
 <script setup lang="ts">
+import type { TabItem } from '@/types/tab'
 import type { ComponentPublicInstance } from 'vue'
 import { computed, nextTick, onBeforeUnmount, onBeforeUpdate, onMounted, ref, watch } from 'vue'
-
-type TabItem = string | { label: string; value: string }
 
 const props = defineProps<{
   tabs: TabItem[]

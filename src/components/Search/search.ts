@@ -1,4 +1,16 @@
 import type { SearchDocument, SearchIndex } from '@/types/search'
+import type {
+  HighlightSegment,
+  PreparedSearchIndex,
+  SearchResult,
+} from '@/types/search-runtime'
+
+export type {
+  HighlightSegment,
+  PreparedSearchDocument,
+  PreparedSearchIndex,
+  SearchResult,
+} from '@/types/search-runtime'
 
 const MIN_NGRAM = 2
 const MAX_NGRAM = 4
@@ -29,11 +41,7 @@ const extractQueryTerms = (s: string): string[] => {
 
 const parseKeyword = (kw: string) => {
   const normalized = normalize(kw)
-  return {
-    normalized,
-    highlight: splitTerms(normalized),
-    query: extractQueryTerms(normalized),
-  }
+  return { normalized, highlight: splitTerms(normalized), query: extractQueryTerms(normalized) }
 }
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -58,9 +66,8 @@ const intersect = (postings: number[][]): number[] => {
     let l = 0,
       r = 0
     while (l < result.length && r < p.length) {
-      const lv = result[l]
-      const rv = p[r]
-      if (lv == null || rv == null) break
+      const lv = result[l]!
+      const rv = p[r]!
       if (lv === rv) {
         inter.push(lv)
         l++
@@ -112,30 +119,6 @@ const getCandidates = (terms: string[], idx: PreparedSearchIndex): number[] => {
     postings.push(p)
   }
   return intersect(postings)
-}
-
-export type PreparedSearchDocument = {
-  source: SearchDocument
-  normTitle: string
-  normDesc: string
-  normContent: string
-  normMeta: string
-}
-
-export type PreparedSearchIndex = {
-  docs: PreparedSearchDocument[]
-  inverted: Record<string, number[]>
-  allDocs: number[]
-}
-
-export interface SearchResult extends SearchDocument {
-  score: number
-  snippet: string
-}
-
-export interface HighlightSegment {
-  text: string
-  match: boolean
 }
 
 export const createEmptyPreparedSearchIndex = (): PreparedSearchIndex => ({

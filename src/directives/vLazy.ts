@@ -1,11 +1,9 @@
 import type { Directive } from 'vue'
-
-type LazyEl = HTMLImageElement & { __cleanup?: () => void }
+import type { LazyEl } from '@/types/lazy'
 
 const schedule = (cb: FrameRequestCallback) => {
   if (typeof window === 'undefined') return
-  const raf = window.requestAnimationFrame
-  if (raf) return raf(cb)
+  if (window.requestAnimationFrame) return window.requestAnimationFrame(cb)
   window.setTimeout(cb, 0)
 }
 
@@ -21,7 +19,7 @@ const setLoading = (el: LazyEl) => {
 
 const setLoaded = (el: LazyEl) => {
   el.style.opacity = '1'
-  el.style.filter = 'blur(0px)'
+  el.style.filter = 'blur(0)'
 }
 
 const createObs = (el: LazyEl, load: () => void) => {
@@ -71,8 +69,7 @@ export const setupLazyImage = (el: HTMLImageElement, src: string) => {
 
 const getSrc = (el: LazyEl, binding: { value: unknown }) => {
   if (typeof binding.value === 'string' && binding.value.trim()) return binding.value
-  const ds = el.getAttribute('data-src')
-  return ds ? ds.trim() : ''
+  return el.getAttribute('data-src')?.trim() ?? ''
 }
 
 export const vLazy: Directive<LazyEl, string | boolean> = {

@@ -2,6 +2,12 @@ import { getTagMeta } from '@/config'
 import type { MenuType } from '@/types/menus'
 import { getTagEntries } from '@/utils/tags'
 
+const tagChildren = getTagEntries().map((tag) => ({
+  title: tag.label,
+  color: getTagMeta(tag.label).color,
+  path: `/tags/${tag.slug}`,
+}))
+
 const menus: MenuType[] = [
   {
     showTitle: false,
@@ -20,11 +26,8 @@ const menus: MenuType[] = [
   },
   {
     title: 'Tags',
-    children: getTagEntries().map((tag) => ({
-      title: tag.label,
-      color: getTagMeta(tag.label).color,
-      path: `/tags/${tag.slug}`,
-    })),
+    children: tagChildren,
   },
 ]
+
 export default menus

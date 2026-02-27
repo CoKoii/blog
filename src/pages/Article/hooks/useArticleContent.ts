@@ -1,4 +1,5 @@
 import type { PostFrontmatter, PostModule } from '@/types/post'
+import type { UseArticleContentOptions } from '@/types/article-hooks'
 import {
   findPostBySlug,
   getAllPosts,
@@ -21,15 +22,11 @@ export const DEFAULT_FRONTMATTER: PostFrontmatter = {
   location: '',
 }
 
-type UseArticleContentOptions = {
-  onBeforeContentChange?: () => void
-  onAfterContentReady?: () => void
-}
-
 const canUseDOM = typeof window !== 'undefined'
 const isServer = import.meta.env.SSR
 const requestNextFrame = (cb: () => void) =>
   (window.requestAnimationFrame || ((fn: FrameRequestCallback) => setTimeout(fn, 0)))(cb)
+const resolvePostTitle = (postId: string) => resolveTitleFromSlug(parsePostId(postId)?.slug ?? '')
 
 export const useArticleContent = (
   route: RouteLocationNormalizedLoaded,
@@ -63,7 +60,7 @@ export const useArticleContent = (
       return
     }
 
-    resolvedTitle.value = resolveTitleFromSlug(parsePostId(post.id)?.slug ?? '')
+    resolvedTitle.value = resolvePostTitle(post.id)
     if (loadedArticleId.value === post.id && ContentComponent.value) return
 
     const currentToken = ++loadToken.value
@@ -89,7 +86,7 @@ export const useArticleContent = (
     const articleSlug = String(route.params.id ?? '')
     const post = findPostBySlug(categorySlug, articleSlug, getAllPosts())
     if (post) {
-      resolvedTitle.value = resolveTitleFromSlug(parsePostId(post.id)?.slug ?? '')
+      resolvedTitle.value = resolvePostTitle(post.id)
       applyContent(post.id, await getPostContent(post.id))
     }
   })

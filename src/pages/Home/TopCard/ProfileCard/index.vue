@@ -2,7 +2,7 @@
 import { siteOwner, socialLinks } from '@/config'
 import { Icon } from '@iconify/vue'
 
-const handleClickAction = (message: string) => alert(message)
+const handleClickAction = (message: string) => window.alert(message)
 </script>
 
 <template>

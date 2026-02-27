@@ -1,31 +1,7 @@
 import { siteImage, siteName, siteUrl } from '@/config'
+import type { HeadConfig, MetaTag, SeoMetaConfig } from '@/types/seo'
 
-export interface SeoMetaConfig {
-  title: string
-  description: string
-  image?: string
-  url: string
-  type: 'website' | 'article'
-  author?: string
-  publishDate?: string
-  modifiedDate?: string
-  keywords?: string[]
-  schemaData?: Record<string, string | number | boolean | Record<string, string | number | boolean>>
-}
-
-interface MetaTag extends Record<string, string | undefined> {
-  name?: string
-  property?: string
-  content?: string
-}
-
-interface HeadConfig {
-  title: string
-  htmlAttrs: Record<string, string>
-  link: Array<Record<string, string>>
-  meta: MetaTag[]
-  script?: Array<Record<string, string>>
-}
+export type { HeadConfig, MetaTag, SeoMetaConfig } from '@/types/seo'
 
 export const buildSeoMeta = (config: SeoMetaConfig): HeadConfig => {
   const {
@@ -49,7 +25,6 @@ export const buildSeoMeta = (config: SeoMetaConfig): HeadConfig => {
   ]
 
   if (author) meta.push({ name: 'author', content: author })
-
   if (keywords?.length) meta.push({ name: 'keywords', content: keywords.join(', ') })
 
   // Open Graph

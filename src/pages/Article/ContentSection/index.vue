@@ -24,7 +24,7 @@ const { contentComponent, toc, activeHeadingId, loading, onScrollToHeading } = d
     </div>
     <aside class="menus">
       <div class="toc" v-if="loading"></div>
-      <div class="toc" v-else-if="toc.length > 0">
+      <div class="toc" v-else-if="toc.length">
         <div class="toc_header">
           <Icon icon="lucide:align-justify" class="toc_icon" />
           <span class="toc_title">目录</span>

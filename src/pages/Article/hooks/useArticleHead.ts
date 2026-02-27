@@ -1,17 +1,9 @@
 import { siteOwner, siteUrl } from '@/config'
 import type { PostFrontmatter } from '@/types/post'
+import type { UseArticleHeadOptions } from '@/types/article-hooks'
 import { buildSeoMeta } from '@/utils/seo'
 import { useHead } from '@vueuse/head'
-import type { ComputedRef, Ref } from 'vue'
 import { computed } from 'vue'
-import type { RouteLocationNormalizedLoaded } from 'vue-router'
-import type { ArticleMeta } from '../types'
-
-type UseArticleHeadOptions = {
-  route: RouteLocationNormalizedLoaded
-  article: ComputedRef<ArticleMeta>
-  frontmatter: Ref<PostFrontmatter>
-}
 
 const toIso = (d?: string) => (d ? new Date(d).toISOString() : '')
 const getPublishDate = (fm: PostFrontmatter) => toIso(fm.publishDate || fm.date)

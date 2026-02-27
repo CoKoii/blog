@@ -1,9 +1,11 @@
 @use './theme/index.scss';
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
 html,
 body {
   height: 100%;
@@ -29,6 +31,7 @@ select,
 button {
   font-family: inherit;
 }
+
 a {
   text-decoration: none;
   color: inherit;

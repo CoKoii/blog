@@ -2,4 +2,9 @@
   max-width: 100%;
   display: flex;
   justify-content: flex-start;
+
+  :deep(.tabs) {
+    width: fit-content;
+    max-width: 100%;
+  }
 }

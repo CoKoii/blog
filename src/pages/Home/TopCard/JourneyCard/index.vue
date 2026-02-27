@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import type { JourneyItem } from '@/types/journey'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 const msgs = [
@@ -14,9 +15,7 @@ const msgs = [
   '第一次通宵改稿',
 ]
 
-type Item = { id: number; text: string; top: number; left: number; duration: number }
-
-const items = ref<Item[]>([])
+const items = ref<JourneyItem[]>([])
 const timers = new Set<number>()
 let interval: number | undefined
 const MAX_ITEMS = 10
@@ -25,7 +24,7 @@ const rand = (min: number, max: number) => Math.random() * (max - min) + min
 
 const spawn = () => {
   const id = Date.now() + Math.floor(Math.random() * 1000)
-  const item: Item = {
+  const item: JourneyItem = {
     id,
     text: msgs[Math.floor(Math.random() * msgs.length)] ?? '',
     top: rand(10, 90),
@@ -44,7 +43,7 @@ const spawn = () => {
 }
 
 onMounted(() => {
-  for (let i = 0; i < 3; i++) spawn()
+  Array.from({ length: 3 }).forEach(spawn)
   interval = window.setInterval(spawn, 1000)
 })
 

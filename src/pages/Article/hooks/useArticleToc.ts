@@ -1,8 +1,7 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import type { TocItem } from '../types'
+import type { Heading } from '@/types/article-hooks'
 import { refreshArticleDecorations as refreshDecorations } from './useArticleDecorations'
-
-type Heading = { id: string; text: string; level: number; el: HTMLElement }
 
 const SELECTOR = '.markdown-content h1, .markdown-content h2, .markdown-content h3'
 const GAP = 16
@@ -57,7 +56,7 @@ export const useArticleToc = () => {
 
   const isBottom = () =>
     window.scrollY + window.innerHeight >=
-    Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0) - 2
+    Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight ?? 0) - 2
 
   const getActiveId = () => {
     if (!headings.length) return ''

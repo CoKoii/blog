@@ -8,7 +8,6 @@ import { Icon } from '@iconify/vue'
     <button class="wx-card" type="button" aria-label="微信公众号卡片：悬停翻转显示二维码">
       <div class="wx-inner">
         <Icon class="wx-bg" icon="simple-icons:wechat" aria-hidden="true" />
-
         <div class="flip">
           <div class="flip-inner">
             <div class="face front">

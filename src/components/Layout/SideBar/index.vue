@@ -1,19 +1,32 @@
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { siteOwner } from '@/config'
 import menus from '@/router/config/menu'
-import { useLayoutStore } from '@/stores/layout'
+import { useLayoutStore } from '@/store/layout'
 import { Icon } from '@iconify/vue'
 import { Tooltip } from 'ant-design-vue'
 
-const layoutStore = useLayoutStore()
-const currentYear = new Date().getFullYear()
+export default defineComponent({
+  components: { Icon, Tooltip },
+  setup() {
+    const layoutStore = useLayoutStore()
+    const currentYear = new Date().getFullYear()
+
+    return {
+      siteOwner,
+      menus,
+      layoutStore,
+      currentYear,
+    }
+  },
+})
 </script>
 
 <template>
   <div class="sideBar" :class="{ collapse: !layoutStore.isSideBarOpen }">
     <div class="sidebar-content">
       <div class="box" v-for="(item, index) in menus" :key="index">
-        <div class="title" v-show="item.title">{{ item.title }}</div>
+        <div v-if="item.title" class="title">{{ item.title }}</div>
         <ul>
           <li v-for="child in item.children" :key="child.title">
             <Tooltip :title="!layoutStore.isSideBarOpen ? child.title : ''" placement="right">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { consumeScroll } from '@/router/utils/scroll'
-import { useLayoutStore } from '@/stores/layout'
+import { useLayoutStore } from '@/store/layout'
 import { onBeforeUnmount, onMounted } from 'vue'
 import Mask from '../Mask/Mask.vue'
 import MobileSideBar from './MobileSideBar/MobileSideBar.vue'
@@ -9,7 +9,7 @@ import TopBar from './TopBar/index.vue'
 
 const layoutStore = useLayoutStore()
 
-const handleResize = () => layoutStore.syncSideBarByWidth()
+const handleResize = layoutStore.syncSideBarByWidth
 
 onMounted(() => {
   layoutStore.syncSideBarByWidth()

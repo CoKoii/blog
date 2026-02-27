@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { githubConfig } from '@/config'
-import { githubRepoStats } from '@/services/github'
+import { githubRepoStats } from '@/data/github'
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
 
@@ -9,13 +9,11 @@ const fmt = (n: number) =>
 
 const profileUrl = computed(
   () =>
-    githubRepoStats.profileUrl ??
-    (githubConfig.username ? `https://github.com/${githubConfig.username}` : 'https://github.com'),
+    githubConfig.username ? `https://github.com/${githubConfig.username}` : 'https://github.com',
 )
 const repoUrl = computed(
   () =>
-    githubRepoStats.repoUrl ??
-    (githubConfig.repo ? `https://github.com/${githubConfig.repo}` : `${profileUrl.value}/blog`),
+    githubConfig.repo ? `https://github.com/${githubConfig.repo}` : `${profileUrl.value}/blog`,
 )
 const projects = computed(() => Number(githubRepoStats.projects ?? 0))
 const stars = computed(() => Number(githubRepoStats.stars ?? 0))

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useLayoutStore } from '@/stores/layout'
+import { useLayoutStore } from '@/store/layout'
 import { onUnmounted, watch } from 'vue'
 
 const layoutStore = useLayoutStore()

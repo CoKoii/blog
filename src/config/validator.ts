@@ -6,8 +6,7 @@ import type {
   SiteSocialLink,
   SiteTags,
 } from './types'
-
-type Dict = Record<string, unknown>
+import type { Dict } from '@/types/common'
 
 const GISCUS_MAPPING = ['pathname', 'url', 'title', 'og:title', 'specific', 'number'] as const
 const GISCUS_INPUT_POSITION = ['top', 'bottom'] as const
@@ -52,11 +51,9 @@ const expectOptionalString = (
 ): string => {
   const value = source[key]
   if (value === undefined) return fallback
-  if (typeof value !== 'string') {
-    errors.push(`字段「${path}」必须是字符串`)
-    return fallback
-  }
-  return value.trim()
+  if (typeof value === 'string') return value.trim()
+  errors.push(`字段「${path}」必须是字符串`)
+  return fallback
 }
 
 const expectBoolean = (source: Dict, key: string, path: string, errors: string[]): boolean => {
@@ -77,11 +74,9 @@ const expectOptionalBoolean = (
 ): boolean => {
   const value = source[key]
   if (value === undefined) return fallback
-  if (typeof value !== 'boolean') {
-    errors.push(`字段「${path}」必须是布尔值`)
-    return fallback
-  }
-  return value
+  if (typeof value === 'boolean') return value
+  errors.push(`字段「${path}」必须是布尔值`)
+  return fallback
 }
 
 const expectStringArray = (source: Dict, key: string, path: string, errors: string[]): string[] => {
@@ -104,10 +99,7 @@ const expectDateLike = (value: string, path: string, errors: string[]) => {
     errors.push(`字段「${path}」必须是 YYYY-MM-DD 格式`)
     return
   }
-  const parsed = Date.parse(`${value}T00:00:00`)
-  if (Number.isNaN(parsed)) {
-    errors.push(`字段「${path}」不是有效日期`)
-  }
+  if (Number.isNaN(Date.parse(`${value}T00:00:00`))) errors.push(`字段「${path}」不是有效日期`)
 }
 
 const expectUrl = (value: string, path: string, errors: string[]) => {

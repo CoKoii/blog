@@ -43,14 +43,19 @@ export const useTagsPage = () => {
     if (post) router.push(buildArticlePath(post))
   }
 
+  const cardPosts = computed(() => formatPostList(filteredPosts.value, 0))
+  const activeTagColor = computed(() => activeTagMeta.value.color ?? '')
+  const heroCover = computed(() => activeTagMeta.value.cover ?? '')
+  const heroDescription = computed(() => activeTagMeta.value.description ?? '')
+
   return {
     categories,
     activeTab,
     activeCategoryLabel,
-    cardPosts: computed(() => formatPostList(filteredPosts.value, 0)),
-    activeTagColor: computed(() => activeTagMeta.value.color ?? ''),
-    heroCover: computed(() => activeTagMeta.value.cover ?? ''),
-    heroDescription: computed(() => activeTagMeta.value.description ?? ''),
+    cardPosts,
+    activeTagColor,
+    heroCover,
+    heroDescription,
     goToArticle,
   }
 }

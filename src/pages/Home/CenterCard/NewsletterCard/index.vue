@@ -4,11 +4,9 @@ import { Icon } from '@iconify/vue'
 
 <template>
   <section class="sidebar-block ad-block">
-    <div class="ad-content">
-      <Icon icon="lucide:mail" class="ad-icon" />
-      <h4>Subscribe Newsletter</h4>
-      <p>Get the latest trends weekly.</p>
-    </div>
+    <Icon icon="lucide:mail" class="ad-icon" />
+    <h4>Subscribe Newsletter</h4>
+    <p>Get the latest trends weekly.</p>
   </section>
 </template>
 

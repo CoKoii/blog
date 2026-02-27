@@ -36,8 +36,6 @@ const username = toTrimmedString(githubConfig.username)
 const repo = toTrimmedString(giscusConfig.repo)
 const apiBase = toTrimmedString(githubConfig.apiBase).replace(/\/+$/, '')
 const token = toTrimmedString(env.GITHUB_TOKEN)
-const profileUrl = username ? `https://github.com/${username}` : ''
-const repoUrl = repo ? `https://github.com/${repo}` : profileUrl
 const commentsEnabled = commentsConfig.enabled
 const categoryId = toTrimmedString(giscusConfig.categoryId)
 const mapping = toTrimmedString(giscusConfig.mapping)
@@ -114,10 +112,6 @@ const matchTitle = (discussionTitle, expectedTitle, strictMode) => {
 }
 
 const createRepoStats = ({ projects = 0, stars = 0, updatedAt = null } = {}) => ({
-  username,
-  profileUrl,
-  repo,
-  repoUrl,
   projects,
   stars,
   updatedAt,
@@ -268,10 +262,6 @@ const main = async () => {
     generatedAt: new Date().toISOString(),
     github: repoStats,
     comments: {
-      repo,
-      categoryId,
-      mapping,
-      strict,
       byPath: commentsByPath,
     },
   }

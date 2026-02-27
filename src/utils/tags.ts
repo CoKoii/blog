@@ -1,8 +1,8 @@
 import { siteConfig } from '@/config'
+import type { TagEntry, TagTab } from '@/types/tag'
 import { postsMeta } from 'virtual:posts-meta'
 
-export type TagEntry = { label: string; slug: string }
-export type TagTab = { label: string; value: string }
+export type { TagEntry, TagTab } from '@/types/tag'
 
 export const ALL_TAG_SLUG = 'all'
 export const ALL_TAG_LABEL = 'All'

@@ -5,7 +5,7 @@ import type { Project, Resource } from '../CenterCard/types'
 
 export const useCenterCardData = () => {
   const tabs = getTagTabs()
-  const projects = ref<Project[]>([
+  const projects: Project[] = [
     {
       name: 'Hero-Admin',
       desc: 'Vue3 Enterprise Template',
@@ -20,7 +20,7 @@ export const useCenterCardData = () => {
       color: 'from-orange-400 to-red-500',
       stars: '856',
     },
-  ])
+  ]
 
   const groupedResources: Resource[] = [
     { title: 'Weekly Reads', count: 12, icon: 'lucide:book-open' },
@@ -40,11 +40,5 @@ export const useCenterCardData = () => {
     ),
   )
 
-  return {
-    projects,
-    activeTab,
-    tabs,
-    latestPosts,
-    groupedResources,
-  }
+  return { projects, activeTab, tabs, latestPosts, groupedResources }
 }

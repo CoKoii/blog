@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Search from '@/components/Search/Search.vue'
 import { brandName } from '@/config'
-import { useLayoutStore } from '@/stores/layout'
+import { useLayoutStore } from '@/store/layout'
 import { Icon } from '@iconify/vue'
 import { Dropdown } from 'ant-design-vue'
 

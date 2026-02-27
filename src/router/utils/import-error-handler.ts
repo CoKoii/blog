@@ -21,11 +21,14 @@ export const getCurrentPath = () =>
 
 export const handleImportError = (error: unknown, targetPath: string = getCurrentPath()) => {
   const path = buildPath(targetPath)
-  if (sessionStorage.getItem(RELOAD_KEY) === path) {
+  const storedPath = sessionStorage.getItem(RELOAD_KEY)
+
+  if (storedPath === path) {
     sessionStorage.removeItem(RELOAD_KEY)
     console.error('[Router] Import failed after reload. Check deployment/cache strategy.', error)
     return
   }
+
   sessionStorage.setItem(RELOAD_KEY, path)
   window.location.replace(buildPath(targetPath, true))
 }
@@ -40,9 +43,7 @@ export const normalizeCurrentPath = () => {
 
 export const clearReloadKey = (path: string) => {
   const normalizedPath = buildPath(path)
-  if (sessionStorage.getItem(RELOAD_KEY) === normalizedPath) {
-    sessionStorage.removeItem(RELOAD_KEY)
-  }
+  if (sessionStorage.getItem(RELOAD_KEY) === normalizedPath) sessionStorage.removeItem(RELOAD_KEY)
 }
 
 export const setupImportErrorHandler = () => {
