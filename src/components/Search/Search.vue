@@ -15,11 +15,6 @@ const router = useRouter()
 const RESULT_LIMIT = 12
 const GAP = 8
 
-let locked = false
-let originalHtmlOverflow = ''
-let originalHtmlPadding = ''
-let originalBodyOverflow = ''
-
 const isOpen = ref(false)
 const isLoading = ref(false)
 const isIndexReady = ref(false)
@@ -36,7 +31,7 @@ const results = computed<SearchResult[]>(() =>
     : [],
 )
 const shouldShowEmptyState = computed(
-  () => Boolean(keywordValue.value) && !isLoading.value && !results.value.length,
+  () => !!keywordValue.value && !isLoading.value && !results.value.length,
 )
 
 const helperText = computed(() => {
@@ -47,36 +42,6 @@ const helperText = computed(() => {
       : '按 / 快速打开搜索，支持标题和正文内容检索'
   return `找到 ${results.value.length} 条结果`
 })
-
-const lockScroll = (lock: boolean) => {
-  if (typeof document === 'undefined') return
-  const html = document.documentElement
-  const body = document.body
-
-  if (lock) {
-    if (!locked) {
-      originalHtmlOverflow = html.style.overflow
-      originalHtmlPadding = html.style.paddingRight
-      originalBodyOverflow = body.style.overflow
-      html.style.overflow = 'hidden'
-      body.style.overflow = 'hidden'
-      locked = true
-    }
-
-    const scrollbarWidth = Math.max(window.innerWidth - html.clientWidth, 0)
-    html.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : originalHtmlPadding
-  } else {
-    if (!locked) return
-    html.style.overflow = originalHtmlOverflow
-    html.style.paddingRight = originalHtmlPadding
-    body.style.overflow = originalBodyOverflow
-    locked = false
-  }
-}
-
-const handleResize = () => {
-  if (isOpen.value) lockScroll(true)
-}
 
 const ensureIndex = async () => {
   if (isIndexReady.value || isLoading.value) return
@@ -116,27 +81,19 @@ const scrollIntoView = (behavior: ScrollBehavior = 'smooth') => {
     const node = container.querySelector<HTMLElement>(`[data-result-index="${activeIndex.value}"]`)
     if (!node) return
 
-    const total = results.value.length
     const maxScroll = container.scrollHeight - container.clientHeight
+    const itemTop = node.offsetTop - GAP
+    const itemBottom = node.offsetTop + node.offsetHeight + GAP * 2
+    const visibleTop = container.scrollTop
+    const visibleBottom = visibleTop + container.clientHeight
 
-    if (activeIndex.value <= 0) {
-      container.scrollTo({ top: 0, behavior })
-    } else if (activeIndex.value >= total - 1) {
-      container.scrollTo({ top: maxScroll, behavior })
-    } else {
-      const itemTop = node.offsetTop - GAP
-      const itemBottom = itemTop + node.offsetHeight + GAP * 2
-      const visibleTop = container.scrollTop
-      const visibleBottom = visibleTop + container.clientHeight
-
-      if (itemTop < visibleTop) {
-        container.scrollTo({ top: Math.max(itemTop, 0), behavior })
-      } else if (itemBottom > visibleBottom) {
-        container.scrollTo({
-          top: Math.min(itemBottom - container.clientHeight, maxScroll),
-          behavior,
-        })
-      }
+    if (itemTop < visibleTop) {
+      container.scrollTo({ top: Math.max(itemTop, 0), behavior })
+    } else if (itemBottom > visibleBottom) {
+      container.scrollTo({
+        top: Math.min(itemBottom - container.clientHeight, maxScroll),
+        behavior,
+      })
     }
   })
 }
@@ -182,22 +139,14 @@ const handleKeydown = (e: KeyboardEvent) => {
   }
 }
 
-watch(results, (list) => {
-  activeIndex.value = list.length ? Math.min(activeIndex.value, list.length - 1) : 0
-})
-
 watch(keywordValue, () => (activeIndex.value = 0))
-watch(isOpen, (open) => lockScroll(open))
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown)
-  window.addEventListener('resize', handleResize)
 })
 
 onBeforeUnmount(() => {
-  lockScroll(false)
   window.removeEventListener('keydown', handleKeydown)
-  window.removeEventListener('resize', handleResize)
 })
 </script>
 
@@ -214,8 +163,21 @@ onBeforeUnmount(() => {
 
   <Teleport to="body">
     <Transition name="search-panel">
-      <div v-if="isOpen" class="SearchOverlay" @click.self="closeSearch()">
-        <section class="SearchDialog" role="dialog" aria-modal="true" aria-label="站内搜索">
+      <div
+        v-if="isOpen"
+        class="SearchOverlay"
+        @click.self="closeSearch()"
+        @wheel.prevent
+        @touchmove.prevent
+      >
+        <section
+          class="SearchDialog"
+          role="dialog"
+          aria-modal="true"
+          aria-label="站内搜索"
+          @wheel.stop
+          @touchmove.stop
+        >
           <div class="SearchDialogInput">
             <Icon class="searchIcon" icon="lucide:search" />
             <input
