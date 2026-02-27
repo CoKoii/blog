@@ -59,19 +59,21 @@ const ensureIndex = async () => {
 }
 
 const openSearch = async () => {
+  keyword.value = ''
   isOpen.value = true
   activeIndex.value = 0
   await ensureIndex()
-  nextTick(() => inputRef.value?.focus())
+  await nextTick()
+  inputRef.value?.focus()
 }
 
-const closeSearch = (clear = false) => {
+const closeSearch = () => {
   isOpen.value = false
-  if (clear) keyword.value = ''
+  keyword.value = ''
 }
 
 const goToResult = async (item: SearchResult) => {
-  closeSearch(true)
+  closeSearch()
   await router.push(item.url)
 }
 
@@ -119,6 +121,13 @@ const isInput = (target: EventTarget | null): boolean =>
   target instanceof HTMLElement &&
   (target.matches('input, textarea, select') || target.isContentEditable)
 
+const dialogKeyActions: Record<string, () => void> = {
+  Escape: closeSearch,
+  ArrowDown: () => moveActive(1),
+  ArrowUp: () => moveActive(-1),
+  Enter: () => results.value.length && goToActive(),
+}
+
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.defaultPrevented || e.isComposing) return
 
@@ -130,24 +139,34 @@ const handleKeydown = (e: KeyboardEvent) => {
 
   if (!isOpen.value) return
 
-  const actions: Record<string, () => void> = {
-    Escape: () => closeSearch(),
-    ArrowDown: () => moveActive(1),
-    ArrowUp: () => moveActive(-1),
-    Enter: () => results.value.length && goToActive(),
-  }
-
-  const action = actions[e.key]
+  const action = dialogKeyActions[e.key]
   if (action) {
     e.preventDefault()
     action()
   }
 }
 
+const lockBodyScroll = () => {
+  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
+  document.documentElement.style.overflow = 'hidden'
+  document.documentElement.style.paddingRight = `${scrollbarWidth}px`
+}
+
+const unlockBodyScroll = () => {
+  document.documentElement.style.overflow = ''
+  document.documentElement.style.paddingRight = ''
+}
+
 watch(keywordValue, () => (activeIndex.value = 0))
+watch(isOpen, (val) => {
+  if (val) lockBodyScroll()
+})
 
 onMounted(() => window.addEventListener('keydown', handleKeydown))
-onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown)
+  unlockBodyScroll()
+})
 </script>
 
 <template>
@@ -162,11 +181,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
   </button>
 
   <Teleport to="body">
-    <Transition name="search-panel">
+    <Transition name="search-panel" @after-leave="unlockBodyScroll">
       <div
         v-if="isOpen"
         class="SearchOverlay"
-        @click.self="closeSearch()"
+        @click.self="closeSearch"
         @wheel.prevent
         @touchmove.prevent
       >
@@ -188,7 +207,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
               spellcheck="false"
               placeholder="搜索文章标题或内容..."
             />
-            <button type="button" class="esc" @click="closeSearch(true)">Esc</button>
+            <button type="button" class="esc" @click="closeSearch">Esc</button>
           </div>
 
           <div class="SearchDialogMeta">
