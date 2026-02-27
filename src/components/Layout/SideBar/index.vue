@@ -1,10 +1,10 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
 import { siteOwner } from '@/config'
 import menus from '@/router/config/menu'
 import { useLayoutStore } from '@/store/layout'
 import { Icon } from '@iconify/vue'
 import { Tooltip } from 'ant-design-vue'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
   components: { Icon, Tooltip },

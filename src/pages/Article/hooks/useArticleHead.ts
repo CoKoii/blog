@@ -1,6 +1,6 @@
 import { siteOwner, siteUrl } from '@/config'
-import type { PostFrontmatter } from '@/types/post'
 import type { UseArticleHeadOptions } from '@/types/article-hooks'
+import type { PostFrontmatter } from '@/types/post'
 import { buildSeoMeta } from '@/utils/seo'
 import { useHead } from '@vueuse/head'
 import { computed } from 'vue'

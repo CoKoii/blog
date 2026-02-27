@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 import type { JourneyItem } from '@/types/journey'
+import { Icon } from '@iconify/vue'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 const msgs = [

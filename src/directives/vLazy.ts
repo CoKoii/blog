@@ -1,5 +1,5 @@
-import type { Directive } from 'vue'
 import type { LazyEl } from '@/types/lazy'
+import type { Directive } from 'vue'
 
 const schedule = (cb: FrameRequestCallback) => {
   if (typeof window === 'undefined') return

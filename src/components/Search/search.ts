@@ -1,9 +1,5 @@
 import type { SearchDocument, SearchIndex } from '@/types/search'
-import type {
-  HighlightSegment,
-  PreparedSearchIndex,
-  SearchResult,
-} from '@/types/search-runtime'
+import type { HighlightSegment, PreparedSearchIndex, SearchResult } from '@/types/search-runtime'
 
 export type {
   HighlightSegment,

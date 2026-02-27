@@ -1,8 +1,4 @@
-export type SeoSchemaValue =
-  | string
-  | number
-  | boolean
-  | Record<string, string | number | boolean>
+export type SeoSchemaValue = string | number | boolean | Record<string, string | number | boolean>
 
 export interface SeoMetaConfig {
   title: string

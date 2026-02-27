@@ -1,3 +1,4 @@
+import type { Dict } from '@/types/common'
 import type {
   SiteCommentsGiscus,
   SiteConfig,
@@ -6,7 +7,6 @@ import type {
   SiteSocialLink,
   SiteTags,
 } from './types'
-import type { Dict } from '@/types/common'
 
 const GISCUS_MAPPING = ['pathname', 'url', 'title', 'og:title', 'specific', 'number'] as const
 const GISCUS_INPUT_POSITION = ['top', 'bottom'] as const

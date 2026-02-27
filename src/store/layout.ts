@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
 import type { LayoutMode } from '@/types/layout'
+import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useLayoutStore = defineStore('layout', () => {

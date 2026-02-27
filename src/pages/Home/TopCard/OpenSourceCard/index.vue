@@ -7,13 +7,11 @@ import { computed } from 'vue'
 const fmt = (n: number) =>
   n < 1000 ? `${n}` : `${n >= 10000 ? n / 1000 : Math.round((n / 1000) * 10) / 10}k`
 
-const profileUrl = computed(
-  () =>
-    githubConfig.username ? `https://github.com/${githubConfig.username}` : 'https://github.com',
+const profileUrl = computed(() =>
+  githubConfig.username ? `https://github.com/${githubConfig.username}` : 'https://github.com',
 )
-const repoUrl = computed(
-  () =>
-    githubConfig.repo ? `https://github.com/${githubConfig.repo}` : `${profileUrl.value}/blog`,
+const repoUrl = computed(() =>
+  githubConfig.repo ? `https://github.com/${githubConfig.repo}` : `${profileUrl.value}/blog`,
 )
 const projects = computed(() => Number(githubRepoStats.projects ?? 0))
 const stars = computed(() => Number(githubRepoStats.stars ?? 0))

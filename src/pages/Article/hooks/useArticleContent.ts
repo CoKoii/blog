@@ -1,5 +1,5 @@
-import type { PostFrontmatter, PostModule } from '@/types/post'
 import type { UseArticleContentOptions } from '@/types/article-hooks'
+import type { PostFrontmatter, PostModule } from '@/types/post'
 import {
   findPostBySlug,
   getAllPosts,

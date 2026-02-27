@@ -1,6 +1,6 @@
+import type { Heading } from '@/types/article-hooks'
 import { onMounted, onUnmounted, ref } from 'vue'
 import type { TocItem } from '../types'
-import type { Heading } from '@/types/article-hooks'
 import { refreshArticleDecorations as refreshDecorations } from './useArticleDecorations'
 
 const SELECTOR = '.markdown-content h1, .markdown-content h2, .markdown-content h3'
