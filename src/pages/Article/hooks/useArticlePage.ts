@@ -2,11 +2,11 @@ import { formatDate } from '@/utils/date'
 import { resolveTitleFromSlug } from '@/utils/strings'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useArticleComments } from './hooks/useArticleComments'
-import { useArticleContent } from './hooks/useArticleContent'
-import { useArticleHead } from './hooks/useArticleHead'
-import { useArticleToc } from './hooks/useArticleToc'
-import type { ArticleMeta } from './types'
+import type { ArticleMeta } from '../types'
+import { useArticleComments } from './useArticleComments'
+import { useArticleContent } from './useArticleContent'
+import { useArticleHead } from './useArticleHead'
+import { useArticleToc } from './useArticleToc'
 
 export const useArticlePage = () => {
   const route = useRoute()

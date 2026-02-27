@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import ContentSection from './ContentSection/index.vue'
 import CoverSection from './CoverSection/index.vue'
-import { useArticlePage } from './useArticlePage'
+import { useArticlePage } from './hooks/useArticlePage'
 
 const { ContentComponent, toc, activeHeadingId, article, scrollToHeading } = useArticlePage()
 const isLoading = computed(() => !ContentComponent.value)

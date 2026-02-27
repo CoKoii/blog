@@ -5,9 +5,9 @@ import type { TocItem } from '../types'
 
 type Heading = { id: string; text: string; level: number; el: HTMLElement }
 
-const canUseDOM = typeof window !== 'undefined'
 const SELECTOR = '.markdown-content h1, .markdown-content h2, .markdown-content h3'
 const GAP = 16
+const canUseDOM = typeof window !== 'undefined'
 
 export const useArticleToc = () => {
   const toc = ref<TocItem[]>([])
@@ -15,7 +15,6 @@ export const useArticleToc = () => {
   let headings: Heading[] = []
   let raf = 0
   let forceSync = false
-  const getConnectedHeadings = () => headings.filter((h) => h.el.isConnected)
 
   const normalizeText = (text: string) =>
     text
@@ -23,8 +22,9 @@ export const useArticleToc = () => {
       .replace(/\s+/g, ' ')
       .trim()
 
+  const getConnectedHeadings = () => headings.filter((h) => h.el.isConnected)
+
   const getOffset = () => {
-    if (!canUseDOM) return 0
     const bar = document.querySelector('.Layout .topBar')
     const height =
       bar instanceof HTMLElement
@@ -45,10 +45,9 @@ export const useArticleToc = () => {
     }
   }
 
-  const getHashId = () => (canUseDOM ? decodeHash(window.location.hash) : '')
+  const getHashId = () => decodeHash(window.location.hash)
 
   const updateHash = (id: string) => {
-    if (!canUseDOM) return
     const current = getHashId()
     if (current === id) return
     const url = id
@@ -58,15 +57,15 @@ export const useArticleToc = () => {
   }
 
   const isBottom = () =>
-    canUseDOM &&
     window.scrollY + window.innerHeight >=
-      Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0) - 2
+    Math.max(document.documentElement.scrollHeight, document.body?.scrollHeight || 0) - 2
 
   const getActiveId = () => {
-    if (!canUseDOM || !headings.length) return ''
+    if (!headings.length) return ''
     const connectedHeadings = getConnectedHeadings()
     if (!connectedHeadings.length) return ''
     if (isBottom()) return connectedHeadings[connectedHeadings.length - 1]?.id || ''
+
     const target = window.scrollY + getOffset()
     let id = connectedHeadings[0]?.id || ''
     for (const h of connectedHeadings) {
@@ -88,7 +87,6 @@ export const useArticleToc = () => {
   }
 
   const scheduleSync = (force = false) => {
-    if (!canUseDOM) return
     if (force) forceSync = true
     if (raf) return
     raf = requestAnimationFrame(() => {
@@ -100,7 +98,7 @@ export const useArticleToc = () => {
   }
 
   const handleHashChange = () => {
-    if (!canUseDOM || !headings.length) return
+    if (!headings.length) return
     const id = getHashId()
     if (id && getConnectedHeadings().some((h) => h.id === id)) {
       activeHeadingId.value = id
@@ -110,7 +108,6 @@ export const useArticleToc = () => {
   }
 
   const refreshToc = () => {
-    if (!canUseDOM) return
     const nodes = Array.from(document.querySelectorAll(SELECTOR))
     headings = nodes
       .filter((n): n is HTMLElement => n instanceof HTMLElement)
@@ -182,7 +179,6 @@ export const useArticleToc = () => {
   })
 
   const enhanceCode = () => {
-    if (!canUseDOM) return
     Array.from(document.querySelectorAll('.markdown-content pre'))
       .filter(
         (b): b is HTMLElement => b instanceof HTMLElement && b.dataset.codeEnhanced !== 'true',
@@ -199,7 +195,6 @@ export const useArticleToc = () => {
   }
 
   const enhanceImages = () => {
-    if (!canUseDOM) return
     Array.from(document.querySelectorAll('.markdown-content img'))
       .filter(
         (img): img is HTMLImageElement =>
@@ -216,7 +211,6 @@ export const useArticleToc = () => {
   }
 
   const enhanceLinks = () => {
-    if (!canUseDOM) return
     Array.from(document.querySelectorAll('.markdown-content a'))
       .filter((link): link is HTMLAnchorElement => link instanceof HTMLAnchorElement)
       .forEach((link) => {
@@ -232,7 +226,7 @@ export const useArticleToc = () => {
   }
 
   const resetTocState = () => {
-    if (canUseDOM && raf) {
+    if (raf) {
       cancelAnimationFrame(raf)
       raf = 0
     }
@@ -250,7 +244,6 @@ export const useArticleToc = () => {
   }
 
   const scrollToHeading = (id: string) => {
-    if (!canUseDOM) return
     const el = document.getElementById(id)
     if (!el) return
     activeHeadingId.value = id

@@ -1,4 +1,4 @@
-import { siteConfig, type SiteOwner, type SiteSocialLink } from './raw'
+import { siteConfig, type SiteOwner, type SiteSocialLink } from './loader'
 
 const norm = (url: string) => url.replace(/\/+$/, '')
 

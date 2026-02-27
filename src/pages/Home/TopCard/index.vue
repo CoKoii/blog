@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import StatsCard from '../components/StatsCard/index.vue'
 import JourneyCard from './JourneyCard/index.vue'
 import OpenSourceCard from './OpenSourceCard/index.vue'
 import ProfileCard from './ProfileCard/index.vue'
+import StatsCard from './StatsCard/index.vue'
 import WechatCard from './WechatCard/index.vue'
 </script>
 

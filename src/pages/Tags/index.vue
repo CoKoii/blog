@@ -2,7 +2,7 @@
 import HeroSection from './HeroSection/index.vue'
 import PostsGrid from './PostsGrid/index.vue'
 import TabsSection from './TabsSection/index.vue'
-import { useTagsPage } from './useTagsPage'
+import { useTagsPage } from './hooks/useTagsPage'
 
 const {
   categories,
