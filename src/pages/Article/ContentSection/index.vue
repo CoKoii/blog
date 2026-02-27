@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CommentBubbles from '@/components/Comments/CommentBubbles.vue'
 import GiscusComments from '@/components/Comments/GiscusComments.vue'
 import { isGiscusReady } from '@/config'
 import { Icon } from '@iconify/vue'
@@ -20,6 +21,7 @@ const { contentComponent, toc, activeHeadingId, loading, onScrollToHeading } = d
       <article class="article markdown-content">
         <component v-if="!loading && contentComponent" :is="contentComponent" />
       </article>
+      <CommentBubbles v-if="!loading && isGiscusReady" />
       <GiscusComments v-if="!loading && isGiscusReady" />
     </div>
     <aside class="menus">

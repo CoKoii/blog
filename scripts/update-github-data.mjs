@@ -21,6 +21,8 @@ const error = (message) => console.log(`${color.red}${message}${color.reset}`)
 
 const DISCUSSION_PER_PAGE = 100
 const DISCUSSION_MAX_PAGES = 10
+const COMMENT_PER_PAGE = 20
+const COMMENT_DETAIL_LIMIT = 8
 const ROOT_DIR = process.cwd()
 
 const env = loadEnv(ROOT_DIR)
@@ -105,6 +107,8 @@ const buildArticlePaths = () =>
 const toPathCommentsMap = (paths, defaultValue = 0) =>
   Object.fromEntries(paths.map((path) => [path, defaultValue]))
 
+const toPathDetailMap = (paths) => Object.fromEntries(paths.map((path) => [path, []]))
+
 const matchTitle = (discussionTitle, expectedTitle, strictMode) => {
   const left = normalizeTitle(discussionTitle)
   const right = normalizeTitle(expectedTitle)
@@ -168,10 +172,44 @@ const fetchCommentsByNumber = async (repoInfo, discussionNumber) => {
   return Number(discussion.comments || 0)
 }
 
-const resolveCommentCounts = async (paths) => {
-  const byPath = toPathCommentsMap(paths, 0)
+const fetchDiscussionComments = async (repoInfo, discussionNumber) => {
+  const apiUrl = `${apiBase}/repos/${repoInfo.owner}/${repoInfo.name}/discussions/${discussionNumber}/comments?per_page=${COMMENT_PER_PAGE}`
+  const comments = await requestJson(apiUrl)
+  return Array.isArray(comments) ? comments : []
+}
 
-  if (!commentsEnabled) return byPath
+const normalizeCommentBody = (value) => {
+  const text = String(value ?? '')
+    .replace(/```[\s\S]*?```/g, ' [代码片段] ')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/[>#*_~\-|]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (!text) return '发表了新评论'
+  return text.length > 120 ? `${text.slice(0, 120)}…` : text
+}
+
+const toCommentDetails = (comments) =>
+  comments
+    .map((item) => ({
+      id: String(item?.id ?? item?.node_id ?? Math.random()),
+      author: String(item?.user?.login ?? '匿名用户'),
+      avatarUrl: String(item?.user?.avatar_url ?? ''),
+      body: normalizeCommentBody(item?.body),
+      createdAt: String(item?.created_at ?? ''),
+    }))
+    .filter((item) => item.body)
+    .sort((left, right) => Date.parse(right.createdAt || 0) - Date.parse(left.createdAt || 0))
+    .slice(0, COMMENT_DETAIL_LIMIT)
+
+const resolveCommentData = async (paths) => {
+  const byPath = toPathCommentsMap(paths, 0)
+  const detailsByPath = toPathDetailMap(paths)
+
+  if (!commentsEnabled) return { byPath, detailsByPath }
 
   const repoInfo = parseRepo(repo)
   if (!repoInfo) throw new Error('GitHub 仓库配置无效，必须为 owner/repo 格式。')
@@ -181,7 +219,12 @@ const resolveCommentCounts = async (paths) => {
       throw new Error('评论映射为 number 时，「评论.giscus.指定词」必须为数字。')
     }
     const count = await fetchCommentsByNumber(repoInfo, term)
-    return toPathCommentsMap(paths, count)
+    const sharedDetails = toCommentDetails(await fetchDiscussionComments(repoInfo, term))
+    for (const path of paths) {
+      byPath[path] = count
+      detailsByPath[path] = sharedDetails
+    }
+    return { byPath, detailsByPath }
   }
 
   if (mapping !== 'pathname' && mapping !== 'specific') {
@@ -191,32 +234,41 @@ const resolveCommentCounts = async (paths) => {
   }
 
   const discussions = await fetchDiscussions(repoInfo)
-  if (!discussions.length) return byPath
+  if (!discussions.length) return { byPath, detailsByPath }
 
   const filteredDiscussions = discussions.filter((discussion) => {
     if (!categoryId) return true
     return discussion?.category?.node_id === categoryId
   })
 
-  if (!filteredDiscussions.length) return byPath
+  if (!filteredDiscussions.length) return { byPath, detailsByPath }
 
   if (mapping === 'specific') {
-    if (!term) return byPath
+    if (!term) return { byPath, detailsByPath }
     const matched = filteredDiscussions.find((discussion) =>
       matchTitle(discussion.title || '', term, strict),
     )
     const count = Number(matched?.comments || 0)
-    return toPathCommentsMap(paths, count)
+    const sharedDetails = matched
+      ? toCommentDetails(await fetchDiscussionComments(repoInfo, matched.number))
+      : []
+    for (const path of paths) {
+      byPath[path] = count
+      detailsByPath[path] = sharedDetails
+    }
+    return { byPath, detailsByPath }
   }
 
   const normalizedDiscussions = filteredDiscussions
     .map((discussion) => ({
+      number: discussion.number,
       title: normalizeTitle(discussion.title || ''),
       comments: Number(discussion.comments || 0),
     }))
     .filter((discussion) => discussion.title)
 
   const titleMap = new Map()
+  const discussionByPath = new Map()
   for (const discussion of normalizedDiscussions) {
     if (!titleMap.has(discussion.title)) {
       titleMap.set(discussion.title, discussion.comments)
@@ -229,6 +281,10 @@ const resolveCommentCounts = async (paths) => {
 
     if (strict) {
       byPath[path] = titleMap.get(lookupTitle) || 0
+      const strictMatched = normalizedDiscussions.find(
+        (discussion) => discussion.title === lookupTitle,
+      )
+      if (strictMatched?.number) discussionByPath.set(path, strictMatched.number)
       continue
     }
 
@@ -236,9 +292,25 @@ const resolveCommentCounts = async (paths) => {
       discussion.title.includes(lookupTitle),
     )
     byPath[path] = matched?.comments || 0
+    if (matched?.number) discussionByPath.set(path, matched.number)
   }
 
-  return byPath
+  const uniqueNumbers = Array.from(new Set(Array.from(discussionByPath.values()))).filter(Boolean)
+  const commentsByDiscussionNumber = new Map()
+  await Promise.all(
+    uniqueNumbers.map(async (number) => {
+      const details = toCommentDetails(await fetchDiscussionComments(repoInfo, number))
+      commentsByDiscussionNumber.set(number, details)
+    }),
+  )
+
+  for (const path of paths) {
+    const number = discussionByPath.get(path)
+    if (!number) continue
+    detailsByPath[path] = commentsByDiscussionNumber.get(number) ?? []
+  }
+
+  return { byPath, detailsByPath }
 }
 
 const main = async () => {
@@ -253,16 +325,17 @@ const main = async () => {
   const articlePaths = buildArticlePaths()
   info(`文章数量：${articlePaths.length}`)
 
-  const [repoStats, commentsByPath] = await Promise.all([
+  const [repoStats, commentsData] = await Promise.all([
     fetchRepoStats(),
-    resolveCommentCounts(articlePaths),
+    resolveCommentData(articlePaths),
   ])
 
   const payload = {
     generatedAt: new Date().toISOString(),
     github: repoStats,
     comments: {
-      byPath: commentsByPath,
+      byPath: commentsData.byPath,
+      detailsByPath: commentsData.detailsByPath,
     },
   }
 

@@ -6,6 +6,15 @@ export type GithubRepoStats = {
 
 export type GithubCommentsData = {
   byPath?: Record<string, number>
+  detailsByPath?: Record<string, GithubCommentDetail[]>
+}
+
+export type GithubCommentDetail = {
+  id: string
+  author: string
+  avatarUrl: string
+  body: string
+  createdAt: string
 }
 
 export type GithubDataPayload = {

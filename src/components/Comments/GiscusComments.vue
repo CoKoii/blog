@@ -15,7 +15,7 @@ const term = mapping === 'specific' || mapping === 'number' ? giscus.term : unde
 </script>
 
 <template>
-  <section class="GiscusComments" aria-label="评论区">
+  <section id="giscus-comments" class="GiscusComments" aria-label="评论区">
     <div class="header">
       <h3 class="title">评论区</h3>
       <p class="desc">欢迎在评论区交流文章内容</p>
