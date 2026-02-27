@@ -1,7 +1,7 @@
 import { formatPostList, getAllPosts } from '@/utils/posts'
 import { ALL_TAG_SLUG, getTagTabs } from '@/utils/tags'
 import { computed, ref } from 'vue'
-import type { Project, Resource } from './types'
+import type { Project, Resource } from '../CenterCard/types'
 
 export const useCenterCardData = () => {
   const projects = ref<Project[]>([

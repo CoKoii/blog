@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CenterCard from './CenterCard/index.vue'
 import TopCard from './TopCard/index.vue'
-import { useHomeHead } from './utils'
+import { useHomeHead } from './hooks/useHomeHead'
 
 useHomeHead()
 </script>

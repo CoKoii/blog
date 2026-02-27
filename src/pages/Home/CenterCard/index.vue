@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import StatsCard from '../components/StatsCard/index.vue'
+import { useCenterCardData } from '../hooks/useCenterCardData'
 import FeedSection from './FeedSection/index.vue'
 import SidebarSection from './SidebarSection/index.vue'
-import { useCenterCardData } from './utils'
 
 const { projects, activeTab, tabs, latestPosts, groupedResources } = useCenterCardData()
 </script>

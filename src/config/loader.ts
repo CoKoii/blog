@@ -2,15 +2,15 @@ import rawConfig from '../../site.config.json'
 import type { SiteConfig } from './types'
 import { validateSiteConfig } from './validator'
 
+export const siteConfig: SiteConfig = validateSiteConfig(rawConfig)
+
 export type {
   SiteComments,
   SiteCommentsGiscus,
-  SiteGithub,
   SiteConfig,
+  SiteGithub,
   SiteOwner,
   SiteSocialLink,
   SiteStats,
   SiteWechat,
 } from './types'
-
-export const siteConfig: SiteConfig = validateSiteConfig(rawConfig)

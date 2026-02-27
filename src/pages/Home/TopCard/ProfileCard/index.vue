@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { siteOwner, socialLinks } from '@/config'
 import { Icon } from '@iconify/vue'
-import { ownerProfile, socialLinks } from '@/config'
 
 const handleAction = (message: string) => {
   alert(message)
@@ -12,21 +12,21 @@ const handleAction = (message: string) => {
     <section class="card">
       <div class="grid">
         <div class="avatar" aria-label="avatar">
-          <img v-lazy="ownerProfile.avatar" alt="Avatar" />
+          <img v-lazy="siteOwner.avatar" alt="Avatar" />
           <span class="status-dot"></span>
         </div>
 
         <div class="content">
           <h1 class="title">
-            {{ ownerProfile.greeting }}
-            <span aria-hidden="true">{{ ownerProfile.greetingEmoji }}</span>
+            {{ siteOwner.greeting }}
+            <span aria-hidden="true">{{ siteOwner.greetingEmoji }}</span>
           </h1>
 
-          <p class="subtitle">{{ ownerProfile.headline }}</p>
+          <p class="subtitle">{{ siteOwner.headline }}</p>
 
           <p class="value">
-            {{ ownerProfile.bio }}
-            <span>{{ ownerProfile.bioEmphasis }}</span>
+            {{ siteOwner.bio }}
+            <span>{{ siteOwner.bioEmphasis }}</span>
           </p>
 
           <div class="actions">
@@ -38,12 +38,12 @@ const handleAction = (message: string) => {
           </div>
 
           <ul class="chips" aria-label="skills">
-            <li v-for="tag in ownerProfile.tags" :key="tag" class="chip">{{ tag }}</li>
+            <li v-for="tag in siteOwner.tags" :key="tag" class="chip">{{ tag }}</li>
           </ul>
         </div>
       </div>
 
-      <div class="quote">{{ ownerProfile.quote }}</div>
+      <div class="quote">{{ siteOwner.quote }}</div>
 
       <div class="social" aria-label="social links">
         <a

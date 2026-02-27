@@ -11,8 +11,6 @@ import type { Component } from 'vue'
 import { nextTick, onServerPrefetch, ref, shallowRef, watch } from 'vue'
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 
-export { resolveTitleFromSlug }
-
 export const DEFAULT_FRONTMATTER: PostFrontmatter = {
   title: '',
   coverImage: '',

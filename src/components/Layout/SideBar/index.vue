@@ -1,9 +1,9 @@
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import menus from '@/router/config/menu'
+import { useLayoutStore } from '@/stores/layout'
 import { Icon } from '@iconify/vue'
 import { Tooltip } from 'ant-design-vue'
-import menus from '@/router/menu'
-import { useLayoutStore } from '@/stores/layout'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'SideBar',
