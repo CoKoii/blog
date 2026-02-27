@@ -237,10 +237,12 @@
   }
 
   img {
+    --md-image-aspect-ratio: 16 / 10;
     display: block;
+    width: 100%;
     max-width: 100%;
-    width: auto;
     height: auto;
+    aspect-ratio: auto var(--md-image-aspect-ratio);
     margin: 0 auto;
     border-radius: var(--radius-3xl);
     border: var(--border-width-1) solid var(--md-line-soft);

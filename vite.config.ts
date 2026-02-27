@@ -7,10 +7,7 @@ import { createPostsMetaPlugin, getPostRoutes, getTagRoutes } from './scripts/pl
 import { createSiteHeadPlugin } from './scripts/plugins/site-head'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
-const FRAMEWORK_MODULE_RE =
-  /\/node_modules\/(?:vue\/|@vue\/|vue-router\/|pinia\/|vite-ssg\/|@unhead\/|unhead\/)/
 
-// https://vite.dev/config/
 export default defineConfig(async () => {
   const highlighter = await createShikiHighlighter()
 
@@ -34,17 +31,6 @@ export default defineConfig(async () => {
     },
     build: {
       cssCodeSplit: false,
-      rollupOptions: {
-        output: {
-          manualChunks(id: string) {
-            const normalizedId = id.replace(/\\/g, '/')
-            if (!normalizedId.includes('/node_modules/')) return undefined
-            if (FRAMEWORK_MODULE_RE.test(normalizedId)) return 'framework'
-            if (normalizedId.includes('/node_modules/@iconify/vue/')) return 'iconify'
-            return 'vendor'
-          },
-        },
-      },
     },
     ssgOptions: {
       includedRoutes(paths: string[]) {

@@ -5,6 +5,22 @@ import { createApp, defineComponent, h, ref } from 'vue'
 const queryAll = <T extends Element>(selector: string) =>
   Array.from(document.querySelectorAll<T>(selector))
 
+const DEFAULT_IMAGE_RATIO = '16 / 10'
+
+const toRatio = (width: number, height: number) => `${width} / ${height}`
+
+const isPositive = (value: number) => Number.isFinite(value) && value > 0
+
+const getRatioFromAttributes = (img: HTMLImageElement) => {
+  const width = Number.parseFloat(img.getAttribute('width') || '')
+  const height = Number.parseFloat(img.getAttribute('height') || '')
+  return isPositive(width) && isPositive(height) ? toRatio(width, height) : null
+}
+
+const applyRatio = (img: HTMLImageElement, ratio: string | null) => {
+  img.style.setProperty('--md-image-aspect-ratio', ratio || DEFAULT_IMAGE_RATIO)
+}
+
 const CopyButton = defineComponent({
   props: { text: { type: String, required: true } },
   setup(props) {
@@ -72,6 +88,22 @@ const enhanceImages = () => {
     .forEach((img) => {
       const originalSrc = img.src || img.getAttribute('src')
       if (!originalSrc) return
+
+      const attrRatio = getRatioFromAttributes(img)
+      applyRatio(img, attrRatio)
+
+      const syncRatioFromNaturalSize = () => {
+        if (!isPositive(img.naturalWidth) || !isPositive(img.naturalHeight)) return
+        const ratio = toRatio(img.naturalWidth, img.naturalHeight)
+        applyRatio(img, ratio)
+      }
+
+      if (img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
+        syncRatioFromNaturalSize()
+      } else {
+        img.addEventListener('load', syncRatioFromNaturalSize, { once: true })
+      }
+
       img.dataset.lazyEnhanced = 'true'
       img.setAttribute('data-original-src', originalSrc)
       img.removeAttribute('src')

@@ -44,29 +44,10 @@ const scrollToComments = () => {
   const target = document.getElementById('giscus-comments')
   if (!target) return
 
-  const getTargetTop = () => {
-    const y = target.getBoundingClientRect().top + window.scrollY - getScrollOffset()
-    const maxTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
-    return Math.min(Math.max(0, y), maxTop)
-  }
-
-  const scroll = (behavior: ScrollBehavior) => {
-    window.scrollTo({ top: getTargetTop(), behavior })
-  }
-
-  scroll('smooth')
-
-  // After lazy images/iframe resize the page, nudge scroll to the corrected position.
-  let attempts = 0
-  const settleAndFix = () => {
-    attempts += 1
-    const targetTop = getTargetTop()
-    if (Math.abs(window.scrollY - targetTop) <= 8 || attempts >= 4) return
-    scroll('auto')
-    window.setTimeout(settleAndFix, 220)
-  }
-
-  window.setTimeout(settleAndFix, 360)
+  const y = target.getBoundingClientRect().top + window.scrollY - getScrollOffset()
+  const maxTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+  const top = Math.min(Math.max(0, y), maxTop)
+  window.scrollTo({ top, behavior: 'smooth' })
 }
 
 const closeBubble = () => {
