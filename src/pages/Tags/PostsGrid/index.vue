@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PostListItem } from '@/utils/posts'
 
-const props = defineProps<{
+const { posts } = defineProps<{
   posts: PostListItem[]
 }>()
 
@@ -13,7 +13,7 @@ const emit = defineEmits<{
 <template>
   <section class="tags-grid">
     <article
-      v-for="post in props.posts"
+      v-for="post in posts"
       :key="post.id"
       class="post-card"
       @click="emit('select', post.id)"

@@ -26,7 +26,7 @@ const ROOT_DIR = process.cwd()
 const env = loadEnv(ROOT_DIR)
 const siteConfig = loadSiteConfig(ROOT_DIR)
 
-const toTrimmedString = (value) => String(value || '').trim()
+const toTrimmedString = (value) => String(value ?? '').trim()
 
 const githubConfig = siteConfig.github
 const commentsConfig = siteConfig.comments
@@ -52,16 +52,19 @@ const decodeSafe = (value) => {
   }
 }
 
-const normalizeTitle = (value) => decodeSafe(String(value || '')).trim().toLowerCase()
+const normalizeTitle = (value) =>
+  decodeSafe(String(value ?? ''))
+    .trim()
+    .toLowerCase()
 
 const normalizePathnameTerm = (pathname) => {
-  const cleanPath = String(pathname || '').split(/[?#]/, 1)[0] || ''
+  const cleanPath = String(pathname ?? '').split(/[?#]/, 1)[0] || ''
   if (cleanPath.length < 2) return 'index'
   return cleanPath.replace(/^\/+/, '').replace(/\.\w+$/, '')
 }
 
 const parseRepo = (value) => {
-  const [owner, name] = String(value || '').split('/')
+  const [owner, name] = String(value ?? '').split('/')
   if (!owner || !name) return null
   return { owner, name }
 }
@@ -188,7 +191,9 @@ const resolveCommentCounts = async (paths) => {
   }
 
   if (mapping !== 'pathname' && mapping !== 'specific') {
-    throw new Error(`评论映射值「${mapping}」不支持构建期统计，请使用 pathname / specific / number。`)
+    throw new Error(
+      `评论映射值「${mapping}」不支持构建期统计，请使用 pathname / specific / number。`,
+    )
   }
 
   const discussions = await fetchDiscussions(repoInfo)

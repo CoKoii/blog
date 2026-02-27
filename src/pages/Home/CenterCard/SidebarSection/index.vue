@@ -4,7 +4,7 @@ import NewsletterCard from '../NewsletterCard/index.vue'
 import PinnedProjects from '../PinnedProjects/index.vue'
 import type { Project, Resource } from '../types'
 
-defineProps<{
+const { projects, groupedResources } = defineProps<{
   projects: Project[]
   groupedResources: Resource[]
 }>()

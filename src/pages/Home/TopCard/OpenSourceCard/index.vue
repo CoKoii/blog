@@ -1,23 +1,25 @@
 <script setup lang="ts">
 import { githubConfig } from '@/config'
-import { githubRepoStats } from '@/data/github'
+import { githubRepoStats } from '@/services/github'
 import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
 
 const fmt = (n: number) =>
   n < 1000 ? `${n}` : `${n >= 10000 ? n / 1000 : Math.round((n / 1000) * 10) / 10}k`
 
-const profileUrl = computed(() => {
-  if (githubRepoStats.profileUrl) return githubRepoStats.profileUrl
-  return githubConfig.username ? `https://github.com/${githubConfig.username}` : 'https://github.com'
-})
-const repoUrl = computed(() => {
-  if (githubRepoStats.repoUrl) return githubRepoStats.repoUrl
-  return githubConfig.repo ? `https://github.com/${githubConfig.repo}` : `${profileUrl.value}/blog`
-})
-const projects = computed(() => Number(githubRepoStats.projects || 0))
-const stars = computed(() => Number(githubRepoStats.stars || 0))
-const updatedAt = computed(() => githubRepoStats.updatedAt || null)
+const profileUrl = computed(
+  () =>
+    githubRepoStats.profileUrl ??
+    (githubConfig.username ? `https://github.com/${githubConfig.username}` : 'https://github.com'),
+)
+const repoUrl = computed(
+  () =>
+    githubRepoStats.repoUrl ??
+    (githubConfig.repo ? `https://github.com/${githubConfig.repo}` : `${profileUrl.value}/blog`),
+)
+const projects = computed(() => Number(githubRepoStats.projects ?? 0))
+const stars = computed(() => Number(githubRepoStats.stars ?? 0))
+const updatedAt = computed(() => githubRepoStats.updatedAt ?? null)
 
 const meta = computed(() => {
   if (!updatedAt.value) return '构建时更新'
@@ -35,13 +37,7 @@ const meta = computed(() => {
         <span class="dot" aria-hidden="true"></span>
         <span>开源作品集</span>
       </div>
-      <a
-        class="pill"
-        title="Open Source"
-        :href="repoUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a class="pill" title="Open Source" :href="repoUrl" target="_blank" rel="noopener noreferrer">
         <Icon class="icon" icon="lucide:github" />
         <span>开源博客</span>
       </a>

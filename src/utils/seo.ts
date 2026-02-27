@@ -40,7 +40,7 @@ export const buildSeoMeta = (config: SeoMetaConfig): HeadConfig => {
     keywords,
     schemaData,
   } = config
-  const finalImage = image || siteImage
+  const finalImage = image ?? siteImage
   const fullImageUrl = finalImage?.startsWith('http') ? finalImage : `${siteUrl}${finalImage}`
 
   const meta: MetaTag[] = [
@@ -48,13 +48,9 @@ export const buildSeoMeta = (config: SeoMetaConfig): HeadConfig => {
     { name: 'description', content: description },
   ]
 
-  if (author) {
-    meta.push({ name: 'author', content: author })
-  }
+  if (author) meta.push({ name: 'author', content: author })
 
-  if (keywords?.length) {
-    meta.push({ name: 'keywords', content: keywords.join(', ') })
-  }
+  if (keywords?.length) meta.push({ name: 'keywords', content: keywords.join(', ') })
 
   // Open Graph
   meta.push(
@@ -79,17 +75,9 @@ export const buildSeoMeta = (config: SeoMetaConfig): HeadConfig => {
 
   // Article-specific meta
   if (type === 'article') {
-    if (publishDate) {
-      meta.push({ property: 'article:published_time', content: publishDate })
-    }
-    if (modifiedDate) {
-      meta.push({ property: 'article:modified_time', content: modifiedDate })
-    }
-    if (keywords?.length) {
-      keywords.forEach((tag) => {
-        meta.push({ property: 'article:tag', content: tag })
-      })
-    }
+    if (publishDate) meta.push({ property: 'article:published_time', content: publishDate })
+    if (modifiedDate) meta.push({ property: 'article:modified_time', content: modifiedDate })
+    keywords?.forEach((tag) => meta.push({ property: 'article:tag', content: tag }))
   }
 
   return {

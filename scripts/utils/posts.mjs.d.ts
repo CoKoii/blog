@@ -1,4 +1,4 @@
-export type PostFileEntry = {
+export interface PostFileEntry {
   category: string
   slug: string
   fileName: string

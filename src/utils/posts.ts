@@ -6,7 +6,7 @@ import { resolveTitleFromSlug } from './strings'
 const components = import.meta.glob<MarkdownModule>('/posts/**/*.md')
 const cache = new Map<string, MarkdownModule>()
 
-const getDate = (p: PostMeta): string => p.frontmatter?.date || p.frontmatter?.publishDate || ''
+const getDate = (p: PostMeta): string => p.frontmatter?.date ?? p.frontmatter?.publishDate ?? ''
 const getTs = (p: PostMeta) => new Date(getDate(p) || 0).getTime()
 
 const sorted = [...postsMeta].sort((a, b) => getTs(b) - getTs(a))
@@ -19,20 +19,24 @@ export const parsePostId = (id: string) => {
 }
 
 export const findPostBySlug = (catSlug: string, slug: string, posts: PostMeta[]) =>
-  posts.find((p) => p.categorySlug === catSlug && p.slug === slug) || null
+  posts.find((p) => p.categorySlug === catSlug && p.slug === slug) ?? null
 
 export const resolvePostIdBySlug = (catSlug: string, slug: string) =>
-  catSlug && slug ? findPostBySlug(catSlug, slug, sorted)?.id || null : null
+  catSlug && slug ? (findPostBySlug(catSlug, slug, sorted)?.id ?? null) : null
 
 const toModule = (meta: PostMeta | undefined, mod: MarkdownModule): PostModule | null =>
-  mod.default ? { default: mod.default, frontmatter: meta?.frontmatter || {} } : null
+  mod.default ? { default: mod.default, frontmatter: meta?.frontmatter ?? {} } : null
+
+const resolveLoader = (id: string) => {
+  const meta = byId.get(id)
+  const path = meta?.path
+  return { meta, path, loader: path ? components[path] : undefined }
+}
 
 export const getAllPosts = () => [...sorted]
 
 export function getPostContentSync(id: string): PostModule | null {
-  const meta = byId.get(id)
-  const path = meta?.path
-  const loader = path ? components[path] : undefined
+  const { meta, path, loader } = resolveLoader(id)
   if (!path || !loader) {
     console.warn(`[Posts] Article not found: ${id}`)
     return null
@@ -42,9 +46,7 @@ export function getPostContentSync(id: string): PostModule | null {
 }
 
 export async function getPostContent(id: string): Promise<PostModule | null> {
-  const meta = byId.get(id)
-  const path = meta?.path
-  const loader = path ? components[path] : undefined
+  const { meta, path, loader } = resolveLoader(id)
 
   if (!path || !loader) {
     console.warn(`[Posts] Article not found: ${id}`)
@@ -67,7 +69,7 @@ export async function getPostContent(id: string): Promise<PostModule | null> {
 export const preloadPostContent = (id: string) => getPostContent(id)
 export const getPostDate = (p: PostMeta) => getDate(p)
 export const findPostById = (id: string | number, posts = sorted) =>
-  posts.find((p) => p.id === String(id)) || null
+  posts.find((p) => p.id === String(id)) ?? null
 
 export interface PostListItem {
   id: string
@@ -83,7 +85,7 @@ export interface PostListItem {
 export const formatPostList = (posts: PostMeta[], hotCount = 2): PostListItem[] =>
   posts.map((p, i) => ({
     id: p.id,
-    title: p.frontmatter.title ?? resolveTitleFromSlug(parsePostId(p.id)?.slug || ''),
+    title: p.frontmatter.title ?? resolveTitleFromSlug(parsePostId(p.id)?.slug ?? ''),
     category: p.category,
     time: formatDateYMD(getDate(p)),
     readTime: p.frontmatter.readTime ? `${p.frontmatter.readTime} min` : '5 min',
@@ -94,8 +96,8 @@ export const formatPostList = (posts: PostMeta[], hotCount = 2): PostListItem[] 
 
 export const getPostStats = (posts: PostMeta[]) => {
   const cats = new Set(posts.map((p) => p.category))
-  const tags = new Set(posts.flatMap((p) => p.frontmatter?.tags || []))
-  const words = posts.reduce((sum, p) => sum + (p.frontmatter?.wordCount || 0), 0)
+  const tags = new Set(posts.flatMap((p) => p.frontmatter?.tags ?? []))
+  const words = posts.reduce((sum, p) => sum + (p.frontmatter?.wordCount ?? 0), 0)
   return {
     totalPosts: posts.length,
     totalCategories: cats.size,

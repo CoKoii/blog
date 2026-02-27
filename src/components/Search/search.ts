@@ -28,11 +28,11 @@ const extractQueryTerms = (s: string): string[] => {
 }
 
 const parseKeyword = (kw: string) => {
-  const norm = normalize(kw)
+  const normalized = normalize(kw)
   return {
-    normalized: norm,
-    highlight: splitTerms(norm),
-    query: extractQueryTerms(norm),
+    normalized,
+    highlight: splitTerms(normalized),
+    query: extractQueryTerms(normalized),
   }
 }
 

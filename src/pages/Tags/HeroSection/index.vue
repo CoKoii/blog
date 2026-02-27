@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps<{
+const { postCount, activeCategoryLabel, heroCover, heroDescription } = defineProps<{
   postCount: number
   activeCategoryLabel: string
   heroCover: string
@@ -12,17 +12,17 @@ const props = defineProps<{
     <div class="hero-text">
       <span class="hero-kicker">分类导览</span>
       <div class="hero-meta">
-        <span class="count">{{ props.postCount }} posts</span>
+        <span class="count">{{ postCount }} posts</span>
         <span class="dot">·</span>
         <span class="label">分类</span>
       </div>
-      <h1 class="hero-title">{{ props.activeCategoryLabel || 'Tags' }}</h1>
+      <h1 class="hero-title">{{ activeCategoryLabel || 'Tags' }}</h1>
       <p class="hero-desc">
-        {{ props.heroDescription }}
+        {{ heroDescription }}
       </p>
     </div>
-    <div v-if="props.heroCover" class="hero-media">
-      <img v-lazy="props.heroCover" :alt="props.activeCategoryLabel" />
+    <div v-if="heroCover" class="hero-media">
+      <img v-lazy="heroCover" :alt="activeCategoryLabel" />
     </div>
   </section>
 </template>

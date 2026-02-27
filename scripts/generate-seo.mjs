@@ -1,9 +1,9 @@
+import matter from 'gray-matter'
 import fs from 'node:fs'
 import path from 'node:path'
-import matter from 'gray-matter'
-import { buildArticlePath, toPinyinSlug } from './utils/slug.mjs'
-import { resolveSiteMeta } from './utils/site-config.mjs'
 import { listPostFiles } from './utils/posts.mjs'
+import { resolveSiteMeta } from './utils/site-config.mjs'
+import { buildArticlePath, toPinyinSlug } from './utils/slug.mjs'
 
 const rootDir = process.cwd()
 const distDir = path.join(rootDir, 'dist')
@@ -32,7 +32,12 @@ const buildTagPaths = (posts) => {
     tagSlugs.add(toPinyinSlug(post.category))
   }
   tagSlugs.delete('all')
-  return ['/tags/all', ...Array.from(tagSlugs).sort().map((slug) => `/tags/${slug}`)]
+  return [
+    '/tags/all',
+    ...Array.from(tagSlugs)
+      .sort()
+      .map((slug) => `/tags/${slug}`),
+  ]
 }
 
 const toIso = (value) => {
@@ -42,7 +47,7 @@ const toIso = (value) => {
   return new Date(parsed).toISOString()
 }
 
-const getFrontmatterDate = (frontmatter) => frontmatter?.date || frontmatter?.publishDate || ''
+const getFrontmatterDate = (frontmatter) => frontmatter?.date ?? frontmatter?.publishDate ?? ''
 
 const buildSitemap = (entries) => {
   const urls = entries

@@ -5,11 +5,8 @@ type LazyEl = HTMLImageElement & { __cleanup?: () => void }
 const schedule = (cb: FrameRequestCallback) => {
   if (typeof window === 'undefined') return
   const raf = window.requestAnimationFrame
-  if (raf) {
-    raf(cb)
-  } else {
-    window.setTimeout(cb, 0)
-  }
+  if (raf) return raf(cb)
+  window.setTimeout(cb, 0)
 }
 
 const setLoading = (el: LazyEl) => {

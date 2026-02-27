@@ -64,9 +64,7 @@ const expectStringArray = (source, key, fieldPath, errors) => {
     return []
   }
 
-  const list = value
-    .map((item) => (typeof item === 'string' ? item.trim() : ''))
-    .filter(Boolean)
+  const list = value.map((item) => (typeof item === 'string' ? item.trim() : '')).filter(Boolean)
 
   if (list.length !== value.length) {
     errors.push(`字段「${fieldPath}」中存在非字符串或空字符串项`)
@@ -245,18 +243,18 @@ const validateSiteConfig = (rawConfig) => {
   const tagMetaRaw = expectObject(tags['元信息'], '标签.元信息', errors)
   const tagMeta = {}
 
-  Object.entries(tagMetaRaw).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(tagMetaRaw)) {
     if (typeof value === 'string') {
       if (!value.trim()) {
         errors.push(`字段「标签.元信息.${key}」颜色字符串不能为空`)
-        return
+        continue
       }
       tagMeta[key] = value.trim()
-      return
+      continue
     }
     if (!isObject(value)) {
       errors.push(`字段「标签.元信息.${key}」必须是字符串或对象`)
-      return
+      continue
     }
     tagMeta[key] = {
       color: expectString(value, '颜色', `标签.元信息.${key}.颜色`, errors),
@@ -265,7 +263,7 @@ const validateSiteConfig = (rawConfig) => {
         allowEmpty: true,
       }),
     }
-  })
+  }
 
   if (giscusRepo && githubRepo && giscusRepo !== githubRepo) {
     console.warn(

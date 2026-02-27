@@ -19,7 +19,7 @@ export const configureProgress = () => {
 
 const preloadArticle = async (to: { name?: unknown; params?: Record<string, unknown> }) => {
   if (to.name !== 'article') return
-  const id = resolvePostIdBySlug(String(to.params?.category || ''), String(to.params?.id || ''))
+  const id = resolvePostIdBySlug(String(to.params?.category ?? ''), String(to.params?.id ?? ''))
   if (id) await preloadPostContent(id)
 }
 
@@ -37,7 +37,7 @@ export const setupRouterGuards = async (router: Router) => {
   router.onError((error, to) => {
     NProgress.done()
     if (isImportError(error)) {
-      handleImportError(error, to?.fullPath || getCurrentPath())
+      handleImportError(error, to?.fullPath ?? getCurrentPath())
     }
   })
 

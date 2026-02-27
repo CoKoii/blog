@@ -3,9 +3,9 @@ const RELOAD_QUERY = '__reload'
 const IMPORT_ERROR_RE =
   /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module/i
 
-const buildPath = (path: string, query?: string) => {
+const buildPath = (path: string, withReload = false) => {
   const url = new URL(path, window.location.origin)
-  if (query) {
+  if (withReload) {
     url.searchParams.set(RELOAD_QUERY, Date.now().toString())
   } else {
     url.searchParams.delete(RELOAD_QUERY)
@@ -27,7 +27,7 @@ export const handleImportError = (error: unknown, targetPath: string = getCurren
     return
   }
   sessionStorage.setItem(RELOAD_KEY, path)
-  window.location.replace(buildPath(targetPath, 'reload'))
+  window.location.replace(buildPath(targetPath, true))
 }
 
 export const normalizeCurrentPath = () => {
@@ -39,7 +39,8 @@ export const normalizeCurrentPath = () => {
 }
 
 export const clearReloadKey = (path: string) => {
-  if (sessionStorage.getItem(RELOAD_KEY) === buildPath(path)) {
+  const normalizedPath = buildPath(path)
+  if (sessionStorage.getItem(RELOAD_KEY) === normalizedPath) {
     sessionStorage.removeItem(RELOAD_KEY)
   }
 }

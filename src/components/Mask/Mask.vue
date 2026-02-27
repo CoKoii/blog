@@ -2,13 +2,14 @@
 import { useLayoutStore } from '@/stores/layout'
 import { onUnmounted, watch } from 'vue'
 
-const store = useLayoutStore()
+const layoutStore = useLayoutStore()
 const prevent = (e: Event) => e.preventDefault()
+const canUseDOM = typeof document !== 'undefined'
 
 watch(
-  () => store.isMobileSideBarOpen,
+  () => layoutStore.isMobileSideBarOpen,
   (open) => {
-    if (typeof document === 'undefined') return
+    if (!canUseDOM) return
     document.body.style.overflow = open ? 'hidden' : ''
     if (open) {
       document.addEventListener('touchmove', prevent, { passive: false })
@@ -20,7 +21,7 @@ watch(
 )
 
 onUnmounted(() => {
-  if (typeof document === 'undefined') return
+  if (!canUseDOM) return
   document.body.style.overflow = ''
   document.removeEventListener('touchmove', prevent)
 })
@@ -28,7 +29,11 @@ onUnmounted(() => {
 
 <template>
   <Transition name="fade">
-    <div class="Mask" v-if="store.isMobileSideBarOpen" @click="store.toggleSideBar()"></div>
+    <div
+      class="Mask"
+      v-if="layoutStore.isMobileSideBarOpen"
+      @click="layoutStore.toggleSideBar"
+    ></div>
   </Transition>
 </template>
 

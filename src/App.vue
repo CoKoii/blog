@@ -1,8 +1,8 @@
 <template>
   <router-view v-slot="{ Component }">
-    <transition name="zoomBlur" mode="out-in">
+    <Transition name="zoomBlur" mode="out-in">
       <component :is="Component" />
-    </transition>
+    </Transition>
   </router-view>
 </template>
 

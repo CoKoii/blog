@@ -19,7 +19,7 @@ const getLbl = (tab: TabItem) => (typeof tab === 'string' ? tab : tab.label)
 
 const activeIdx = computed(() => {
   const i = props.tabs.findIndex((t) => getVal(t) === props.activeTab)
-  return i === -1 ? 0 : i
+  return i < 0 ? 0 : i
 })
 
 const tabsRef = ref<HTMLDivElement>()

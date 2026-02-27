@@ -24,15 +24,15 @@ const getModifiedDate = (fm: PostFrontmatter) =>
 
 export const useArticleHead = ({ route, article, frontmatter }: UseArticleHeadOptions) => {
   const canonical = computed(() => {
-    const cat = String(route.params.category || '')
-    const id = String(route.params.id || '')
+    const cat = String(route.params.category ?? '')
+    const id = String(route.params.id ?? '')
     return cat && id ? `${siteUrl}/article/${cat}/${id}` : siteUrl
   })
 
   useHead(() => {
     const fm = frontmatter.value
     const art = article.value
-    const desc = fm.description || art.title
+    const desc = fm.description ?? art.title
     const pubDate = getPublishDate(fm)
     const modDate = getModifiedDate(fm)
 
@@ -42,7 +42,7 @@ export const useArticleHead = ({ route, article, frontmatter }: UseArticleHeadOp
       image: art.coverImage,
       url: canonical.value,
       type: 'article',
-      author: String(fm.author || siteOwner.name),
+      author: String(fm.author ?? siteOwner.name),
       publishDate: pubDate,
       modifiedDate: modDate,
       keywords: art.tags,

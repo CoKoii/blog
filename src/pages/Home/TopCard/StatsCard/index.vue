@@ -6,6 +6,7 @@ import { onMounted, ref } from 'vue'
 
 const days = ref('—')
 const stats = getPostStats(getAllPosts())
+const DAY_MS = 864e5
 
 const fmtWords = (v: number) => {
   if (!Number.isFinite(v)) return '—'
@@ -18,7 +19,7 @@ onMounted(() => {
   const now = new Date()
   const s = new Date(start.getFullYear(), start.getMonth(), start.getDate())
   const n = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  days.value = String(Math.max(0, Math.round((n.getTime() - s.getTime()) / 864e5)))
+  days.value = String(Math.max(0, Math.round((n.getTime() - s.getTime()) / DAY_MS)))
 })
 </script>
 

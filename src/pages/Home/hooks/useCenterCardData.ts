@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 import type { Project, Resource } from '../CenterCard/types'
 
 export const useCenterCardData = () => {
+  const tabs = getTagTabs()
   const projects = ref<Project[]>([
     {
       name: 'Hero-Admin',
@@ -30,18 +31,19 @@ export const useCenterCardData = () => {
   const activeTab = ref(ALL_TAG_SLUG)
   const allPosts = getAllPosts()
 
-  const latestPosts = computed(() => {
-    const posts =
+  const latestPosts = computed(() =>
+    formatPostList(
       activeTab.value === ALL_TAG_SLUG
         ? allPosts
-        : allPosts.filter((p) => p.categorySlug === activeTab.value)
-    return formatPostList(posts, 2)
-  })
+        : allPosts.filter((post) => post.categorySlug === activeTab.value),
+      2,
+    ),
+  )
 
   return {
     projects,
     activeTab,
-    tabs: getTagTabs(),
+    tabs,
     latestPosts,
     groupedResources,
   }

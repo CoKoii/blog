@@ -23,7 +23,6 @@ export const createApp = ViteSSG(
     app.directive('lazy', vLazy)
 
     if (!isClient) return
-
     configureProgress()
     normalizeCurrentPath()
     setupImportErrorHandler()

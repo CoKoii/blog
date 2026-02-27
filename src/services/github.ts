@@ -1,4 +1,4 @@
-import rawGithubData from './github-data.json'
+import rawGithubData from '@/data/github-data.json'
 
 export type GithubRepoStats = {
   username?: string
@@ -27,19 +27,15 @@ export type GithubDataPayload = {
 const payload = rawGithubData as GithubDataPayload
 
 export const githubData = payload
-export const githubRepoStats = payload.github || {}
-export const githubCommentsByPath = payload.comments?.byPath || {}
+export const githubRepoStats = payload.github ?? {}
+export const githubCommentsByPath = payload.comments?.byPath ?? {}
 
 const normalizeRoutePath = (value: string) => {
   const clean = String(value || '/').split(/[?#]/, 1)[0] || '/'
-  if (clean !== '/' && clean.endsWith('/')) {
-    return clean.replace(/\/+$/, '')
-  }
-  return clean
+  return clean === '/' ? clean : clean.replace(/\/+$/, '')
 }
 
 export const getCommentCountByPath = (value: string): number => {
   const count = githubCommentsByPath[normalizeRoutePath(value)]
-  if (typeof count !== 'number' || !Number.isFinite(count)) return 0
-  return count
+  return typeof count === 'number' && Number.isFinite(count) ? count : 0
 }

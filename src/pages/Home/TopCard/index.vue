@@ -7,7 +7,7 @@ import WechatCard from './WechatCard/index.vue'
 </script>
 
 <template>
-  <div class="top-card">
+  <section class="top-card">
     <div class="bento-grid">
       <ProfileCard class="bento-item bento-profile" />
       <OpenSourceCard class="bento-item bento-oss" />
@@ -15,7 +15,7 @@ import WechatCard from './WechatCard/index.vue'
       <JourneyCard class="bento-item bento-journey" />
       <WechatCard class="bento-item bento-wechat" />
     </div>
-  </div>
+  </section>
 </template>
 
 <style scoped lang="scss" src="./style.scss"></style>

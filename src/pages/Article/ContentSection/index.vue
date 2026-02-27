@@ -5,7 +5,7 @@ import { Icon } from '@iconify/vue'
 import type { Component } from 'vue'
 import type { TocItem } from '../types'
 
-const props = defineProps<{
+const { contentComponent, toc, activeHeadingId, loading, onScrollToHeading } = defineProps<{
   contentComponent: Component | null
   toc: TocItem[]
   activeHeadingId: string
@@ -15,30 +15,30 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="content" :class="{ is_skeleton: props.loading }">
+  <div class="content" :class="{ is_skeleton: loading }">
     <div class="main">
       <article class="article markdown-content">
-        <component v-if="!props.loading && props.contentComponent" :is="props.contentComponent" />
+        <component v-if="!loading && contentComponent" :is="contentComponent" />
       </article>
-      <GiscusComments v-if="!props.loading && isGiscusReady" />
+      <GiscusComments v-if="!loading && isGiscusReady" />
     </div>
     <aside class="menus">
-      <div class="toc" v-if="props.loading"></div>
-      <div class="toc" v-else-if="props.toc.length > 0">
+      <div class="toc" v-if="loading"></div>
+      <div class="toc" v-else-if="toc.length > 0">
         <div class="toc_header">
           <Icon icon="lucide:align-justify" class="toc_icon" />
           <span class="toc_title">目录</span>
         </div>
         <nav class="toc_nav">
           <a
-            v-for="item in props.toc"
+            v-for="item in toc"
             :key="item.id"
             :class="[
               'toc_item',
               `toc_level_${item.level}`,
-              { active: props.activeHeadingId === item.id },
+              { active: activeHeadingId === item.id },
             ]"
-            @click.prevent="props.onScrollToHeading(item.id)"
+            @click.prevent="onScrollToHeading(item.id)"
             :href="`#${item.id}`"
             >{{ item.text }}</a
           >

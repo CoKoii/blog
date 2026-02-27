@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import SlidingTabs from '@/components/Tabs/SlidingTabs.vue'
+import { computed } from 'vue'
 
 type TabItem = {
   value: string
@@ -16,7 +16,7 @@ const emit = defineEmits<{
   'update:activeTab': [value: string]
 }>()
 
-const activeTab = computed({
+const activeTabModel = computed({
   get: () => props.activeTab,
   set: (value: string) => emit('update:activeTab', value),
 })
@@ -24,7 +24,7 @@ const activeTab = computed({
 
 <template>
   <div class="tags-tabs">
-    <SlidingTabs v-model:activeTab="activeTab" :tabs="tabs" full-width />
+    <SlidingTabs v-model:activeTab="activeTabModel" :tabs="tabs" full-width />
   </div>
 </template>
 

@@ -18,14 +18,15 @@ const props = defineProps<{
 const emit = defineEmits<{ 'update:activeTab': [value: string] }>()
 const router = useRouter()
 
-const activeTab = computed({
+const activeTabModel = computed({
   get: () => props.activeTab,
   set: (v: string) => emit('update:activeTab', v),
 })
 
 const goTo = (id: string | number) => {
   const post = findPostById(id)
-  if (post) router.push(buildArticlePath(post))
+  if (!post) return
+  router.push(buildArticlePath(post))
 }
 </script>
 
@@ -36,7 +37,7 @@ const goTo = (id: string | number) => {
         <Icon icon="lucide:sparkles" class="title-icon" />
         最新文章
       </h2>
-      <SlidingTabs v-model:activeTab="activeTab" :tabs="tabs" />
+      <SlidingTabs v-model:activeTab="activeTabModel" :tabs="tabs" />
     </div>
 
     <div class="post-list">

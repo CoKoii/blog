@@ -2,7 +2,7 @@
 import { siteOwner, socialLinks } from '@/config'
 import { Icon } from '@iconify/vue'
 
-const handleAction = (message: string) => alert(message)
+const handleClickAction = (message: string) => alert(message)
 </script>
 
 <template>
@@ -28,11 +28,13 @@ const handleAction = (message: string) => alert(message)
           </p>
 
           <div class="actions">
-            <button class="btn primary" @click="handleAction('TODO: 跳转到 Projects')">
+            <button class="btn primary" @click="handleClickAction('TODO: 跳转到 Projects')">
               View Projects
             </button>
-            <button class="btn" @click="handleAction('TODO: 跳转到 About')">About Me</button>
-            <button class="btn" @click="handleAction('TODO: 下载简历/打开 PDF')">Resume</button>
+            <button class="btn" @click="handleClickAction('TODO: 跳转到 About')">About Me</button>
+            <button class="btn" @click="handleClickAction('TODO: 下载简历/打开 PDF')">
+              Resume
+            </button>
           </div>
 
           <ul class="chips" aria-label="skills">

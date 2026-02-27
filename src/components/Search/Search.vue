@@ -141,13 +141,8 @@ const handleKeydown = (e: KeyboardEvent) => {
 
 watch(keywordValue, () => (activeIndex.value = 0))
 
-onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleKeydown)
-})
+onMounted(() => window.addEventListener('keydown', handleKeydown))
+onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
 </script>
 
 <template>

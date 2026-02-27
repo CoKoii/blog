@@ -7,10 +7,10 @@ useHomeHead()
 </script>
 
 <template>
-  <div class="Home">
+  <section class="Home">
     <TopCard />
     <CenterCard />
-  </div>
+  </section>
 </template>
 
 <style scoped lang="scss" src="./style.scss"></style>

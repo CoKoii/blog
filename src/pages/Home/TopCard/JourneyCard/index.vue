@@ -19,6 +19,7 @@ type Item = { id: number; text: string; top: number; left: number; duration: num
 const items = ref<Item[]>([])
 const timers = new Set<number>()
 let interval: number | undefined
+const MAX_ITEMS = 10
 
 const rand = (min: number, max: number) => Math.random() * (max - min) + min
 
@@ -33,7 +34,7 @@ const spawn = () => {
   }
 
   items.value.push(item)
-  if (items.value.length > 10) items.value.shift()
+  if (items.value.length > MAX_ITEMS) items.value.shift()
 
   const tid = window.setTimeout(() => {
     items.value = items.value.filter((d) => d.id !== id)
@@ -48,7 +49,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  if (interval) window.clearInterval(interval)
+  if (interval != null) window.clearInterval(interval)
   timers.forEach((t) => window.clearTimeout(t))
   timers.clear()
 })

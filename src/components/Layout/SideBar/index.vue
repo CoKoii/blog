@@ -13,7 +13,7 @@ const currentYear = new Date().getFullYear()
   <div class="sideBar" :class="{ collapse: !layoutStore.isSideBarOpen }">
     <div class="sidebar-content">
       <div class="box" v-for="(item, index) in menus" :key="index">
-        <div class="title" v-if="item.title">{{ item.title }}</div>
+        <div class="title" v-show="item.title">{{ item.title }}</div>
         <ul>
           <li v-for="child in item.children" :key="child.title">
             <Tooltip :title="!layoutStore.isSideBarOpen ? child.title : ''" placement="right">

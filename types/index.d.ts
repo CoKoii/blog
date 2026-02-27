@@ -4,64 +4,66 @@ declare module './scripts/utils/slug.mjs' {
 }
 
 declare module './scripts/utils/site-config.mjs' {
+  type Text = string
+  type SocialItem = { label: Text; icon: Text; url: Text }
+  type TagMetaItem = Text | { color: Text; cover: Text; description: Text }
+
   export type SiteConfigRecord = {
     site: {
-      url: string
-      name: string
-      description: string
-      image: string
-      language: string
-      brandName: string
+      url: Text
+      name: Text
+      description: Text
+      image: Text
+      language: Text
+      brandName: Text
     }
     owner: {
-      name: string
-      headline: string
-      greeting: string
-      greetingEmoji: string
-      bio: string
-      bioEmphasis: string
-      quote: string
-      avatar: string
-      tags: string[]
+      name: Text
+      headline: Text
+      greeting: Text
+      greetingEmoji: Text
+      bio: Text
+      bioEmphasis: Text
+      quote: Text
+      avatar: Text
+      tags: Text[]
     }
-    socials: Array<{ label: string; icon: string; url: string }>
-    wechat: { qrUrl: string }
-    stats: { startDate: string }
+    socials: SocialItem[]
+    wechat: { qrUrl: Text }
+    stats: { startDate: Text }
     github: {
-      username: string
-      repo: string
-      apiBase: string
+      username: Text
+      repo: Text
+      apiBase: Text
     }
     comments: {
       enabled: boolean
       giscus: {
-        host: string
-        repo: string
-        repoId: string
-        category: string
-        categoryId: string
+        host: Text
+        repo: Text
+        repoId: Text
+        category: Text
+        categoryId: Text
         mapping: 'pathname' | 'url' | 'title' | 'og:title' | 'specific' | 'number'
-        term: string
+        term: Text
         strict: boolean
         reactionsEnabled: boolean
         emitMetadata: boolean
         inputPosition: 'top' | 'bottom'
-        theme: string
-        lang: string
+        theme: Text
+        lang: Text
         loading: 'lazy' | 'eager'
       }
     }
     tags: {
-      defaultColor: string
-      meta: Record<string, string | { color: string; cover: string; description: string }>
+      defaultColor: Text
+      meta: Record<Text, TagMetaItem>
     }
   }
 
   export function loadSiteConfig(rootDir?: string): SiteConfigRecord
   export function normalizeSiteUrl(url: unknown): string
-  export function resolveSiteMeta(options?: {
-    rootDir?: string
-  }): {
+  export function resolveSiteMeta(options?: { rootDir?: string }): {
     siteConfig: SiteConfigRecord
     siteUrl: string
     siteName: string

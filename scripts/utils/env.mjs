@@ -1,6 +1,8 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+const ENV_FILES = ['.env', '.env.local', '.env.production', '.env.production.local']
+
 const parseEnvLine = (line) => {
   const trimmed = line.trim()
   if (!trimmed || trimmed.startsWith('#')) return null
@@ -34,12 +36,7 @@ const readEnvFile = (filePath) => {
 }
 
 export const loadEnv = (rootDir = process.cwd()) => {
-  const envFiles = [
-    path.join(rootDir, '.env'),
-    path.join(rootDir, '.env.local'),
-    path.join(rootDir, '.env.production'),
-    path.join(rootDir, '.env.production.local'),
-  ]
+  const envFiles = ENV_FILES.map((name) => path.join(rootDir, name))
 
   const env = {}
   for (const envPath of envFiles) {

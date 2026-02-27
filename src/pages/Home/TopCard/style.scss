@@ -13,7 +13,7 @@
     gap: var(--space-4);
 
     @media (max-width: 1800px) {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       grid-template-rows: 380px 180px 180px;
       grid-template-areas:
         'profile profile'
@@ -23,8 +23,7 @@
 
     @media (max-width: 1000px) {
       grid-template-columns: minmax(0, 1fr);
-      grid-template-rows:
-        minmax(340px, auto) minmax(180px, auto) minmax(180px, auto);
+      grid-template-rows: minmax(340px, auto) minmax(180px, auto) minmax(180px, auto);
       grid-template-areas:
         'profile'
         'oss'

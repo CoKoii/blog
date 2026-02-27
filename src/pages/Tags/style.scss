@@ -3,10 +3,7 @@
   flex-direction: column;
   gap: var(--space-32px);
 
-  :deep(.tabs .tab-indicator-inner) {
-    box-shadow: none;
-  }
-
+  :deep(.tabs .tab-indicator-inner),
   :deep(.tabs .tab-btn.active) {
     box-shadow: none;
   }

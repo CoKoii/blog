@@ -9,7 +9,7 @@ import { createPostsMetaPlugin, getPostRoutes, getTagRoutes } from './scripts/pl
 import { createSiteHeadPlugin } from './scripts/plugins/site-head'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
-const FRAMEWORK_RE =
+const FRAMEWORK_MODULE_RE =
   /\/node_modules\/(?:vue\/|@vue\/|vue-router\/|pinia\/|vite-ssg\/|@unhead\/|unhead\/)/
 
 // https://vite.dev/config/
@@ -41,7 +41,7 @@ export default defineConfig(async () => {
           manualChunks(id: string) {
             const normalizedId = id.replace(/\\/g, '/')
             if (!normalizedId.includes('/node_modules/')) return undefined
-            if (FRAMEWORK_RE.test(normalizedId)) return 'framework'
+            if (FRAMEWORK_MODULE_RE.test(normalizedId)) return 'framework'
             if (normalizedId.includes('/node_modules/@iconify/vue/')) return 'iconify'
             return 'vendor'
           },

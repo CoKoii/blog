@@ -112,7 +112,7 @@ export const useArticleToc = () => {
       .filter((n): n is HTMLElement => n instanceof HTMLElement)
       .map((el, i) => {
         const level = Number.parseInt(el.tagName[1] ?? '1', 10)
-        const text = normalizeText(el.textContent || '')
+        const text = normalizeText(el.textContent ?? '')
         const id = el.id || `heading-${i}`
         if (!el.id) el.id = id
         return { id, text, level, el }

@@ -1,6 +1,4 @@
 import { pinyin } from 'pinyin-pro'
-
-// 将中文转换为 URL 友好的拼音格式，保留英文和数字
 export const toPinyinSlug = (text) => {
   const segments = []
   let currentSegment = ''

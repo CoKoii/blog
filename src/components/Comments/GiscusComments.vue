@@ -11,7 +11,7 @@ const reactionsEnabled: '0' | '1' = giscus.reactionsEnabled ? '1' : '0'
 const emitMetadata: '0' | '1' = giscus.emitMetadata ? '1' : '0'
 const term =
   giscus.mapping === 'specific' || giscus.mapping === 'number'
-    ? giscus.term || undefined
+    ? (giscus.term ?? undefined)
     : undefined
 </script>
 
@@ -24,7 +24,7 @@ const term =
     <div class="body">
       <Giscus
         :key="route.path"
-        :host="giscus.host || undefined"
+        :host="giscus.host ?? undefined"
         :repo="repo"
         :repo-id="giscus.repoId"
         :category="giscus.category"

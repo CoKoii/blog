@@ -28,6 +28,8 @@ type UseArticleContentOptions = {
 
 const canUseDOM = typeof window !== 'undefined'
 const isServer = import.meta.env.SSR
+const requestNextFrame = (cb: () => void) =>
+  (window.requestAnimationFrame || ((fn: FrameRequestCallback) => setTimeout(fn, 0)))(cb)
 
 export const useArticleContent = (
   route: RouteLocationNormalizedLoaded,
@@ -41,11 +43,7 @@ export const useArticleContent = (
 
   const runAfterReady = () => {
     if (!canUseDOM || !options.onAfterContentReady) return
-    void nextTick().then(() => {
-      ;(window.requestAnimationFrame || ((cb: FrameRequestCallback) => setTimeout(cb, 0)))(() =>
-        options.onAfterContentReady?.(),
-      )
-    })
+    void nextTick().then(() => requestNextFrame(() => options.onAfterContentReady?.()))
   }
 
   const applyContent = (id: string, module: PostModule | null) => {
@@ -65,7 +63,7 @@ export const useArticleContent = (
       return
     }
 
-    resolvedTitle.value = resolveTitleFromSlug(parsePostId(post.id)?.slug || '')
+    resolvedTitle.value = resolveTitleFromSlug(parsePostId(post.id)?.slug ?? '')
     if (loadedArticleId.value === post.id && ContentComponent.value) return
 
     const currentToken = ++loadToken.value
@@ -87,11 +85,11 @@ export const useArticleContent = (
   }
 
   onServerPrefetch(async () => {
-    const categorySlug = String(route.params.category || '')
-    const articleSlug = String(route.params.id || '')
+    const categorySlug = String(route.params.category ?? '')
+    const articleSlug = String(route.params.id ?? '')
     const post = findPostBySlug(categorySlug, articleSlug, getAllPosts())
     if (post) {
-      resolvedTitle.value = resolveTitleFromSlug(parsePostId(post.id)?.slug || '')
+      resolvedTitle.value = resolveTitleFromSlug(parsePostId(post.id)?.slug ?? '')
       applyContent(post.id, await getPostContent(post.id))
     }
   })
@@ -99,7 +97,7 @@ export const useArticleContent = (
   if (!isServer) {
     watch(
       () => [route.params.category, route.params.id],
-      ([category, id]) => loadArticle(String(category || ''), String(id || '')),
+      ([category, id]) => loadArticle(String(category ?? ''), String(id ?? '')),
       { immediate: true },
     )
   }

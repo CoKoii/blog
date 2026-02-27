@@ -6,12 +6,15 @@ export const listPostFiles = (rootDir = process.cwd()) => {
   if (!fs.existsSync(postsDir)) return []
 
   const entries = []
-  const categories = fs.readdirSync(postsDir)
-  for (const category of categories) {
+  const categories = fs.readdirSync(postsDir, { withFileTypes: true })
+  for (const categoryEntry of categories) {
+    if (!categoryEntry.isDirectory()) continue
+    const category = categoryEntry.name
     const categoryDir = path.join(postsDir, category)
-    if (!fs.statSync(categoryDir).isDirectory()) continue
-    const files = fs.readdirSync(categoryDir)
-    for (const file of files) {
+    const files = fs.readdirSync(categoryDir, { withFileTypes: true })
+    for (const fileEntry of files) {
+      if (!fileEntry.isFile()) continue
+      const file = fileEntry.name
       if (!file.endsWith('.md')) continue
       const slug = file.replace(/\.md$/, '')
       entries.push({

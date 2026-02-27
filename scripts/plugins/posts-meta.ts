@@ -63,11 +63,8 @@ type SearchIndex = {
   invertedIndex: Record<string, number[]>
 }
 
-export const getPostRoutes = (rootDir: string) => {
-  return listPostFiles(rootDir).map((post: PostFileEntry) =>
-    buildArticlePath(post.category, post.slug),
-  )
-}
+export const getPostRoutes = (rootDir: string) =>
+  listPostFiles(rootDir).map((post: PostFileEntry) => buildArticlePath(post.category, post.slug))
 
 export const getTagRoutes = (rootDir: string) => {
   const tagSlugs = new Set<string>()

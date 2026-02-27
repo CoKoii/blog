@@ -20,15 +20,15 @@ export const useArticlePage = () => {
 
   const article = computed<ArticleMeta>(() => ({
     title:
-      frontmatter.value.title ||
+      frontmatter.value.title?.trim() ||
       resolvedTitle.value ||
-      resolveTitleFromSlug(String(route.params.id || '')),
-    coverImage: frontmatter.value.coverImage || '',
-    tags: frontmatter.value.tags || [],
-    wordCount: frontmatter.value.wordCount || 0,
-    readTime: frontmatter.value.readTime || 0,
-    publishDate: formatDate(frontmatter.value.publishDate || frontmatter.value.date),
-    location: frontmatter.value.location || '',
+      resolveTitleFromSlug(String(route.params.id ?? '')),
+    coverImage: frontmatter.value.coverImage ?? '',
+    tags: frontmatter.value.tags ?? [],
+    wordCount: frontmatter.value.wordCount ?? 0,
+    readTime: frontmatter.value.readTime ?? 0,
+    publishDate: formatDate(frontmatter.value.publishDate ?? frontmatter.value.date),
+    location: frontmatter.value.location ?? '',
     comments: comments.value,
   }))
 

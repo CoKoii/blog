@@ -2,7 +2,7 @@
 import { Icon } from '@iconify/vue'
 import type { Resource } from '../types'
 
-defineProps<{
+const { groupedResources } = defineProps<{
   groupedResources: Resource[]
 }>()
 </script>

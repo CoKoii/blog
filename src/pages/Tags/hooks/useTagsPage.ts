@@ -14,7 +14,7 @@ export const useTagsPage = () => {
 
   watch(
     () => route.params.category,
-    (category) => (activeTab.value = String(category || '')),
+    (category) => (activeTab.value = String(category ?? '')),
     { immediate: true },
   )
 
@@ -25,7 +25,7 @@ export const useTagsPage = () => {
   })
 
   const activeCategoryLabel = computed(
-    () => categories.find((c) => c.value === activeTab.value)?.label || ALL_TAG_LABEL,
+    () => categories.find((c) => c.value === activeTab.value)?.label ?? ALL_TAG_LABEL,
   )
 
   const filteredPosts = computed(() =>
@@ -48,9 +48,9 @@ export const useTagsPage = () => {
     activeTab,
     activeCategoryLabel,
     cardPosts: computed(() => formatPostList(filteredPosts.value, 0)),
-    activeTagColor: computed(() => activeTagMeta.value.color || ''),
-    heroCover: computed(() => activeTagMeta.value.cover || ''),
-    heroDescription: computed(() => activeTagMeta.value.description || ''),
+    activeTagColor: computed(() => activeTagMeta.value.color ?? ''),
+    heroCover: computed(() => activeTagMeta.value.cover ?? ''),
+    heroDescription: computed(() => activeTagMeta.value.description ?? ''),
     goToArticle,
   }
 }

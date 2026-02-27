@@ -29,7 +29,7 @@ const expectString = (
   key: string,
   path: string,
   errors: string[],
-  options: { allowEmpty?: boolean } = {},
+  { allowEmpty = false }: { allowEmpty?: boolean } = {},
 ): string => {
   const value = source[key]
   if (typeof value !== 'string') {
@@ -37,7 +37,7 @@ const expectString = (
     return ''
   }
   const trimmed = value.trim()
-  if (!options.allowEmpty && !trimmed) {
+  if (!allowEmpty && !trimmed) {
     errors.push(`字段「${path}」不能为空`)
   }
   return trimmed
@@ -91,9 +91,7 @@ const expectStringArray = (source: Dict, key: string, path: string, errors: stri
     return []
   }
 
-  const list = value
-    .map((item) => (typeof item === 'string' ? item.trim() : ''))
-    .filter(Boolean)
+  const list = value.map((item) => (typeof item === 'string' ? item.trim() : '')).filter(Boolean)
 
   if (list.length !== value.length) {
     errors.push(`字段「${path}」中存在非字符串或空字符串项`)

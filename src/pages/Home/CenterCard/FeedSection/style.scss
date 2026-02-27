@@ -1,5 +1,4 @@
 .feed-section {
-  // Header section
   .feed-header {
     display: flex;
     justify-content: space-between;
@@ -16,7 +15,6 @@
   }
 }
 
-// Post list
 .post-list {
   display: flex;
   flex-direction: column;
@@ -139,7 +137,6 @@
   }
 }
 
-// Media queries
 @media (max-width: 720px) {
   .feed-section .feed-header {
     flex-wrap: wrap;

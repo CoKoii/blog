@@ -19,8 +19,8 @@ onMounted(() => {
 onBeforeUnmount(() => window.removeEventListener('resize', handleResize))
 
 const handleBeforeEnter = () => {
-  const pos = consumeScroll()
-  window.scrollTo({ left: pos.left ?? 0, top: pos.top ?? 0, behavior: 'auto' })
+  const { left = 0, top = 0 } = consumeScroll()
+  window.scrollTo({ left, top, behavior: 'auto' })
 }
 </script>
 

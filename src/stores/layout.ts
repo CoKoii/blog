@@ -25,11 +25,9 @@ export const useLayoutStore = defineStore('layout', () => {
   }
 
   const toggleSideBar = () => {
-    if (typeof window === 'undefined') return
-    const w = window.innerWidth
-    if (w <= BP.small) {
+    if (mode.value === 'small') {
       isMobileSideBarOpen.value = !isMobileSideBarOpen.value
-    } else if (w > BP.medium) {
+    } else if (mode.value === 'large') {
       isSideBarOpen.value = !isSideBarOpen.value
     }
   }

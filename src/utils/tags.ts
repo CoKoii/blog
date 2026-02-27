@@ -8,7 +8,7 @@ export const ALL_TAG_SLUG = 'all'
 export const ALL_TAG_LABEL = 'All'
 
 const labels = Object.keys(siteConfig.tags.meta)
-  .map((l) => l.trim())
+  .map((label) => label.trim())
   .filter(Boolean)
 
 const normalizeLabel = (text: string): string =>
@@ -19,14 +19,13 @@ const normalizeLabel = (text: string): string =>
 
 const { slugByCategory, slugByNormalizedCategory } = postsMeta.reduce(
   (maps, post) => {
-    if (post.category && post.categorySlug) {
-      if (!maps.slugByCategory.has(post.category)) {
-        maps.slugByCategory.set(post.category, post.categorySlug)
-      }
-      const normalized = normalizeLabel(post.category)
-      if (normalized && !maps.slugByNormalizedCategory.has(normalized)) {
-        maps.slugByNormalizedCategory.set(normalized, post.categorySlug)
-      }
+    if (!post.category || !post.categorySlug) return maps
+    if (!maps.slugByCategory.has(post.category)) {
+      maps.slugByCategory.set(post.category, post.categorySlug)
+    }
+    const normalized = normalizeLabel(post.category)
+    if (normalized && !maps.slugByNormalizedCategory.has(normalized)) {
+      maps.slugByNormalizedCategory.set(normalized, post.categorySlug)
     }
     return maps
   },
@@ -44,11 +43,13 @@ const toSlug = (text: string): string =>
     .replace(/^-|-$/g, '')
 
 const resolveSlug = (label: string): string =>
-  slugByCategory.get(label) || slugByNormalizedCategory.get(normalizeLabel(label)) || toSlug(label)
+  slugByCategory.get(label) ?? slugByNormalizedCategory.get(normalizeLabel(label)) ?? toSlug(label)
 
+const seenSlugs = new Set<string>()
 const entries = labels.reduce<TagEntry[]>((acc, label) => {
   const slug = resolveSlug(label)
-  if (slug && slug !== ALL_TAG_SLUG && !acc.some((e) => e.slug === slug)) {
+  if (slug && slug !== ALL_TAG_SLUG && !seenSlugs.has(slug)) {
+    seenSlugs.add(slug)
     acc.push({ label, slug })
   }
   return acc
@@ -60,10 +61,10 @@ const byLabel = new Map(entries.map((e) => [e.label, e]))
 const tabs = labels.reduce<TagTab[]>((acc, label) => {
   if (label === ALL_TAG_SLUG) {
     acc.push({ label: ALL_TAG_LABEL, value: ALL_TAG_SLUG })
-  } else {
-    const e = byLabel.get(label)
-    if (e) acc.push({ label: e.label, value: e.slug })
+    return acc
   }
+  const e = byLabel.get(label)
+  if (e) acc.push({ label: e.label, value: e.slug })
   return acc
 }, [])
 

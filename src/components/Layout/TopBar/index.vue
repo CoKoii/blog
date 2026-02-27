@@ -5,13 +5,13 @@ import { useLayoutStore } from '@/stores/layout'
 import { Icon } from '@iconify/vue'
 import { Dropdown } from 'ant-design-vue'
 
-const store = useLayoutStore()
+const layoutStore = useLayoutStore()
 </script>
 
 <template>
   <div class="TopBar">
     <div class="title">
-      <div class="icon" @click="store.toggleSideBar">
+      <div class="icon" @click="layoutStore.toggleSideBar">
         <Icon icon="simple-line-icons:menu" />
       </div>
       <router-link to="/">
@@ -22,7 +22,7 @@ const store = useLayoutStore()
       <Search />
     </div>
     <div class="user">
-      <Dropdown :placement="'bottomRight'">
+      <Dropdown placement="bottomRight">
         <div class="avatar">
           <Icon icon="lucide:user" />
         </div>

@@ -28,7 +28,7 @@ const {
     <section class="posts-section">
       <div class="posts-head">
         <h2 class="posts-title">文章列表</h2>
-        <p class="posts-subtitle">{{ activeCategoryLabel || 'All' }} · {{ cardPosts.length }} 篇</p>
+        <p class="posts-subtitle">{{ activeCategoryLabel }} · {{ cardPosts.length }} 篇</p>
       </div>
       <PostsGrid :posts="cardPosts" @select="goToArticle" />
     </section>

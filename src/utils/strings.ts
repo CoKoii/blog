@@ -8,4 +8,4 @@ export const safeDecodeURIComponent = (value: string): string => {
 }
 
 export const resolveTitleFromSlug = (slug?: string): string =>
-  safeDecodeURIComponent(slug || '') || 'Untitled'
+  safeDecodeURIComponent(slug ?? '') || 'Untitled'

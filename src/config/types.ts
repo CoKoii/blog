@@ -52,19 +52,13 @@ export type SiteComments = {
   giscus: SiteCommentsGiscus
 }
 
-export type TagConfig =
-  | string
-  | {
-      color: string
-      cover?: string
-      description?: string
-    }
-
 export type TagMeta = {
   color: string
   cover?: string
   description?: string
 }
+
+export type TagConfig = string | TagMeta
 
 export type SiteMeta = {
   url: string
