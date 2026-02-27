@@ -82,9 +82,13 @@ const scrollIntoView = (behavior: ScrollBehavior = 'smooth') => {
     const node = container.querySelector<HTMLElement>(`[data-result-index="${activeIndex.value}"]`)
     if (!node) return
 
+    const containerRect = container.getBoundingClientRect()
+    const nodeRect = node.getBoundingClientRect()
+
+    const itemTop = container.scrollTop + (nodeRect.top - containerRect.top) - GAP
+    const itemBottom = container.scrollTop + (nodeRect.bottom - containerRect.top) + GAP
+
     const maxScroll = container.scrollHeight - container.clientHeight
-    const itemTop = node.offsetTop - GAP
-    const itemBottom = node.offsetTop + node.offsetHeight + GAP * 2
     const visibleTop = container.scrollTop
     const visibleBottom = visibleTop + container.clientHeight
 

@@ -36,8 +36,11 @@
       border: var(--border-width-1) solid rgba(15, 23, 42, 0.07);
       border-radius: var(--radius-xl);
       padding: var(--space-4) var(--space-3);
-      max-height: calc(100vh - var(--layout-topbar-height) - var(--space-5));
-      overflow: auto;
+      max-height: min(60vh, 520px);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
       .toc_header {
         display: flex;
         align-items: center;
@@ -57,6 +60,18 @@
           font-weight: 700;
           color: var(--color-gray-850);
           letter-spacing: 0.3px;
+        }
+      }
+
+      .toc_body {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+          display: none;
         }
       }
 
