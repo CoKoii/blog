@@ -2,9 +2,7 @@
 import { siteOwner, socialLinks } from '@/config'
 import { Icon } from '@iconify/vue'
 
-const handleAction = (message: string) => {
-  alert(message)
-}
+const handleAction = (message: string) => alert(message)
 </script>
 
 <template>

@@ -12,7 +12,6 @@ export interface PostFrontmatter {
   coverImage?: string
   wordCount?: number
   readTime?: number
-  views?: number
   location?: string
   author?: string
   category?: string

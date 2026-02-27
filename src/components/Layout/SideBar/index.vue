@@ -1,27 +1,12 @@
-<script lang="ts">
+<script setup lang="ts">
+import { siteOwner } from '@/config'
 import menus from '@/router/config/menu'
 import { useLayoutStore } from '@/stores/layout'
 import { Icon } from '@iconify/vue'
 import { Tooltip } from 'ant-design-vue'
-import { defineComponent, ref } from 'vue'
 
-export default defineComponent({
-  name: 'SideBar',
-  components: {
-    Icon,
-    Tooltip,
-  },
-  setup() {
-    const layoutStore = useLayoutStore()
-    const visitorCount = ref('统计中')
-
-    return {
-      layoutStore,
-      visitorCount,
-      menus,
-    }
-  },
-})
+const layoutStore = useLayoutStore()
+const currentYear = new Date().getFullYear()
 </script>
 
 <template>
@@ -49,16 +34,8 @@ export default defineComponent({
     </div>
 
     <div class="sidebar-footer">
-      <div class="footer-stat footer-stat--compact" aria-live="polite">
-        <Icon class="footer-icon" icon="lucide:bar-chart-3" />
-        <span class="stat-label">访问人数</span>
-        <span class="stat-value">
-          <Icon v-if="visitorCount === '统计中'" class="loading-icon" icon="lucide:loader-2" />
-          <span v-else>{{ visitorCount }}</span>
-        </span>
-      </div>
       <div class="copyright">
-        <span>© 2026 CaoKai</span>
+        <span>© {{ currentYear }} {{ siteOwner.name }}</span>
         <span class="status-dot" aria-hidden="true"></span>
       </div>
     </div>

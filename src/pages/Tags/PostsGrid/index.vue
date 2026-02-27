@@ -8,10 +8,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   select: [id: string | number]
 }>()
-
-const handleSelect = (id: string | number) => {
-  emit('select', id)
-}
 </script>
 
 <template>
@@ -20,7 +16,7 @@ const handleSelect = (id: string | number) => {
       v-for="post in props.posts"
       :key="post.id"
       class="post-card"
-      @click="handleSelect(post.id)"
+      @click="emit('select', post.id)"
     >
       <div class="card-cover">
         <img v-lazy="post.cover" :alt="post.title" />

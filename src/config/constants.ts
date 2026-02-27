@@ -1,4 +1,5 @@
-import { siteConfig, type SiteOwner, type SiteSocialLink } from './loader'
+import { siteConfig } from './loader'
+import type { SiteOwner, SiteSocialLink } from './types'
 
 const norm = (url: string) => url.replace(/\/+$/, '')
 
@@ -43,5 +44,3 @@ export const getTagMeta = (tag: string): import('./types').TagMeta => {
     description: cfg.description,
   }
 }
-
-export const getTagColor = (tag: string) => getTagMeta(tag).color

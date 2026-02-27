@@ -30,7 +30,7 @@ export const githubData = payload
 export const githubRepoStats = payload.github || {}
 export const githubCommentsByPath = payload.comments?.byPath || {}
 
-export const normalizeRoutePath = (value: string) => {
+const normalizeRoutePath = (value: string) => {
   const clean = String(value || '/').split(/[?#]/, 1)[0] || '/'
   if (clean !== '/' && clean.endsWith('/')) {
     return clean.replace(/\/+$/, '')
