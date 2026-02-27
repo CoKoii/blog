@@ -7,7 +7,13 @@ const handleClickAction = (message: string) => window.alert(message)
 
 <template>
   <div class="profile-box">
-    <section class="card">
+    <section
+      class="card"
+      :style="{
+        '--card-hue': siteOwner.wallpaperHue,
+        '--card-wallpaper-url': siteOwner.wallpaper ? `url('${siteOwner.wallpaper}')` : 'none',
+      }"
+    >
       <div class="grid">
         <div class="avatar" aria-label="avatar">
           <img v-lazy="siteOwner.avatar" alt="Avatar" />

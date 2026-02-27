@@ -64,7 +64,7 @@ export const useArticleToc = () => {
     if (!connectedHeadings.length) return ''
     if (isBottom()) return connectedHeadings[connectedHeadings.length - 1]?.id || ''
 
-    const target = window.scrollY + getOffset()
+    const target = window.scrollY + getOffset() + window.innerHeight * 0.1
     let id = connectedHeadings[0]?.id || ''
     for (const h of connectedHeadings) {
       if (h.el.getBoundingClientRect().top + window.scrollY <= target) {

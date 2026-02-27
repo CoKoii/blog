@@ -7,6 +7,8 @@ export type SiteOwner = {
   bioEmphasis: string
   quote: string
   avatar: string
+  wallpaper: string
+  wallpaperHue: number
   tags: string[]
 }
 

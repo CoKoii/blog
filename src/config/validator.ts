@@ -164,12 +164,31 @@ const resolveSiteMeta = (root: Dict, errors: string[]): SiteMeta => {
   return { url, name, description, image, language, brandName }
 }
 
+const expectOptionalNumber = (
+  source: Dict,
+  key: string,
+  path: string,
+  errors: string[],
+  fallback: number,
+): number => {
+  const value = source[key]
+  if (value === undefined) return fallback
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    errors.push(`字段「${path}」必须是数字`)
+    return fallback
+  }
+  return value
+}
+
 const resolveOwner = (root: Dict, errors: string[]): SiteOwner => {
   const owner = expectObject(root['作者'], '作者', errors)
   const avatar = expectString(owner, '头像', '作者.头像', errors)
+  const wallpaper = expectOptionalString(owner, '壁纸', '作者.壁纸', errors, '')
+  const wallpaperHue = expectOptionalNumber(owner, '壁纸色相', '作者.壁纸色相', errors, 0)
   const tags = expectStringArray(owner, '标签', '作者.标签', errors)
 
   if (avatar) expectUrl(avatar, '作者.头像', errors)
+  if (wallpaper) expectUrl(wallpaper, '作者.壁纸', errors)
 
   return {
     name: expectString(owner, '姓名', '作者.姓名', errors),
@@ -180,6 +199,8 @@ const resolveOwner = (root: Dict, errors: string[]): SiteOwner => {
     bioEmphasis: expectString(owner, '简介强调', '作者.简介强调', errors, { allowEmpty: true }),
     quote: expectString(owner, '签名', '作者.签名', errors),
     avatar,
+    wallpaper,
+    wallpaperHue,
     tags,
   }
 }
