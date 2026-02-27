@@ -4,15 +4,19 @@ import type { TocItem } from '../types'
 import { refreshArticleDecorations as refreshDecorations } from './useArticleDecorations'
 
 const SELECTOR = '.markdown-content h1, .markdown-content h2, .markdown-content h3'
-const GAP = 16
+const GAP = 100
 const canUseDOM = typeof window !== 'undefined'
+const MAX_RETRIES = 3
 
 export const useArticleToc = () => {
   const toc = ref<TocItem[]>([])
   const activeHeadingId = ref('')
   let headings: Heading[] = []
   let raf = 0
-  let forceSync = false
+  let cachedOffset = 0
+  let offsetObserver: ResizeObserver | null = null
+  let retryCount = 0
+  let retryRaf = 0
 
   const normalizeText = (text: string) =>
     text
@@ -22,7 +26,7 @@ export const useArticleToc = () => {
 
   const getConnectedHeadings = () => headings.filter((h) => h.el.isConnected)
 
-  const getOffset = () => {
+  const refreshOffset = () => {
     const bar = document.querySelector('.Layout .topBar')
     const height =
       bar instanceof HTMLElement
@@ -30,7 +34,7 @@ export const useArticleToc = () => {
         : Number.parseFloat(
             getComputedStyle(document.documentElement).getPropertyValue('--layout-topbar-height'),
           ) || 0
-    return height + GAP
+    cachedOffset = height + GAP
   }
 
   const decodeHash = (hash: string) => {
@@ -62,12 +66,11 @@ export const useArticleToc = () => {
     if (!headings.length) return ''
     const connectedHeadings = getConnectedHeadings()
     if (!connectedHeadings.length) return ''
-    if (isBottom()) return connectedHeadings[connectedHeadings.length - 1]?.id || ''
+    if (isBottom()) return connectedHeadings[connectedHeadings.length - 1]!.id
 
-    const target = window.scrollY + getOffset() + window.innerHeight * 0.1
-    let id = connectedHeadings[0]?.id || ''
+    let id = connectedHeadings[0]!.id
     for (const h of connectedHeadings) {
-      if (h.el.getBoundingClientRect().top + window.scrollY <= target) {
+      if (h.el.getBoundingClientRect().top <= cachedOffset) {
         id = h.id
       } else {
         break
@@ -85,14 +88,23 @@ export const useArticleToc = () => {
   }
 
   const scheduleSync = (force = false) => {
-    if (force) forceSync = true
     if (raf) return
     raf = requestAnimationFrame(() => {
-      const f = forceSync
       raf = 0
-      forceSync = false
-      syncActive(f)
+      syncActive(force)
     })
+  }
+
+  const watchOffset = () => {
+    const bar = document.querySelector('.Layout .topBar')
+    if (!bar || typeof ResizeObserver === 'undefined') return
+    offsetObserver?.disconnect()
+    offsetObserver = new ResizeObserver(() => {
+      const prev = cachedOffset
+      refreshOffset()
+      if (cachedOffset !== prev) scheduleSync(true)
+    })
+    offsetObserver.observe(bar)
   }
 
   const handleHashChange = () => {
@@ -105,7 +117,11 @@ export const useArticleToc = () => {
     }
   }
 
-  const refreshToc = () => {
+  const handleScroll = () => scheduleSync()
+  const handleResize = () => scheduleSync(true)
+
+  const refreshToc = (isRetry = false) => {
+    if (isRetry) retryCount++
     const nodes = Array.from(document.querySelectorAll(SELECTOR))
     headings = nodes
       .filter((n): n is HTMLElement => n instanceof HTMLElement)
@@ -119,11 +135,19 @@ export const useArticleToc = () => {
     toc.value = headings.map(({ id, text, level }) => ({ id, text, level }))
 
     if (!headings.length) {
+      if (retryCount < MAX_RETRIES) {
+        if (retryRaf) cancelAnimationFrame(retryRaf)
+        retryRaf = requestAnimationFrame(() => {
+          retryRaf = 0
+          refreshToc(true)
+        })
+      }
       activeHeadingId.value = ''
       updateHash('')
       return
     }
 
+    retryCount = 0
     const hashId = getHashId()
     if (hashId && headings.some((h) => h.id === hashId)) {
       activeHeadingId.value = hashId
@@ -137,10 +161,14 @@ export const useArticleToc = () => {
       cancelAnimationFrame(raf)
       raf = 0
     }
+    if (retryRaf) {
+      cancelAnimationFrame(retryRaf)
+      retryRaf = 0
+    }
+    retryCount = 0
     toc.value = []
     activeHeadingId.value = ''
     headings = []
-    forceSync = false
   }
 
   const refreshArticleDecorations = () => {
@@ -153,15 +181,14 @@ export const useArticleToc = () => {
     if (!el) return
     activeHeadingId.value = id
     updateHash(id)
-    const top = el.getBoundingClientRect().top + window.scrollY - getOffset() + 1
+    const top = el.getBoundingClientRect().top + window.scrollY - cachedOffset + 1
     window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
   }
 
-  const handleScroll = () => scheduleSync()
-  const handleResize = () => scheduleSync(true)
-
   onMounted(() => {
     if (!canUseDOM) return
+    refreshOffset()
+    watchOffset()
     window.addEventListener('scroll', handleScroll, { passive: true })
     window.addEventListener('resize', handleResize)
     window.addEventListener('hashchange', handleHashChange)
@@ -172,6 +199,8 @@ export const useArticleToc = () => {
     window.removeEventListener('scroll', handleScroll)
     window.removeEventListener('resize', handleResize)
     window.removeEventListener('hashchange', handleHashChange)
+    offsetObserver?.disconnect()
+    offsetObserver = null
     resetTocState()
   })
 
