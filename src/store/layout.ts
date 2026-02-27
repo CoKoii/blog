@@ -1,6 +1,6 @@
 import type { LayoutMode } from '@/types/layout'
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export const useLayoutStore = defineStore('layout', () => {
   const BP = { small: 768, medium: 1024 } as const
@@ -8,6 +8,7 @@ export const useLayoutStore = defineStore('layout', () => {
   const isSideBarOpen = ref(true)
   const isMobileSideBarOpen = ref(false)
   const mode = ref<LayoutMode>('large')
+  const isDesktopSideBarCollapsed = computed(() => mode.value !== 'small' && !isSideBarOpen.value)
 
   const getMode = (w: number): LayoutMode =>
     w <= BP.small ? 'small' : w <= BP.medium ? 'medium' : 'large'
@@ -32,5 +33,11 @@ export const useLayoutStore = defineStore('layout', () => {
     if (mode.value === 'large') isSideBarOpen.value = !isSideBarOpen.value
   }
 
-  return { isSideBarOpen, isMobileSideBarOpen, toggleSideBar, syncSideBarByWidth }
+  return {
+    isSideBarOpen,
+    isMobileSideBarOpen,
+    isDesktopSideBarCollapsed,
+    toggleSideBar,
+    syncSideBarByWidth,
+  }
 })

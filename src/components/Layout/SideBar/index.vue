@@ -23,13 +23,13 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="sideBar" :class="{ collapse: !layoutStore.isSideBarOpen }">
+  <div class="sideBar" :class="{ collapse: layoutStore.isDesktopSideBarCollapsed }">
     <div class="sidebar-content">
       <div class="box" v-for="(item, index) in menus" :key="index">
         <div v-if="item.title" class="title">{{ item.title }}</div>
         <ul>
           <li v-for="child in item.children" :key="child.title">
-            <Tooltip :title="!layoutStore.isSideBarOpen ? child.title : ''" placement="right">
+            <Tooltip :title="layoutStore.isDesktopSideBarCollapsed ? child.title : ''" placement="right">
               <router-link :to="child.path" active-class="" exact-active-class="active">
                 <Icon :icon="child.icon" v-if="child.icon" />
                 <div

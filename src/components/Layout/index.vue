@@ -25,7 +25,7 @@ const handleBeforeEnter = () => {
 </script>
 
 <template>
-  <div class="Layout" :class="{ collapse: !layoutStore.isSideBarOpen }">
+  <div class="Layout" :class="{ collapse: layoutStore.isDesktopSideBarCollapsed }">
     <Teleport to="body">
       <MobileSideBar />
     </Teleport>
