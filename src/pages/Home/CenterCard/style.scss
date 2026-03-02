@@ -11,7 +11,7 @@
     min-width: 0;
   }
 
-  @media (max-width: 1800px) {
+  @media (max-width: 1700px) {
     grid-template-columns: minmax(0, 1fr);
   }
 }
@@ -59,7 +59,7 @@
 }
 
 .center-sidebar {
-  @media (max-width: 1800px) {
+  @media (max-width: 1700px) {
     display: none;
   }
 }
