@@ -4,15 +4,28 @@
 
 .main-content {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, calc(25% - var(--space-32px)));
-  gap: var(--space-5);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
 
   > * {
     min-width: 0;
   }
 
+  .center-feed {
+    grid-column: 1 / 4;
+  }
+
+  .center-sidebar {
+    grid-column: 4;
+  }
+
   @media (max-width: 1700px) {
     grid-template-columns: minmax(0, 1fr);
+
+    .center-feed,
+    .center-sidebar {
+      grid-column: 1 / -1;
+    }
   }
 }
 

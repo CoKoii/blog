@@ -10,7 +10,12 @@ const { projects, activeTab, tabs, latestPosts, groupedResources } = useCenterCa
 <template>
   <div class="CenterCard">
     <main class="main-content">
-      <FeedSection v-model:active-tab="activeTab" :tabs="tabs" :latest-posts="latestPosts" />
+      <FeedSection
+        class="center-feed"
+        v-model:active-tab="activeTab"
+        :tabs="tabs"
+        :latest-posts="latestPosts"
+      />
       <StatsCard class="mobile-site-days" />
       <SidebarSection
         class="center-sidebar"
