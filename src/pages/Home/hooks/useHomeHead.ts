@@ -5,11 +5,13 @@ import { useHead } from '@vueuse/head'
 
 export const useHomeHead = () => {
   const wallpaperOrigin = getImageOrigin(siteOwner.wallpaper)
-  const wallpaperPreloadHref = createResponsiveImageSource(siteOwner.wallpaper, {
+  const wallpaperImage = createResponsiveImageSource(siteOwner.wallpaper, {
     srcWidth: 960,
+    widths: [640, 960, 1280, 1600],
+    sizes: '(max-width: 1000px) 100vw, 50vw',
     quality: 80,
     format: 'webp',
-  }).src
+  })
 
   useHead(() => {
     const head = buildSeoMeta({
@@ -33,8 +35,18 @@ export const useHomeHead = () => {
         ...(wallpaperOrigin
           ? [{ rel: 'preconnect', href: wallpaperOrigin, crossorigin: 'anonymous' }]
           : []),
-        ...(wallpaperPreloadHref
-          ? [{ rel: 'preload', as: 'image', href: wallpaperPreloadHref }]
+        ...(wallpaperImage.src
+          ? [
+              {
+                rel: 'preload',
+                as: 'image',
+                href: wallpaperImage.src,
+                crossorigin: 'anonymous',
+                fetchpriority: 'high',
+                ...(wallpaperImage.srcset ? { imagesrcset: wallpaperImage.srcset } : {}),
+                ...(wallpaperImage.sizes ? { imagesizes: wallpaperImage.sizes } : {}),
+              },
+            ]
           : []),
       ],
     }

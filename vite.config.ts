@@ -12,6 +12,9 @@ export default defineConfig(async ({ command }) => {
   const highlighter = await createShikiHighlighter()
 
   return {
+    build: {
+      cssCodeSplit: false,
+    },
     server: {
       open: true,
     },
