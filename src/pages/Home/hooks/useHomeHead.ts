@@ -1,7 +1,7 @@
 import { siteDescription, siteName, siteOwner, siteUrl } from '@/config'
 import { createResponsiveImageSource, getImageOrigin } from '@/utils/image'
 import { buildSeoMeta } from '@/utils/seo'
-import { useHead } from '@vueuse/head'
+import { useHead } from '@unhead/vue'
 
 export const useHomeHead = () => {
   const wallpaperOrigin = getImageOrigin(siteOwner.wallpaper)

@@ -1,14 +1,6 @@
 {
   "extends": "@tsconfig/node24/tsconfig.json",
-  "include": [
-    "vite.config.*",
-    "vitest.config.*",
-    "cypress.config.*",
-    "nightwatch.conf.*",
-    "playwright.config.*",
-    "eslint.config.*",
-    "src/types/**/*.d.ts"
-  ],
+  "include": ["vite.config.ts", "eslint.config.ts", "src/types/**/*.d.ts"],
   "compilerOptions": {
     "noEmit": true,
     "skipLibCheck": true,
@@ -17,7 +9,6 @@
 
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["node"],
-    "typeRoots": ["./src/types", "./node_modules/@types"]
+    "types": ["node"]
   }
 }

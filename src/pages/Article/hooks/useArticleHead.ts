@@ -2,7 +2,7 @@ import { siteOwner, siteUrl } from '@/config'
 import type { UseArticleHeadOptions } from '@/types/article-hooks'
 import type { PostFrontmatter } from '@/types/post'
 import { buildSeoMeta } from '@/utils/seo'
-import { useHead } from '@vueuse/head'
+import { useHead } from '@unhead/vue'
 import { computed } from 'vue'
 
 const toIso = (d?: string) => (d ? new Date(d).toISOString() : '')

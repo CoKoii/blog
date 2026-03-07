@@ -192,10 +192,18 @@ const normalizeCommentBody = (value) => {
   return text.length > 120 ? `${text.slice(0, 120)}…` : text
 }
 
+const toCommentFallbackId = (item, index) =>
+  [
+    item?.user?.login ?? 'anonymous',
+    item?.created_at ?? 'unknown',
+    item?.updated_at ?? 'unknown',
+    index,
+  ].join(':')
+
 const toCommentDetails = (comments) =>
   comments
-    .map((item) => ({
-      id: String(item?.id ?? item?.node_id ?? Math.random()),
+    .map((item, index) => ({
+      id: String(item?.id ?? item?.node_id ?? toCommentFallbackId(item, index)),
       author: String(item?.user?.login ?? '匿名用户'),
       avatarUrl: String(item?.user?.avatar_url ?? ''),
       body: normalizeCommentBody(item?.body),

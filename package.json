@@ -7,24 +7,25 @@
     "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
-    "dev": "node scripts/update-github-data.mjs && vite",
+    "dev": "vite",
+    "predev": "pnpm update-github-data",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
-    "build-only": "node scripts/update-github-data.mjs && vite-ssg build && node scripts/generate-seo.mjs",
+    "prebuild-only": "pnpm update-github-data",
+    "build-only": "vite-ssg build",
+    "postbuild-only": "node scripts/generate-seo.mjs",
     "update-github-data": "node scripts/update-github-data.mjs",
     "type-check": "vue-tsc --build",
     "test": "node --test",
     "lint": "eslint . --fix --cache",
-    "format": "prettier --write --experimental-cli src/"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@giscus/vue": "^3.1.1",
     "@unhead/vue": "^2.1.2",
-    "@vueuse/head": "^2.0.0",
     "nprogress": "^0.2.0",
     "pinia": "^3.0.4",
     "pinyin-pro": "^3.27.0",
-    "unhead": "^2.1.2",
     "vite-ssg": "^28.2.2",
     "vue": "^3.5.26",
     "vue-router": "^4.6.4"
@@ -42,7 +43,6 @@
     "eslint": "^9.39.2",
     "eslint-plugin-vue": "~10.6.2",
     "gray-matter": "^4.0.3",
-    "jiti": "^2.6.1",
     "npm-run-all2": "^8.0.4",
     "prettier": "3.7.4",
     "sass": "^1.97.1",

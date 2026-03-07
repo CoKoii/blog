@@ -1,0 +1,7 @@
+dist
+dist-ssr
+.vite-ssg-temp
+coverage
+node_modules
+.eslintcache
+src/data/github-data.json
