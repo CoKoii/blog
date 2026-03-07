@@ -13,7 +13,25 @@ export default defineConfig(async ({ command }) => {
 
   return {
     build: {
-      cssCodeSplit: false,
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            if (id.includes('/node_modules/')) {
+              if (
+                id.includes('/vue/') ||
+                id.includes('/@vue/') ||
+                id.includes('/vue-router/') ||
+                id.includes('/pinia/') ||
+                id.includes('/@vueuse/') ||
+                id.includes('/unhead/') ||
+                id.includes('/@unhead/')
+              ) {
+                return 'vendor'
+              }
+            }
+          },
+        },
+      },
     },
     server: {
       open: true,

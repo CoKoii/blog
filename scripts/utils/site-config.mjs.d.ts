@@ -18,6 +18,8 @@ export type SiteConfigRecord = {
     bioEmphasis: Text
     quote: Text
     avatar: Text
+    wallpaper: Text
+    wallpaperHue: number
     tags: Text[]
   }
   socials: Array<{ label: Text; icon: Text; url: Text }>

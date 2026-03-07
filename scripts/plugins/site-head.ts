@@ -8,8 +8,18 @@ const escapeHtml = (value: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
 
+const getOrigin = (url: string): string => {
+  if (!url) return ''
+  try {
+    return new URL(url).origin
+  } catch {
+    return ''
+  }
+}
+
 export const createSiteHeadPlugin = (rootDir: string) => {
-  const { siteName, siteDescription, siteLanguage } = resolveSiteMeta({ rootDir })
+  const { siteConfig, siteName, siteDescription, siteLanguage } = resolveSiteMeta({ rootDir })
+  const imageCdnOrigin = getOrigin(siteConfig.site.image)
 
   return {
     name: 'site-config-index-html',
@@ -32,6 +42,13 @@ export const createSiteHeadPlugin = (rootDir: string) => {
       }
 
       nextHtml = nextHtml.replace(/<html[^>]*>/, `<html lang="${language}">`)
+
+      if (imageCdnOrigin) {
+        nextHtml = nextHtml.replace(
+          /(<meta charset="[^"]*"\s*\/?>)/,
+          `$1\n    <link rel="preconnect" href="${imageCdnOrigin}" />\n    <link rel="dns-prefetch" href="${imageCdnOrigin}" />`,
+        )
+      }
 
       return nextHtml
     },

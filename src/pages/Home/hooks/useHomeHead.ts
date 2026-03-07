@@ -6,7 +6,7 @@ import { useHead } from '@vueuse/head'
 export const useHomeHead = () => {
   const wallpaperOrigin = getImageOrigin(siteOwner.wallpaper)
   const wallpaperImage = createResponsiveImageSource(siteOwner.wallpaper, {
-    srcWidth: 960,
+    srcWidth: 1200,
     widths: [640, 960, 1280, 1600],
     sizes: '(max-width: 1000px) 100vw, 50vw',
     quality: 80,
@@ -32,9 +32,7 @@ export const useHomeHead = () => {
       ...head,
       link: [
         ...head.link,
-        ...(wallpaperOrigin
-          ? [{ rel: 'preconnect', href: wallpaperOrigin, crossorigin: 'anonymous' }]
-          : []),
+        ...(wallpaperOrigin ? [{ rel: 'preconnect', href: wallpaperOrigin }] : []),
         ...(wallpaperImage.src
           ? [
               {
