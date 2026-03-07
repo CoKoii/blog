@@ -41,7 +41,6 @@ export const useHomeHead = () => {
                 rel: 'preload',
                 as: 'image',
                 href: wallpaperImage.src,
-                crossorigin: 'anonymous',
                 fetchpriority: 'high',
                 ...(wallpaperImage.srcset ? { imagesrcset: wallpaperImage.srcset } : {}),
                 ...(wallpaperImage.sizes ? { imagesizes: wallpaperImage.sizes } : {}),
