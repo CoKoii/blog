@@ -1,4 +1,4 @@
-import type { LazyEl } from '@/types/lazy'
+import type { LazyEl, LazySource } from '@/types/lazy'
 import type { Directive } from 'vue'
 
 const schedule = (cb: FrameRequestCallback) => {
@@ -11,15 +11,17 @@ const setLoading = (el: LazyEl) => {
   if (el.dataset.lazy === '1') return
   Object.assign(el.style, {
     opacity: '0',
-    filter: 'blur(20px)',
-    transition: 'opacity 0.3s ease, filter 0.3s ease',
+    transform: 'scale(1.02)',
+    transition: 'opacity 0.25s ease, transform 0.25s ease',
+    willChange: 'opacity, transform',
   })
   el.dataset.lazy = '1'
 }
 
 const setLoaded = (el: LazyEl) => {
   el.style.opacity = '1'
-  el.style.filter = 'blur(0)'
+  el.style.transform = 'none'
+  el.style.willChange = 'auto'
 }
 
 const createObs = (el: LazyEl, load: () => void) => {
@@ -42,11 +44,25 @@ const createObs = (el: LazyEl, load: () => void) => {
   return obs
 }
 
-export const setupLazyImage = (el: HTMLImageElement, src: string) => {
-  const lazy = el as LazyEl
-  if (!src) return () => {}
+const applySource = (el: LazyEl, source: LazySource) => {
+  if (source.srcset) el.srcset = source.srcset
+  else el.removeAttribute('srcset')
 
-  if (lazy.complete && lazy.naturalWidth > 0 && (lazy.currentSrc === src || lazy.src === src)) {
+  if (source.sizes) el.sizes = source.sizes
+  else el.removeAttribute('sizes')
+
+  if (el.src !== source.src) el.src = source.src
+}
+
+export const setupLazyImage = (el: HTMLImageElement, source: LazySource) => {
+  const lazy = el as LazyEl
+  if (!source.src) return () => {}
+
+  if (
+    lazy.complete &&
+    lazy.naturalWidth > 0 &&
+    (lazy.currentSrc === source.src || lazy.src === source.src || (!!source.srcset && !!lazy.currentSrc))
+  ) {
     schedule(() => setLoaded(lazy))
     return () => {}
   }
@@ -54,9 +70,7 @@ export const setupLazyImage = (el: HTMLImageElement, src: string) => {
   setLoading(lazy)
 
   const onLoad = () => setLoaded(lazy)
-  const load = () => {
-    if (lazy.src !== src) lazy.src = src
-  }
+  const load = () => applySource(lazy, source)
 
   lazy.addEventListener('load', onLoad, { once: true })
   const obs = createObs(lazy, load)
@@ -67,22 +81,47 @@ export const setupLazyImage = (el: HTMLImageElement, src: string) => {
   }
 }
 
-const getSrc = (el: LazyEl, binding: { value: unknown }) => {
-  if (typeof binding.value === 'string' && binding.value.trim()) return binding.value
-  return el.getAttribute('data-src')?.trim() ?? ''
+const getSource = (el: LazyEl, binding: { value: unknown }): LazySource | null => {
+  if (typeof binding.value === 'string' && binding.value.trim()) return { src: binding.value.trim() }
+
+  if (
+    binding.value &&
+    typeof binding.value === 'object' &&
+    'src' in binding.value &&
+    typeof binding.value.src === 'string' &&
+    binding.value.src.trim()
+  ) {
+    const srcset =
+      'srcset' in binding.value && typeof binding.value.srcset === 'string'
+        ? binding.value.srcset.trim()
+        : ''
+    const sizes =
+      'sizes' in binding.value && typeof binding.value.sizes === 'string'
+        ? binding.value.sizes.trim()
+        : ''
+
+    return {
+      src: binding.value.src.trim(),
+      ...(srcset ? { srcset } : {}),
+      ...(sizes ? { sizes } : {}),
+    }
+  }
+
+  const src = el.getAttribute('data-src')?.trim() ?? ''
+  return src ? { src } : null
 }
 
-export const vLazy: Directive<LazyEl, string | boolean> = {
+export const vLazy: Directive<LazyEl, string | LazySource | boolean> = {
   mounted(el, binding) {
-    const src = getSrc(el, binding)
-    if (src) el.__cleanup = setupLazyImage(el, src)
+    const source = getSource(el, binding)
+    if (source) el.__cleanup = setupLazyImage(el, source)
   },
   updated(el, binding) {
     if (binding.value === binding.oldValue) return
-    const src = getSrc(el, binding)
-    if (!src) return
+    const source = getSource(el, binding)
+    if (!source) return
     el.__cleanup?.()
-    el.__cleanup = setupLazyImage(el, src)
+    el.__cleanup = setupLazyImage(el, source)
   },
   unmounted(el) {
     el.__cleanup?.()

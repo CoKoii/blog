@@ -18,7 +18,6 @@ export type GithubCommentDetail = {
 }
 
 export type GithubDataPayload = {
-  generatedAt?: string
   github?: GithubRepoStats
   comments?: GithubCommentsData
 }

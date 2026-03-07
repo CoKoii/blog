@@ -2,8 +2,7 @@
 import Search from '@/components/Search/Search.vue'
 import { brandName } from '@/config'
 import { useLayoutStore } from '@/store/layout'
-import { Icon } from '@iconify/vue'
-import { Dropdown } from 'ant-design-vue'
+import { Icon } from '@/components/Icon'
 
 const layoutStore = useLayoutStore()
 </script>
@@ -22,21 +21,19 @@ const layoutStore = useLayoutStore()
       <Search />
     </div>
     <div class="user">
-      <Dropdown placement="bottomRight">
-        <div class="avatar">
+      <details class="user-menu">
+        <summary class="avatar" aria-label="打开用户菜单">
           <Icon icon="lucide:user" />
-        </div>
-        <template #overlay>
-          <div class="avatar_dropdown">
-            <div class="profile">profile</div>
-            <div class="line"></div>
-            <div class="tools">
-              <div class="lang">lang</div>
-              <div class="theme">theme</div>
-            </div>
+        </summary>
+        <div class="avatar_dropdown">
+          <div class="profile">profile</div>
+          <div class="line"></div>
+          <div class="tools">
+            <div class="lang">lang</div>
+            <div class="theme">theme</div>
           </div>
-        </template>
-      </Dropdown>
+        </div>
+      </details>
     </div>
   </div>
 </template>

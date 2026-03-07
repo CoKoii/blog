@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import SlidingTabs from '@/components/Tabs/SlidingTabs.vue'
+import { Icon } from '@/components/Icon'
 import type { TabItem } from '@/types/tab'
+import { createResponsiveImageSource } from '@/utils/image'
 import { buildArticlePath } from '@/utils/paths'
 import { findPostById, type PostListItem } from '@/utils/posts'
-import { Icon } from '@iconify/vue'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -26,6 +27,14 @@ const goTo = (id: string | number) => {
   if (!post) return
   router.push(buildArticlePath(post))
 }
+
+const getPostCover = (cover: string) =>
+  createResponsiveImageSource(cover, {
+    srcWidth: 480,
+    widths: [320, 480, 640],
+    sizes: '(max-width: 720px) 42vw, 200px',
+    quality: 80,
+  })
 </script>
 
 <template>
@@ -41,7 +50,7 @@ const goTo = (id: string | number) => {
     <div class="post-list">
       <article v-for="post in latestPosts" :key="post.id" class="post-row" @click="goTo(post.id)">
         <div class="post-cover">
-          <img v-lazy="post.cover" :alt="post.title" />
+          <img v-lazy="getPostCover(post.cover)" :alt="post.title" />
         </div>
         <div class="post-main">
           <h3 class="post-title">{{ post.title }}</h3>

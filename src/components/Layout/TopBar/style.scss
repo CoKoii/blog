@@ -39,6 +39,7 @@
 
   .user {
     justify-self: end;
+    position: relative;
   }
 
   .avatar {
@@ -50,14 +51,46 @@
     border-radius: var(--radius-full);
     font-size: var(--font-size-md);
     cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+}
+
+.user-menu {
+  position: relative;
+
+  &[open] .avatar {
+    background-color: var(--color-bg-hover);
   }
 }
 
 .avatar_dropdown {
-  width: 400px;
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  z-index: 4;
+  width: min(260px, 78vw);
   box-shadow: var(--shadow-panel);
+  border: var(--border-width-1) solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   padding: var(--space-5);
+  background: var(--color-white);
+  color: var(--color-text-primary);
+
+  .line {
+    height: 1px;
+    margin: var(--space-3) 0;
+    background: var(--color-border-subtle);
+  }
+
+  .tools {
+    display: grid;
+    gap: var(--space-2);
+    color: var(--color-text-secondary);
+  }
 }
 
 @media (max-width: 768px) {
@@ -81,6 +114,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .avatar_dropdown {
+      top: calc(100% + var(--space-1));
+      width: 220px;
+      padding: var(--space-4);
     }
 
     :deep(.Search .text svg) {

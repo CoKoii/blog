@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { githubConfig } from '@/config'
 import { githubRepoStats } from '@/data/github'
-import { Icon } from '@iconify/vue'
+import { Icon } from '@/components/Icon'
 import { computed } from 'vue'
 
 const fmt = (n: number) =>

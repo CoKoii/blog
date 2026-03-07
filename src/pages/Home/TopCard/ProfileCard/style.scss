@@ -35,17 +35,31 @@
   --c-icon-hover-bg: hsl(var(--card-hue) 45% 70% / 0.24);
 
   position: relative;
-  background-image:
-    linear-gradient(125deg, var(--c-overlay-10) 0%, var(--c-overlay-05) 50%),
-    var(--card-wallpaper-url, none);
-  background-size: cover;
-  background-position: center;
   border-radius: var(--radius-4xl);
   overflow: hidden;
   padding: clamp(18px, 3.2vw, 34px);
   height: 100%;
   display: flex;
   flex-direction: column;
+  isolation: isolate;
+}
+
+.wallpaper,
+.card-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.wallpaper {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.card-overlay {
+  background-image: linear-gradient(125deg, var(--c-overlay-10) 0%, var(--c-overlay-05) 50%);
+  z-index: 1;
 }
 
 .grid {

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { statsConfig } from '@/config'
 import { getAllPosts, getPostStats } from '@/utils/posts'
-import { Icon } from '@iconify/vue'
+import { Icon } from '@/components/Icon'
 import { onMounted, ref } from 'vue'
 
 const days = ref('—')

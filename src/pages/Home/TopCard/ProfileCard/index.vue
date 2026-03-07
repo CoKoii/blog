@@ -1,22 +1,56 @@
 <script setup lang="ts">
+import { Icon } from '@/components/Icon'
 import { siteOwner, socialLinks } from '@/config'
-import { Icon } from '@iconify/vue'
+import { createDensityImageSource, createResponsiveImageSource } from '@/utils/image'
 
 const handleClickAction = (message: string) => window.alert(message)
+
+const wallpaperImage = createResponsiveImageSource(siteOwner.wallpaper, {
+  srcWidth: 1200,
+  widths: [640, 960, 1280, 1600],
+  sizes: '(max-width: 1000px) 100vw, 50vw',
+  quality: 80,
+  format: 'webp',
+})
+const avatarImage = createDensityImageSource(siteOwner.avatar, {
+  sizes: '72px',
+  quality: 80,
+  mode: 'm_fill',
+  variants: [
+    { width: 128, height: 128, descriptor: '1x' },
+    { width: 256, height: 256, descriptor: '2x' },
+  ],
+})
 </script>
 
 <template>
   <div class="profile-box">
-    <section
-      class="card"
-      :style="{
-        '--card-hue': siteOwner.wallpaperHue,
-        '--card-wallpaper-url': siteOwner.wallpaper ? `url('${siteOwner.wallpaper}')` : 'none',
-      }"
-    >
+    <section class="card" :style="{ '--card-hue': siteOwner.wallpaperHue }">
+      <img
+        v-if="wallpaperImage.src"
+        class="wallpaper"
+        :src="wallpaperImage.src"
+        :srcset="wallpaperImage.srcset"
+        :sizes="wallpaperImage.sizes"
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      />
+      <div class="card-overlay" aria-hidden="true"></div>
       <div class="grid">
         <div class="avatar" aria-label="avatar">
-          <img v-lazy="siteOwner.avatar" alt="Avatar" />
+          <img
+            :src="avatarImage.src"
+            :srcset="avatarImage.srcset"
+            :sizes="avatarImage.sizes"
+            width="128"
+            height="128"
+            alt="Avatar"
+            loading="eager"
+            decoding="async"
+          />
           <span class="status-dot"></span>
         </div>
 

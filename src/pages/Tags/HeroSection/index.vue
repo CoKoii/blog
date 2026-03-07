@@ -1,10 +1,20 @@
 <script setup lang="ts">
+import { createResponsiveImageSource } from '@/utils/image'
+import { computed } from 'vue'
+
 const { postCount, activeCategoryLabel, heroCover, heroDescription } = defineProps<{
   postCount: number
   activeCategoryLabel: string
   heroCover: string
   heroDescription: string
 }>()
+
+const heroCoverImage = computed(() =>
+  createResponsiveImageSource(heroCover, {
+    srcWidth: 900,
+    quality: 80,
+  }),
+)
 </script>
 
 <template>
@@ -22,7 +32,7 @@ const { postCount, activeCategoryLabel, heroCover, heroDescription } = definePro
       </p>
     </div>
     <div v-if="heroCover" class="hero-media">
-      <img v-lazy="heroCover" :alt="activeCategoryLabel" />
+      <img v-lazy="heroCoverImage" :alt="activeCategoryLabel" />
     </div>
   </section>
 </template>

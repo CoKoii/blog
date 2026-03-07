@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getCommentCountByPath, getCommentDetailsByPath } from '@/data/github'
 import type { GithubCommentDetail } from '@/types/github'
-import { Icon } from '@iconify/vue'
+import { Icon } from '@/components/Icon'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 

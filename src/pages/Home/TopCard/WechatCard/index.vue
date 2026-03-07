@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { wechatConfig } from '@/config'
-import { Icon } from '@iconify/vue'
+import { Icon } from '@/components/Icon'
 </script>
 
 <template>

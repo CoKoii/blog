@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
+import { Icon } from '@/components/Icon'
 import type { Project } from '../types'
 
 const { projects } = defineProps<{ projects: Project[] }>()

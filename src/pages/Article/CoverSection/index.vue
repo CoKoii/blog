@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
+import { Icon } from '@/components/Icon'
 import type { ArticleMeta } from '../types'
 
 const { article, loading } = defineProps<{ article: ArticleMeta; loading: boolean }>()

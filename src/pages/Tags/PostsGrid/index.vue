@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { createResponsiveImageSource } from '@/utils/image'
 import type { PostListItem } from '@/utils/posts'
 
 const { posts } = defineProps<{
@@ -8,6 +9,14 @@ const { posts } = defineProps<{
 const emit = defineEmits<{
   select: [id: string | number]
 }>()
+
+const getPostCover = (cover: string) =>
+  createResponsiveImageSource(cover, {
+    srcWidth: 560,
+    widths: [360, 560, 720],
+    sizes: '(max-width: 720px) 42vw, 25vw',
+    quality: 80,
+  })
 </script>
 
 <template>
@@ -19,7 +28,7 @@ const emit = defineEmits<{
       @click="emit('select', post.id)"
     >
       <div class="card-cover">
-        <img v-lazy="post.cover" :alt="post.title" />
+        <img v-lazy="getPostCover(post.cover)" :alt="post.title" />
         <span class="read-badge">{{ post.readTime }} read</span>
       </div>
       <div class="card-body">

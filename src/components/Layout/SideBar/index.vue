@@ -1,25 +1,11 @@
-<script lang="ts">
+<script setup lang="ts">
+import { Icon } from '@/components/Icon'
 import { siteOwner } from '@/config'
 import menus from '@/router/config/menu'
 import { useLayoutStore } from '@/store/layout'
-import { Icon } from '@iconify/vue'
-import { Tooltip } from 'ant-design-vue'
-import { defineComponent } from 'vue'
 
-export default defineComponent({
-  components: { Icon, Tooltip },
-  setup() {
-    const layoutStore = useLayoutStore()
-    const currentYear = new Date().getFullYear()
-
-    return {
-      siteOwner,
-      menus,
-      layoutStore,
-      currentYear,
-    }
-  },
-})
+const layoutStore = useLayoutStore()
+const currentYear = new Date().getFullYear()
 </script>
 
 <template>
@@ -29,17 +15,20 @@ export default defineComponent({
         <div v-if="item.title" class="title">{{ item.title }}</div>
         <ul>
           <li v-for="child in item.children" :key="child.title">
-            <Tooltip :title="layoutStore.isDesktopSideBarCollapsed ? child.title : ''" placement="right">
-              <router-link :to="child.path" active-class="" exact-active-class="active">
-                <Icon :icon="child.icon" v-if="child.icon" />
-                <div
-                  class="color"
-                  v-else
-                  :style="{ backgroundColor: child.color, boxShadow: `0 0 4px ${child.color}` }"
-                ></div>
-                <div class="text">{{ child.title }}</div>
-              </router-link>
-            </Tooltip>
+            <router-link
+              :to="child.path"
+              active-class=""
+              exact-active-class="active"
+              :title="layoutStore.isDesktopSideBarCollapsed ? child.title : undefined"
+            >
+              <Icon :icon="child.icon" v-if="child.icon" />
+              <div
+                class="color"
+                v-else
+                :style="{ backgroundColor: child.color, boxShadow: `0 0 4px ${child.color}` }"
+              ></div>
+              <div class="text">{{ child.title }}</div>
+            </router-link>
           </li>
         </ul>
       </div>

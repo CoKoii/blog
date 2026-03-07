@@ -8,7 +8,7 @@ import { createSiteHeadPlugin } from './scripts/plugins/site-head'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
-export default defineConfig(async () => {
+export default defineConfig(async ({ command }) => {
   const highlighter = await createShikiHighlighter()
 
   return {
@@ -22,15 +22,12 @@ export default defineConfig(async () => {
       }),
       createMarkdownPlugin(highlighter),
       createPostsMetaPlugin(__dirname),
-      vueDevTools(),
-    ],
+      command === 'serve' ? vueDevTools() : null,
+    ].filter(Boolean),
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
-    },
-    build: {
-      cssCodeSplit: false,
     },
     ssgOptions: {
       includedRoutes(paths: string[]) {

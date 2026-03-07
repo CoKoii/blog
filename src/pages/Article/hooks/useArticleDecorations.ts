@@ -1,5 +1,5 @@
 import { setupLazyImage } from '@/directives/vLazy'
-import { Icon } from '@iconify/vue'
+import { Icon } from '@/components/Icon'
 import { createApp, defineComponent, h, ref } from 'vue'
 
 const queryAll = <T extends Element>(selector: string) =>
@@ -107,7 +107,7 @@ const enhanceImages = () => {
       img.dataset.lazyEnhanced = 'true'
       img.setAttribute('data-original-src', originalSrc)
       img.removeAttribute('src')
-      setupLazyImage(img, originalSrc)
+      setupLazyImage(img, { src: originalSrc })
     })
 }
 

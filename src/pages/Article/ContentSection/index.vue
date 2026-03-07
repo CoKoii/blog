@@ -2,7 +2,7 @@
 import CommentBubbles from '@/components/Comments/CommentBubbles.vue'
 import GiscusComments from '@/components/Comments/GiscusComments.vue'
 import { isGiscusReady } from '@/config'
-import { Icon } from '@iconify/vue'
+import { Icon } from '@/components/Icon'
 import type { Component } from 'vue'
 import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import type { TocItem } from '../types'

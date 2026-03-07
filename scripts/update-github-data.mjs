@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { loadEnv } from './utils/env.mjs'
@@ -205,6 +205,18 @@ const toCommentDetails = (comments) =>
     .sort((left, right) => Date.parse(right.createdAt || 0) - Date.parse(left.createdAt || 0))
     .slice(0, COMMENT_DETAIL_LIMIT)
 
+const stringifyJson = (value) => `${JSON.stringify(value, null, 2)}\n`
+
+const writeJsonIfChanged = async (outputPath, payload) => {
+  const nextContent = stringifyJson(payload)
+  const currentContent = await readFile(outputPath, 'utf8').catch(() => '')
+
+  if (currentContent === nextContent) return false
+
+  await writeFile(outputPath, nextContent, 'utf8')
+  return true
+}
+
 const resolveCommentData = async (paths) => {
   const byPath = toPathCommentsMap(paths, 0)
   const detailsByPath = toPathDetailMap(paths)
@@ -331,7 +343,6 @@ const main = async () => {
   ])
 
   const payload = {
-    generatedAt: new Date().toISOString(),
     github: repoStats,
     comments: {
       byPath: commentsData.byPath,
@@ -342,9 +353,9 @@ const main = async () => {
   const __dirname = dirname(fileURLToPath(import.meta.url))
   const outputPath = resolve(__dirname, '../src/data/github-data.json')
   await mkdir(dirname(outputPath), { recursive: true })
-  await writeFile(outputPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8')
+  const hasWritten = await writeJsonIfChanged(outputPath, payload)
 
-  success(`GitHub 数据写入完成：${outputPath}`)
+  success(hasWritten ? `GitHub 数据写入完成：${outputPath}` : `GitHub 数据未变化，跳过写入：${outputPath}`)
   success(`总耗时：${Date.now() - startedAt}ms`)
 }
 
