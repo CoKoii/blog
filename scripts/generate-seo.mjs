@@ -188,6 +188,19 @@ const patchHtmlForSeoImages = () => {
   })
 }
 
+const normalizeNotFoundPage = () => {
+  const source = path.join(distDir, ':pathMatch(.*)*.html')
+  const target = path.join(distDir, '404.html')
+
+  if (!fs.existsSync(source)) return
+  if (fs.existsSync(target)) {
+    fs.rmSync(source)
+    return
+  }
+
+  fs.renameSync(source, target)
+}
+
 const main = () => {
   ensureDist()
   const posts = collectPosts()
@@ -228,6 +241,7 @@ const main = () => {
   writeFile('feed.xml', buildRss(feedItems))
   writeFile('atom.xml', buildAtom(feedItems))
   patchHtmlForSeoImages()
+  normalizeNotFoundPage()
 }
 
 main()
