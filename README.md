@@ -18,8 +18,11 @@ pnpm dev
 
 ```bash
 pnpm build
+pnpm analyze
 pnpm preview
 ```
+
+`pnpm analyze` 会在正常构建产物之外，额外生成 `Sonda` 报告到 `.sonda/report.html`。
 
 ## 写作
 
@@ -54,6 +57,7 @@ GITHUB_TOKEN=your_github_pat
 
 - `pnpm dev` 本地开发
 - `pnpm build` 生产构建
+- `pnpm analyze` 生成构建体积分析报告
 - `pnpm build-only` 仅构建
 - `pnpm update-github-data` 刷新 GitHub 数据
 

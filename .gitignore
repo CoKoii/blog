@@ -29,6 +29,7 @@ coverage
 *.tsbuildinfo
 
 .eslintcache
+.sonda
 
 # Cypress
 /cypress/videos/
