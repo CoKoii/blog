@@ -94,6 +94,7 @@
     color: #003fd6;
     font-size: 0.9em;
     padding: 0.14em 0.46em;
+
     border-radius: var(--radius-6px);
     border: var(--border-width-1) solid rgba(0, 71, 214, 0.48);
     margin: 0 0.1em;
@@ -459,8 +460,16 @@
     padding: 0;
     border-radius: 0;
     margin: 0;
-    font-size: 1em;
-    font-family: var(--md-code-font);
+    font-size: 0.9em;
+    font-family:
+      'SF Mono',
+      SF Mono,
+      SFMono-Regular,
+      Consolas,
+      'Liberation Mono',
+      Menlo,
+      Courier,
+      monospace !important;
     font-variant-ligatures: none;
     letter-spacing: 0;
     border: 0;
