@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { statsConfig } from '@/config'
-import { getAllPosts, getPostStats } from '@/utils/posts'
+import { getPostStats, postsRef } from '@/utils/posts'
 import { Icon } from '@/components/Icon'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const days = ref('—')
-const stats = getPostStats(getAllPosts())
+const stats = computed(() => getPostStats(postsRef.value))
 const DAY_MS = 864e5
 
 const fmtWords = (v: number) => {

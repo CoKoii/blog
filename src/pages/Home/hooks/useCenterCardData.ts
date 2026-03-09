@@ -1,10 +1,10 @@
-import { formatPostList, getAllPosts } from '@/utils/posts'
-import { ALL_TAG_SLUG, getTagTabs } from '@/utils/tags'
+import { formatPostList, postsRef } from '@/utils/posts'
+import { ALL_TAG_SLUG, tagTabsRef } from '@/utils/tags'
 import { computed, ref } from 'vue'
 import type { Project, Resource } from '../CenterCard/types'
 
 export const useCenterCardData = () => {
-  const tabs = getTagTabs()
+  const tabs = tagTabsRef
   const projects: Project[] = [
     {
       name: 'Hero-Admin',
@@ -29,13 +29,12 @@ export const useCenterCardData = () => {
   ]
 
   const activeTab = ref(ALL_TAG_SLUG)
-  const allPosts = getAllPosts()
 
   const latestPosts = computed(() =>
     formatPostList(
       activeTab.value === ALL_TAG_SLUG
-        ? allPosts
-        : allPosts.filter((post) => post.categorySlug === activeTab.value),
+        ? postsRef.value
+        : postsRef.value.filter((post) => post.categorySlug === activeTab.value),
       2,
     ),
   )

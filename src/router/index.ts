@@ -1,15 +1,11 @@
-import { getAllPosts } from '@/utils/posts'
-import { ALL_TAG_SLUG, getTagSlugSet } from '@/utils/tags'
+import { resolvePostIdBySlug } from '@/utils/posts'
+import { ALL_TAG_SLUG, tagSlugSetRef } from '@/utils/tags'
 import type { RouteRecordRaw } from 'vue-router'
 
-const posts = getAllPosts()
-const catSlugs = getTagSlugSet()
-const artIds = new Set(posts.map((p) => `${p.categorySlug}/${p.slug}`))
-
 const isValidArticle = (category: string, id: string) =>
-  !!category && !!id && artIds.has(`${category}/${id}`)
+  !!category && !!id && !!resolvePostIdBySlug(category, id)
 const isValidTag = (category: string) =>
-  !!category && (catSlugs.has(category) || category === ALL_TAG_SLUG)
+  !!category && (tagSlugSetRef.value.has(category) || category === ALL_TAG_SLUG)
 
 const routes: RouteRecordRaw[] = [
   {

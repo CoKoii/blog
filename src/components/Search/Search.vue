@@ -58,6 +58,15 @@ const ensureIndex = async () => {
   }
 }
 
+if (import.meta.hot) {
+  import.meta.hot.accept('virtual:search-index', (mod) => {
+    if ((!isIndexReady.value && !isLoading.value) || !mod?.searchIndex) return
+    preparedSearchIndex.value = prepareSearchIndex(mod.searchIndex)
+    isIndexReady.value = true
+    isLoading.value = false
+  })
+}
+
 const openSearch = async () => {
   keyword.value = ''
   isOpen.value = true

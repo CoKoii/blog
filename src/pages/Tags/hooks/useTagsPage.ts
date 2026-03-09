@@ -1,15 +1,14 @@
 import { getTagMeta } from '@/config'
 import { buildArticlePath } from '@/utils/paths'
-import { findPostById, formatPostList, getAllPosts } from '@/utils/posts'
-import { ALL_TAG_LABEL, ALL_TAG_SLUG, getTagTabs } from '@/utils/tags'
+import { findPostById, formatPostList, postsRef } from '@/utils/posts'
+import { ALL_TAG_LABEL, ALL_TAG_SLUG, tagTabsRef } from '@/utils/tags'
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 export const useTagsPage = () => {
   const route = useRoute()
   const router = useRouter()
-  const allPosts = getAllPosts()
-  const categories = getTagTabs()
+  const categories = tagTabsRef
   const activeTab = ref('')
 
   watch(
@@ -25,13 +24,13 @@ export const useTagsPage = () => {
   })
 
   const activeCategoryLabel = computed(
-    () => categories.find((c) => c.value === activeTab.value)?.label ?? ALL_TAG_LABEL,
+    () => categories.value.find((c) => c.value === activeTab.value)?.label ?? ALL_TAG_LABEL,
   )
 
   const filteredPosts = computed(() =>
     activeTab.value === ALL_TAG_SLUG
-      ? allPosts
-      : allPosts.filter((p) => p.categorySlug === activeTab.value),
+      ? postsRef.value
+      : postsRef.value.filter((post) => post.categorySlug === activeTab.value),
   )
 
   const activeTagMeta = computed(() =>
@@ -39,7 +38,7 @@ export const useTagsPage = () => {
   )
 
   const goToArticle = (postId: string | number) => {
-    const post = findPostById(postId, allPosts)
+    const post = findPostById(postId, postsRef.value)
     if (post) router.push(buildArticlePath(post))
   }
 

@@ -1,14 +1,9 @@
 import { getTagMeta } from '@/config'
 import type { MenuType } from '@/types/menus'
-import { getTagEntries } from '@/utils/tags'
+import { tagEntriesRef } from '@/utils/tags'
+import { computed } from 'vue'
 
-const tagChildren = getTagEntries().map((tag) => ({
-  title: tag.label,
-  color: getTagMeta(tag.label).color,
-  path: `/tags/${tag.slug}`,
-}))
-
-const menus: MenuType[] = [
+export const menusRef = computed<MenuType[]>(() => [
   {
     showTitle: false,
     children: [
@@ -26,8 +21,10 @@ const menus: MenuType[] = [
   },
   {
     title: 'Tags',
-    children: tagChildren,
+    children: tagEntriesRef.value.map((tag) => ({
+      title: tag.label,
+      color: getTagMeta(tag.label).color,
+      path: `/tags/${tag.slug}`,
+    })),
   },
-]
-
-export default menus
+])

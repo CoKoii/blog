@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import matter from 'gray-matter'
-import type { HmrContext, ViteDevServer } from 'vite'
+import { normalizePath, type HmrContext, type ViteDevServer } from 'vite'
 
 import { listPostFiles } from '../utils/posts.mjs'
 import { buildArticlePath, toPinyinSlug } from '../utils/slug.mjs'
@@ -39,6 +39,7 @@ type ParsedPostEntry = {
   slug: string
   sourceSlug: string
   fileName: string
+  filePath: string
   frontmatter: PostFrontmatter
   markdownContent: string
   wordCount: number
@@ -205,27 +206,49 @@ const extractSearchTerms = (
   return terms
 }
 
-const collectParsedPosts = (rootDir: string): ParsedPostEntry[] => {
+const parsePostFile = (post: PostFileEntry, source = fs.readFileSync(post.filePath, 'utf-8')) => {
+  const { data, content } = matter(source)
+  const metrics = estimateReadingMetrics(content)
+
+  return {
+    id: `${post.category}/${post.slug}`,
+    category: post.category,
+    categorySlug: toPinyinSlug(post.category),
+    slug: toPinyinSlug(post.slug),
+    sourceSlug: post.slug,
+    fileName: post.fileName,
+    filePath: normalizePath(post.filePath),
+    frontmatter: data as PostFrontmatter,
+    markdownContent: content,
+    wordCount: metrics.wordCount,
+    readTime: metrics.readTime,
+  }
+}
+
+const collectParsedPosts = (rootDir: string) => {
   const postFiles = [...listPostFiles(rootDir)].sort((a, b) => a.filePath.localeCompare(b.filePath))
+  return new Map(postFiles.map((post) => [normalizePath(post.filePath), parsePostFile(post)]))
+}
 
-  return postFiles.map((post) => {
-    const source = fs.readFileSync(post.filePath, 'utf-8')
-    const { data, content } = matter(source)
-    const metrics = estimateReadingMetrics(content)
+const toSortedParsedPosts = (cache: Map<string, ParsedPostEntry>) =>
+  [...cache.values()].sort((a, b) => a.filePath.localeCompare(b.filePath))
 
-    return {
-      id: `${post.category}/${post.slug}`,
-      category: post.category,
-      categorySlug: toPinyinSlug(post.category),
-      slug: toPinyinSlug(post.slug),
-      sourceSlug: post.slug,
-      fileName: post.fileName,
-      frontmatter: data as PostFrontmatter,
-      markdownContent: content,
-      wordCount: metrics.wordCount,
-      readTime: metrics.readTime,
-    }
-  })
+const resolvePostFileEntry = (postsDir: string, file: string): PostFileEntry | null => {
+  const relative = path.relative(postsDir, file)
+  if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) return null
+
+  const segments = relative.split(path.sep)
+  if (segments.length !== 2) return null
+
+  const [category, fileName] = segments
+  if (!category || !fileName?.endsWith('.md')) return null
+
+  return {
+    category,
+    slug: fileName.slice(0, -3),
+    fileName,
+    filePath: file,
+  }
 }
 
 const createPostsMetaData = (posts: ParsedPostEntry[]) => {
@@ -299,18 +322,37 @@ const createSearchIndexData = (documents: SearchDocument[]): SearchIndex => {
 
 export const createPostsMetaPlugin = (rootDir: string) => {
   const postsDir = path.resolve(rootDir, 'posts')
+  const normalizedPostsDir = normalizePath(postsDir)
   const resolvedPostsMetaModuleId = `\0${POSTS_META_VIRTUAL_MODULE_ID}`
   const resolvedSearchIndexModuleId = `\0${SEARCH_INDEX_VIRTUAL_MODULE_ID}`
-  let parsedPostsCache: ParsedPostEntry[] | null = null
+  let parsedPostsCache: Map<string, ParsedPostEntry> | null = null
 
   const getParsedPosts = () => {
+    if (!parsedPostsCache) {
+      parsedPostsCache = collectParsedPosts(rootDir)
+    }
+    return toSortedParsedPosts(parsedPostsCache)
+  }
+
+  const getParsedPostsCache = () => {
     if (parsedPostsCache) return parsedPostsCache
     parsedPostsCache = collectParsedPosts(rootDir)
     return parsedPostsCache
   }
 
-  const invalidateParsedPostsCache = () => {
-    parsedPostsCache = null
+  const updateParsedPostCache = async (file: string, read: HmrContext['read']) => {
+    const cache = getParsedPostsCache()
+    const normalizedFile = normalizePath(file)
+
+    if (!fs.existsSync(file)) {
+      cache.delete(normalizedFile)
+      return
+    }
+
+    const post = resolvePostFileEntry(postsDir, file)
+    if (!post) return
+
+    cache.set(normalizedFile, parsePostFile(post, await read()))
   }
 
   return {
@@ -339,19 +381,26 @@ export const createPostsMetaPlugin = (rootDir: string) => {
     configureServer(server: ViteDevServer) {
       server.watcher.add(postsDir)
     },
-    handleHotUpdate(ctx: HmrContext) {
-      if (!ctx.file.startsWith(postsDir) || !ctx.file.endsWith('.md')) return undefined
+    async handleHotUpdate(ctx: HmrContext) {
+      const file = normalizePath(ctx.file)
+      if (!file.startsWith(`${normalizedPostsDir}/`) || !file.endsWith('.md')) return undefined
 
-      invalidateParsedPostsCache()
+      await updateParsedPostCache(ctx.file, ctx.read)
 
-      const moduleIds = [resolvedPostsMetaModuleId, resolvedSearchIndexModuleId]
-      for (const moduleId of moduleIds) {
-        const mod = ctx.server.moduleGraph.getModuleById(moduleId)
-        if (mod) ctx.server.moduleGraph.invalidateModule(mod)
+      const updatedModules = new Set(ctx.modules)
+      const postsMetaModule = ctx.server.moduleGraph.getModuleById(resolvedPostsMetaModuleId)
+      if (postsMetaModule) {
+        ctx.server.moduleGraph.invalidateModule(postsMetaModule)
+        updatedModules.add(postsMetaModule)
       }
 
-      ctx.server.ws.send({ type: 'full-reload' })
-      return []
+      const searchIndexModule = ctx.server.moduleGraph.getModuleById(resolvedSearchIndexModuleId)
+      if (searchIndexModule) {
+        ctx.server.moduleGraph.invalidateModule(searchIndexModule)
+        updatedModules.add(searchIndexModule)
+      }
+
+      return [...updatedModules]
     },
   }
 }

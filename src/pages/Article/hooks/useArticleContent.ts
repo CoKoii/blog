@@ -2,10 +2,12 @@ import type { UseArticleContentOptions } from '@/types/article-hooks'
 import type { PostFrontmatter, PostModule } from '@/types/post'
 import {
   findPostBySlug,
-  getAllPosts,
   getPostContent,
   getPostContentSync,
+  postsRef,
+  postsRevisionRef,
   parsePostId,
+  refreshPostContent,
 } from '@/utils/posts'
 import { resolveTitleFromSlug } from '@/utils/strings'
 import type { Component } from 'vue'
@@ -51,20 +53,20 @@ export const useArticleContent = (
     runAfterReady()
   }
 
-  const loadArticle = (categorySlug: string, articleSlug: string) => {
+  const loadArticle = (categorySlug: string, articleSlug: string, force = false) => {
     if (!categorySlug || !articleSlug) return
 
-    const post = findPostBySlug(categorySlug, articleSlug, getAllPosts())
+    const post = findPostBySlug(categorySlug, articleSlug, postsRef.value)
     if (!post) {
       console.warn(`Article not found: ${categorySlug}/${articleSlug}`)
       return
     }
 
     resolvedTitle.value = resolvePostTitle(post.id)
-    if (loadedArticleId.value === post.id && ContentComponent.value) return
+    if (!force && loadedArticleId.value === post.id && ContentComponent.value) return
 
     const currentToken = ++loadToken.value
-    const syncModule = getPostContentSync(post.id)
+    const syncModule = force ? null : getPostContentSync(post.id)
 
     if (syncModule) {
       options.onBeforeContentChange?.()
@@ -72,11 +74,14 @@ export const useArticleContent = (
       return
     }
 
-    ContentComponent.value = null
-    frontmatter.value = { ...DEFAULT_FRONTMATTER }
     options.onBeforeContentChange?.()
+    if (!force || !ContentComponent.value) {
+      ContentComponent.value = null
+      frontmatter.value = { ...DEFAULT_FRONTMATTER }
+    }
 
-    void getPostContent(post.id).then((module) => {
+    const load = force ? refreshPostContent(post.id) : getPostContent(post.id)
+    void load.then((module) => {
       if (loadToken.value === currentToken) applyContent(post.id, module)
     })
   }
@@ -84,7 +89,7 @@ export const useArticleContent = (
   onServerPrefetch(async () => {
     const categorySlug = String(route.params.category ?? '')
     const articleSlug = String(route.params.id ?? '')
-    const post = findPostBySlug(categorySlug, articleSlug, getAllPosts())
+    const post = findPostBySlug(categorySlug, articleSlug, postsRef.value)
     if (post) {
       resolvedTitle.value = resolvePostTitle(post.id)
       applyContent(post.id, await getPostContent(post.id))
@@ -96,6 +101,10 @@ export const useArticleContent = (
       () => [route.params.category, route.params.id],
       ([category, id]) => loadArticle(String(category ?? ''), String(id ?? '')),
       { immediate: true },
+    )
+    watch(
+      () => postsRevisionRef.value,
+      () => loadArticle(String(route.params.category ?? ''), String(route.params.id ?? ''), true),
     )
   }
 

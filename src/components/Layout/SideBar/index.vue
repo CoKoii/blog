@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Icon } from '@/components/Icon'
 import { siteOwner } from '@/config'
-import menus from '@/router/config/menu'
+import { menusRef } from '@/router/config/menu'
 import { useLayoutStore } from '@/store/layout'
 
 const layoutStore = useLayoutStore()
@@ -11,7 +11,7 @@ const currentYear = new Date().getFullYear()
 <template>
   <div class="sideBar" :class="{ collapse: layoutStore.isDesktopSideBarCollapsed }">
     <div class="sidebar-content">
-      <div class="box" v-for="(item, index) in menus" :key="index">
+      <div class="box" v-for="(item, index) in menusRef" :key="index">
         <div v-if="item.title" class="title">{{ item.title }}</div>
         <ul>
           <li v-for="child in item.children" :key="child.title">
