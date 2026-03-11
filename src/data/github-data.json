@@ -2,12 +2,13 @@
   "github": {
     "projects": 8,
     "stars": 3,
-    "updatedAt": "2026-03-10T08:00:31Z"
+    "updatedAt": "2026-03-11T02:45:29Z"
   },
   "comments": {
     "byPath": {
       "/article/prompt/vue-xiangmuzhonggouyouhuatishici": 0,
       "/article/vuejs-shejiyushixian/diyizhang-quanhengdeyishu": 0,
+      "/article/vuejs-shejiyushixian/dierzhang-kuangjiashejidehexinyaosu": 0,
       "/article/baguwen/javascript-mianshizhenti": 0,
       "/article/qianduan/tongguozitizijihuatishengwangyejiazaixingneng": 2,
       "/article/houduan/shiyong-cloudflaretunnel-jinxingqianhouduanyuanchengliantiao": 0
@@ -15,6 +16,7 @@
     "detailsByPath": {
       "/article/prompt/vue-xiangmuzhonggouyouhuatishici": [],
       "/article/vuejs-shejiyushixian/diyizhang-quanhengdeyishu": [],
+      "/article/vuejs-shejiyushixian/dierzhang-kuangjiashejidehexinyaosu": [],
       "/article/baguwen/javascript-mianshizhenti": [],
       "/article/qianduan/tongguozitizijihuatishengwangyejiazaixingneng": [
         {

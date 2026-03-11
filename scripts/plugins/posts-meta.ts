@@ -325,23 +325,31 @@ export const createPostsMetaPlugin = (rootDir: string) => {
   const normalizedPostsDir = normalizePath(postsDir)
   const resolvedPostsMetaModuleId = `\0${POSTS_META_VIRTUAL_MODULE_ID}`
   const resolvedSearchIndexModuleId = `\0${SEARCH_INDEX_VIRTUAL_MODULE_ID}`
+  const virtualModuleIds = [resolvedPostsMetaModuleId, resolvedSearchIndexModuleId]
   let parsedPostsCache: Map<string, ParsedPostEntry> | null = null
 
-  const getParsedPosts = () => {
-    if (!parsedPostsCache) {
-      parsedPostsCache = collectParsedPosts(rootDir)
-    }
-    return toSortedParsedPosts(parsedPostsCache)
-  }
-
-  const getParsedPostsCache = () => {
+  const ensureParsedPostsCache = () => {
     if (parsedPostsCache) return parsedPostsCache
     parsedPostsCache = collectParsedPosts(rootDir)
     return parsedPostsCache
   }
 
+  const getParsedPosts = () => toSortedParsedPosts(ensureParsedPostsCache())
+
+  const readPostSourceFromDisk = async (file: string, read?: HmrContext['read']) => {
+    if (read) {
+      try {
+        await read()
+      } catch {
+        // Fall back to the raw file read below.
+      }
+    }
+
+    return fs.promises.readFile(file, 'utf-8')
+  }
+
   const updateParsedPostCache = async (file: string, read: HmrContext['read']) => {
-    const cache = getParsedPostsCache()
+    const cache = ensureParsedPostsCache()
     const normalizedFile = normalizePath(file)
 
     if (!fs.existsSync(file)) {
@@ -352,7 +360,16 @@ export const createPostsMetaPlugin = (rootDir: string) => {
     const post = resolvePostFileEntry(postsDir, file)
     if (!post) return
 
-    cache.set(normalizedFile, parsePostFile(post, await read()))
+    cache.set(normalizedFile, parsePostFile(post, await readPostSourceFromDisk(file, read)))
+  }
+
+  const invalidateVirtualModules = (server: ViteDevServer, updatedModules: Set<unknown>) => {
+    for (const moduleId of virtualModuleIds) {
+      const module = server.moduleGraph.getModuleById(moduleId)
+      if (!module) continue
+      server.moduleGraph.invalidateModule(module)
+      updatedModules.add(module)
+    }
   }
 
   return {
@@ -388,17 +405,7 @@ export const createPostsMetaPlugin = (rootDir: string) => {
       await updateParsedPostCache(ctx.file, ctx.read)
 
       const updatedModules = new Set(ctx.modules)
-      const postsMetaModule = ctx.server.moduleGraph.getModuleById(resolvedPostsMetaModuleId)
-      if (postsMetaModule) {
-        ctx.server.moduleGraph.invalidateModule(postsMetaModule)
-        updatedModules.add(postsMetaModule)
-      }
-
-      const searchIndexModule = ctx.server.moduleGraph.getModuleById(resolvedSearchIndexModuleId)
-      if (searchIndexModule) {
-        ctx.server.moduleGraph.invalidateModule(searchIndexModule)
-        updatedModules.add(searchIndexModule)
-      }
+      invalidateVirtualModules(ctx.server, updatedModules)
 
       return [...updatedModules]
     },
