@@ -1,8 +1,8 @@
 {
   "github": {
-    "projects": 0,
-    "stars": 0,
-    "updatedAt": null
+    "projects": 7,
+    "stars": 3,
+    "updatedAt": "2026-03-12T03:03:49Z"
   },
   "comments": {
     "byPath": {
@@ -10,7 +10,7 @@
       "/article/vuejs-shejiyushixian/diyizhang-quanhengdeyishu": 0,
       "/article/vuejs-shejiyushixian/dierzhang-kuangjiashejidehexinyaosu": 0,
       "/article/baguwen/javascript-mianshizhenti": 0,
-      "/article/qianduan/tongguozitizijihuatishengwangyejiazaixingneng": 0,
+      "/article/qianduan/tongguozitizijihuatishengwangyejiazaixingneng": 2,
       "/article/houduan/shiyong-cloudflaretunnel-jinxingqianhouduanyuanchengliantiao": 0
     },
     "detailsByPath": {
@@ -18,7 +18,22 @@
       "/article/vuejs-shejiyushixian/diyizhang-quanhengdeyishu": [],
       "/article/vuejs-shejiyushixian/dierzhang-kuangjiashejidehexinyaosu": [],
       "/article/baguwen/javascript-mianshizhenti": [],
-      "/article/qianduan/tongguozitizijihuatishengwangyejiazaixingneng": [],
+      "/article/qianduan/tongguozitizijihuatishengwangyejiazaixingneng": [
+        {
+          "id": "15918331",
+          "author": "CoKoii",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/68091750?v=4",
+          "body": "二级评论",
+          "createdAt": "2026-02-25T03:14:54Z"
+        },
+        {
+          "id": "15918317",
+          "author": "CoKoii",
+          "avatarUrl": "https://avatars.githubusercontent.com/u/68091750?v=4",
+          "body": "测试评论",
+          "createdAt": "2026-02-25T03:12:05Z"
+        }
+      ],
       "/article/houduan/shiyong-cloudflaretunnel-jinxingqianhouduanyuanchengliantiao": []
     }
   }
