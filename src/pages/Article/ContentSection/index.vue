@@ -4,7 +4,7 @@ import GiscusComments from '@/components/Comments/GiscusComments.vue'
 import { isGiscusReady } from '@/config'
 import { Icon } from '@/components/Icon'
 import type { Component } from 'vue'
-import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { TocItem } from '../types'
 
 const { contentComponent, toc, activeHeadingId, loading, onScrollToHeading } = defineProps<{
@@ -16,9 +16,20 @@ const { contentComponent, toc, activeHeadingId, loading, onScrollToHeading } = d
 }>()
 
 const tocRef = ref<HTMLElement | null>(null)
+const canUseDOM = typeof window !== 'undefined'
+const FLOATING_COMMENT_MEDIA_QUERY = '(min-width: 1201px)'
+const showCommentBubble = ref(false)
+let commentBubbleMedia: MediaQueryList | null = null
 let rafId = 0
 const SCROLL_EDGE_GAP = 18
 const SMOOTH_SCROLL_DISTANCE = 56
+
+const syncCommentBubbleVisibility = (matches = commentBubbleMedia?.matches ?? false) => {
+  showCommentBubble.value = matches
+}
+
+const handleCommentBubbleMediaChange = (event: MediaQueryListEvent) =>
+  syncCommentBubbleVisibility(event.matches)
 
 const scrollActiveIntoView = (id: string) => {
   if (!id || !tocRef.value) return
@@ -57,8 +68,18 @@ watch(
     nextTick(() => scrollActiveIntoView(id))
   },
 )
+
+onMounted(() => {
+  if (!canUseDOM) return
+  commentBubbleMedia = window.matchMedia(FLOATING_COMMENT_MEDIA_QUERY)
+  syncCommentBubbleVisibility(commentBubbleMedia.matches)
+  commentBubbleMedia.addEventListener('change', handleCommentBubbleMediaChange)
+})
+
 onBeforeUnmount(() => {
   if (rafId) cancelAnimationFrame(rafId)
+  commentBubbleMedia?.removeEventListener('change', handleCommentBubbleMediaChange)
+  commentBubbleMedia = null
 })
 </script>
 
@@ -68,7 +89,7 @@ onBeforeUnmount(() => {
       <article class="article markdown-content">
         <component v-if="!loading && contentComponent" :is="contentComponent" />
       </article>
-      <CommentBubbles v-if="!loading && isGiscusReady" />
+      <CommentBubbles v-if="!loading && isGiscusReady && showCommentBubble" />
       <GiscusComments v-if="!loading && isGiscusReady" />
     </div>
     <aside class="menus">

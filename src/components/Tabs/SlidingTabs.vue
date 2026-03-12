@@ -21,18 +21,18 @@ const activeIdx = computed(() => {
   return i < 0 ? 0 : i
 })
 
-const tabsRef = ref<HTMLDivElement>()
-const btns = ref<HTMLButtonElement[]>([])
-const observer = ref<ResizeObserver | null>(null)
+const tabsRef = ref<HTMLDivElement | null>(null)
+let btns: HTMLButtonElement[] = []
+let observer: ResizeObserver | null = null
 
 const setBtnRef = (el: Element | ComponentPublicInstance | null) => {
-  if (el instanceof HTMLButtonElement) btns.value.push(el)
+  if (el instanceof HTMLButtonElement) btns.push(el)
 }
 
 const center = async () => {
   await nextTick()
   const cont = tabsRef.value
-  const btn = btns.value[activeIdx.value]
+  const btn = btns[activeIdx.value]
   if (!cont || !btn) return
 
   const cRect = cont.getBoundingClientRect()
@@ -51,20 +51,20 @@ const center = async () => {
 const setTab = (tab: TabItem) => emit('update:activeTab', getVal(tab))
 
 onBeforeUpdate(() => {
-  btns.value = []
+  btns = []
 })
 
 onMounted(() => {
   center()
   if (tabsRef.value) {
-    observer.value = new ResizeObserver(center)
-    observer.value.observe(tabsRef.value)
+    observer = new ResizeObserver(center)
+    observer.observe(tabsRef.value)
   }
 })
 
 onBeforeUnmount(() => {
-  observer.value?.disconnect()
-  observer.value = null
+  observer?.disconnect()
+  observer = null
 })
 
 watch(() => props.activeTab, center)
@@ -72,12 +72,7 @@ watch(() => props.tabs, center, { deep: true })
 </script>
 
 <template>
-  <div
-    ref="tabsRef"
-    class="tabs"
-    :class="{ 'tabs--full': fullWidth }"
-    :style="{ '--active-index': activeIdx }"
-  >
+  <div ref="tabsRef" class="tabs" :class="{ 'tabs--full': fullWidth }">
     <span class="tab-indicator" aria-hidden="true">
       <span :key="activeTab" class="tab-indicator-inner" />
     </span>
@@ -120,8 +115,11 @@ watch(() => props.tabs, center, { deep: true })
     left: var(--space-3px);
     width: var(--indicator-width, 0px);
     transform: translateX(var(--indicator-x, 0px));
-    transition: transform 0.55s cubic-bezier(0.16, 1.35, 0.3, 1);
+    transition:
+      transform 0.55s cubic-bezier(0.16, 1.35, 0.3, 1),
+      width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform;
+    pointer-events: none;
     z-index: 0;
   }
 
@@ -183,20 +181,13 @@ watch(() => props.tabs, center, { deep: true })
       display: none;
     }
 
-    .tab-indicator {
-      display: none;
-    }
-
     .tab-btn {
       flex: 0 0 auto;
       padding: var(--space-6px) var(--space-14px);
       scroll-snap-align: center;
 
       &.active {
-        background: var(--color-white);
         color: var(--color-black);
-        box-shadow: 0 6px 14px rgba(17, 24, 39, 0.12);
-        animation: jelly 0.55s ease-out;
       }
     }
   }

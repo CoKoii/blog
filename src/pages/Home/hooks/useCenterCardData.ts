@@ -3,6 +3,8 @@ import { ALL_TAG_SLUG, tagTabsRef } from '@/utils/tags'
 import { computed, ref } from 'vue'
 import type { Project, Resource } from '../CenterCard/types'
 
+const HOME_LATEST_POSTS_LIMIT = 5
+
 export const useCenterCardData = () => {
   const tabs = tagTabsRef
   const projects: Project[] = [
@@ -30,14 +32,15 @@ export const useCenterCardData = () => {
 
   const activeTab = ref(ALL_TAG_SLUG)
 
-  const latestPosts = computed(() =>
-    formatPostList(
+  const visiblePosts = computed(() =>
+    (
       activeTab.value === ALL_TAG_SLUG
         ? postsRef.value
-        : postsRef.value.filter((post) => post.categorySlug === activeTab.value),
-      2,
-    ),
+        : postsRef.value.filter((post) => post.categorySlug === activeTab.value)
+    ).slice(0, HOME_LATEST_POSTS_LIMIT),
   )
+
+  const latestPosts = computed(() => formatPostList(visiblePosts.value, 2))
 
   return { projects, activeTab, tabs, latestPosts, groupedResources }
 }
