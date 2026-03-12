@@ -29,23 +29,29 @@ const setBtnRef = (el: Element | ComponentPublicInstance | null) => {
   if (el instanceof HTMLButtonElement) btns.push(el)
 }
 
+const getTabMetrics = (container: HTMLDivElement, button: HTMLButtonElement) => {
+  const paddingInlineStart = Number.parseFloat(getComputedStyle(container).paddingInlineStart) || 0
+
+  return {
+    indicatorWidth: button.offsetWidth,
+    indicatorX: Math.max(0, button.offsetLeft - paddingInlineStart),
+    scrollLeftTarget: button.offsetLeft + button.offsetWidth / 2 - container.clientWidth / 2,
+  }
+}
+
 const center = async () => {
   await nextTick()
-  const cont = tabsRef.value
-  const btn = btns[activeIdx.value]
-  if (!cont || !btn) return
+  const container = tabsRef.value
+  const button = btns[activeIdx.value]
+  if (!container || !button) return
 
-  const cRect = cont.getBoundingClientRect()
-  const bRect = btn.getBoundingClientRect()
-  const pad = Number.parseFloat(getComputedStyle(cont).paddingLeft) || 0
-  const x = bRect.left - cRect.left - pad
-  const w = bRect.width
+  const { indicatorWidth, indicatorX, scrollLeftTarget } = getTabMetrics(container, button)
+  const maxScrollLeft = Math.max(0, container.scrollWidth - container.clientWidth)
+  const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
 
-  cont.style.setProperty('--indicator-x', `${Math.max(0, x)}px`)
-  cont.style.setProperty('--indicator-width', `${w}px`)
-
-  const offset = bRect.left + bRect.width / 2 - cRect.left - cRect.width / 2
-  cont.scrollTo({ left: cont.scrollLeft + offset, behavior: 'smooth' })
+  container.style.setProperty('--indicator-x', `${indicatorX}px`)
+  container.style.setProperty('--indicator-width', `${indicatorWidth}px`)
+  container.scrollTo({ left: Math.min(Math.max(0, scrollLeftTarget), maxScrollLeft), behavior })
 }
 
 const setTab = (tab: TabItem) => emit('update:activeTab', getVal(tab))
@@ -133,6 +139,7 @@ watch(() => props.tabs, center, { deep: true })
   }
 
   .tab-btn {
+    appearance: none;
     background: transparent;
     border: none;
     padding: var(--space-6px) var(--space-14px);
@@ -145,9 +152,16 @@ watch(() => props.tabs, center, { deep: true })
     position: relative;
     z-index: 1;
     white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 
     &.active {
       color: var(--color-black);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--color-accent-blue);
     }
   }
 }
@@ -183,12 +197,7 @@ watch(() => props.tabs, center, { deep: true })
 
     .tab-btn {
       flex: 0 0 auto;
-      padding: var(--space-6px) var(--space-14px);
       scroll-snap-align: center;
-
-      &.active {
-        color: var(--color-black);
-      }
     }
   }
 }
