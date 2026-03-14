@@ -60,3 +60,68 @@ const title = {
   <span></span>
 </h1>
 ```
+
+## 初始渲染器
+
+虚拟 DOM 是如何变成真实 DOM 并渲染到浏览器页面中的呢?
+
+这就用到了我们接下来要介绍的: `渲染器`
+
+假设我们有如下虚拟 DOM:
+
+```js
+const vnode = {
+  tag: 'div',
+  props: {
+    onClick: () => alert('hello'),
+  },
+  children: 'click me',
+}
+```
+
+首先简单解释一下上面这段代码
+
+- `tag`: 表示 DOM 元素的标签名称，这里是 div 标签
+- `props`: 表示 DOM 元素的属性，这里有一个 onClick 属性，表示当用户点击这个 div 标签时会弹出一个 alert 提示框
+- `children`: 表示 DOM 元素的子节点，这里是一个文本节点，内容是 "click me"
+
+接下来我们需要将这个虚拟 DOM 转换成真实 DOM 并渲染到页面中，这就需要一个渲染器
+
+```js
+function render(vnode, container) {
+  // 创建一个 DOM 元素
+  const el = document.createElement(vnode.tag)
+  // 遍历 vnode.props 中的属性并设置到 DOM 元素上
+  for (const key in vnode.props) {
+    const value = vnode.props[key]
+    if (key.startsWith('on')) {
+      // 如果属性名以 "on" 开头,说明这是一个事件处理函数,需要使用 addEventListener 来绑定事件
+      el.addEventListener(key.slice(2).toLowerCase(), value)
+    } else {
+      // 否则,这是一个普通的属性,直接使用 setAttribute 来设置属性
+      el.setAttribute(key, value)
+    }
+  }
+  // 如果 children 是一个字符串,说明这是一个文本节点,直接设置 el.textContent 就可以了
+  if (typeof vnode.children === 'string') {
+    el.textContent = vnode.children
+  } else {
+    // 否则,说明 children 是一个数组,需要递归地调用 render 函数来渲染子节点
+    vnode.children.forEach((child) => render(child, el))
+  }
+  // 最后将创建好的 DOM 元素添加到 container 中
+  container.appendChild(el)
+}
+```
+
+这里的 `render` 函数接受两个参数:
+
+- `vnode`: 需要渲染的虚拟 DOM
+- `container`: 需要将虚拟 DOM 渲染到哪个 DOM 元素中
+
+接下来,我们可以调用 `render` 函数来渲染虚拟 DOM:
+
+```js
+const container = document.getElementById('app')
+render(vnode, container)
+```
