@@ -17,9 +17,12 @@ location: 杭州
 ## 前言
 
 做联调时最常见的尴尬是：接口在你电脑上能跑，但别人打不开
-Cloudflare Tunnel 就是解决这件事的，它会给你一个临时 `https://xxxx.trycloudflare.com` 地址，让别人也能访问你本地的服务
+
+> Cloudflare Tunnel 就是解决这件事的，它会给你一个临时 `https://xxxx.trycloudflare.com` 地址，让别人也能访问你本地的服务。
 
 ## 先准备好这 3 件事
+
+### 自检清单
 
 1. 你的本地服务已经启动 ( 下面示例用 `3000` 端口 )
 2. 先在本机自检：`curl http://localhost:3000` 能拿到响应
@@ -40,7 +43,7 @@ cloudflared --version
 cloudflared tunnel --url http://localhost:3000
 ```
 
-看到日志里出现 `https://xxxx.trycloudflare.com` 后，这个地址就是别人访问你本地服务的入口，把它发给前端、测试或第三方回调平台即可
+> 看到日志里出现 `https://xxxx.trycloudflare.com` 后，这个地址就是别人访问你本地服务的入口，把它发给前端、测试或第三方回调平台即可。
 
 ### 3. 关闭隧道
 
@@ -72,9 +75,9 @@ docker compose up -d cloudflared     # 启动
 docker compose logs -f cloudflared   # 看日志并复制地址
 ```
 
-日志里出现 `https://xxxx.trycloudflare.com` 后，这个地址就可以直接发给联调方，他们会通过它访问你本机服务
+> 日志里出现 `https://xxxx.trycloudflare.com` 后，这个地址就可以直接发给联调方，他们会通过它访问你本机服务。
 
-常用开关命令：
+#### 常用开关命令
 
 ```bash
 docker compose stop cloudflared      # 停止
@@ -87,7 +90,7 @@ docker compose start cloudflared     # 再启动
 
 ![Docker Desktop 里 cloudflared-3000 的 Start/Stop 按钮](https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/docker-desktop-cloudflared.webp)
 
-`host.docker.internal` 可以理解成「容器访问你这台电脑」的入口地址
+> `host.docker.internal` 可以理解成「容器访问你这台电脑」的入口地址。
 
 ## 网络不稳时 (可选)
 
@@ -122,4 +125,4 @@ Docker 方式一般更稳一些，遇到问题先看日志
 
 ## 一句话总结
 
-先确认本地服务能跑，再开 Tunnel 拿到 HTTPS 地址发给联调方；联调结束就把命令或容器停掉
+> 先确认本地服务能跑，再开 Tunnel 拿到 HTTPS 地址发给联调方；联调结束就把命令或容器停掉。

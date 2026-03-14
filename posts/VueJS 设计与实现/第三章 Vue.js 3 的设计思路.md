@@ -21,14 +21,14 @@ location: 苏州
 
 Vue.js 3 是一个声明式的 UI 框架，意思是说用户在使用 Vue.js 3 开发页面时是声明式地描述 UI 的
 
-前端页面都涉及哪些内容呢？
+### 前端页面都涉及哪些内容呢？
 
 - DOM 元素: 例如是 div 标签还是 a 标签
 - 属性: 如 a 标签的 href 属性，再如 id、class 等通用属性
 - 事件: 如 click、keydown 等
 - 元素的层级结构: DOM 树的层级结构，既有子节点，又有父节点
 
-Vue.js 3 如何声明式地描述上述内容呢？
+### Vue.js 3 如何声明式地描述上述内容呢？
 
 - 使用与 HTML 标签一致的方式来描述 DOM 元素，例如描述一个 div 标签时可以使用 `<div></div>`
 - 使用与 HTML 标签一致的方式来描述属性，例如 `<div id="app"></div>`
@@ -37,6 +37,8 @@ Vue.js 3 如何声明式地描述上述内容呢？
 - 使用与 HTML 标签一致的方式来描述层级结构,例如一个具有 span 子节点的 div 标签可以这样描述 `<div><span>Child</span></div>`
 
 可以看到,在 Vue.js 中,哪怕是事件,都有与之对应的描述方式,这就是所谓的声明式地描述 UI
+
+### 我们还可以使用 JavaScript 对象来描述
 
 我们还可以使用 JavaScript 对象来描述,例如
 
@@ -67,7 +69,7 @@ const title = {
 
 这就用到了我们接下来要介绍的: `渲染器`
 
-假设我们有如下虚拟 DOM:
+### 假设我们有如下虚拟 DOM
 
 ```js
 const vnode = {
@@ -79,13 +81,13 @@ const vnode = {
 }
 ```
 
-首先简单解释一下上面这段代码
+### 首先简单解释一下上面这段代码
 
 - `tag`: 表示 DOM 元素的标签名称，这里是 div 标签
 - `props`: 表示 DOM 元素的属性，这里有一个 onClick 属性，表示当用户点击这个 div 标签时会弹出一个 alert 提示框
 - `children`: 表示 DOM 元素的子节点，这里是一个文本节点，内容是 "click me"
 
-接下来我们需要将这个虚拟 DOM 转换成真实 DOM 并渲染到页面中，这就需要一个渲染器
+### 接下来我们需要将这个虚拟 DOM 转换成真实 DOM 并渲染到页面中
 
 ```js
 function render(vnode, container) {
@@ -114,12 +116,12 @@ function render(vnode, container) {
 }
 ```
 
-这里的 `render` 函数接受两个参数:
+### 这里的 `render` 函数接受两个参数
 
 - `vnode`: 需要渲染的虚拟 DOM
 - `container`: 需要将虚拟 DOM 渲染到哪个 DOM 元素中
 
-接下来,我们可以调用 `render` 函数来渲染虚拟 DOM:
+### 接下来,我们可以调用 `render` 函数来渲染虚拟 DOM
 
 ```js
 const container = document.getElementById('app')
