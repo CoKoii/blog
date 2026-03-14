@@ -21,11 +21,11 @@ Cloudflare Tunnel 就是解决这件事的，它会给你一个临时 `https://x
 
 ## 先准备好这 3 件事
 
-1.  你的本地服务已经启动 ( 下面示例用 `3000` 端口 )
-2.  先在本机自检：`curl http://localhost:3000` 能拿到响应
-3.  二选一：命令行方式 或 Docker 方式
+1. 你的本地服务已经启动 ( 下面示例用 `3000` 端口 )
+2. 先在本机自检：`curl http://localhost:3000` 能拿到响应
+3. 二选一：命令行方式或 Docker 方式
 
-## 方式 A：命令行 ( 最快 )
+## 方式 A：命令行 (最快)
 
 ### 1. 安装并验证
 
@@ -46,7 +46,7 @@ cloudflared tunnel --url http://localhost:3000
 
 当前终端按 `Ctrl + C`
 
-## 方式 B: Docker ( 开关更方便 )
+## 方式 B: Docker (开关更方便)
 
 如果你平时就用 Docker，用容器管理 `cloudflared` 会更直观
 
@@ -81,7 +81,7 @@ docker compose stop cloudflared      # 停止
 docker compose start cloudflared     # 再启动
 ```
 
-### 3. 图形化开关 ( 更省事 )
+### 3. 图形化开关 (更省事)
 
 如果你不想记命令，也可以直接用 Docker Desktop 里的按钮控制容器启动和停止：
 
@@ -89,9 +89,9 @@ docker compose start cloudflared     # 再启动
 
 `host.docker.internal` 可以理解成「容器访问你这台电脑」的入口地址
 
-## 网络不稳时 ( 可选 )
+## 网络不稳时 (可选)
 
-联调时偶尔掉线或延迟高，可以试试这条命令 ( 不用纠结参数含义，直接复制即可 ) ：
+联调时偶尔掉线或延迟高，可以试试这条命令 (不用纠结参数含义，直接复制即可)：
 
 ```bash
 cloudflared tunnel \
@@ -101,14 +101,14 @@ cloudflared tunnel \
   --url http://localhost:3000
 ```
 
-## 常见问题 ( 按顺序排查 )
+## 常见问题 (按顺序排查)
 
-### 1. 打不开、超时、502/504
+### 1. 打不开、超时、502 / 504
 
-1.  本地服务是否可用：`curl http://localhost:3000`
-2.  `--url` 里的端口是否写对
-3.  Docker 方式确认用了 `host.docker.internal`
-4.  还不稳就换上面的「网络不稳」命令
+1. 本地服务是否可用：`curl http://localhost:3000`
+2. `--url` 里的端口是否写对
+3. Docker 方式确认用了 `host.docker.internal`
+4. 还不稳就换上面的「网络不稳」命令
 
 ### 2. 为什么每次地址都不一样？
 

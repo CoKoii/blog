@@ -15,6 +15,7 @@
   --md-quote-shadow: rgba(59, 130, 246, 0.18);
   --md-code-bg: #1f232b;
   --md-code-border: rgba(255, 255, 255, 0.15);
+  --md-strong-gap: 0.28em;
 
   width: 100%;
   max-width: 100%;
@@ -60,6 +61,14 @@
   strong {
     color: var(--md-ink);
     font-weight: 680;
+
+    &[data-md-gap-before] {
+      margin-inline-start: var(--md-strong-gap);
+    }
+
+    &[data-md-gap-after] {
+      margin-inline-end: var(--md-strong-gap);
+    }
   }
 
   em {

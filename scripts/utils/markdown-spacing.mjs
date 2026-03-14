@@ -32,7 +32,6 @@ const TEXT_LIKE_RE = /[\p{Script=Han}\p{L}\p{N}`"'“”‘’()[\]{}]/u
 const WORDISH_RE = /[\p{Script=Han}\p{L}\p{N}]/u
 const INLINE_CODE_CONTENT_RE = /[\p{L}\p{N}_$]/u
 const THEMATIC_BREAK_RE = /^ {0,3}(?:[-*_]\s*){3,}$/u
-
 const createRule = (phase, name, description, apply) => ({
   phase,
   name,
@@ -186,8 +185,9 @@ const headingMarkerSpacingRule = createRule(
 
 /**
  * 规则：统一无序列表标记后的空格。
- * 场景：`-列表项`、`*   列表项`、`- [x]已完成`。
- * 原则：跳过主题分隔线 `--- / *** / ___`，避免误判 Markdown 结构。
+ * 场景：`-列表项`、`+列表项`、`- [x]已完成`。
+ * 原则：跳过主题分隔线 `--- / *** / ___`，同时不自动修复 `*` 前缀，
+ * 因为 `*` 与粗体/斜体语法冲突，误判成本高于漏改成本。
  */
 const unorderedListSpacingRule = createRule(
   'source',
@@ -199,7 +199,7 @@ const unorderedListSpacingRule = createRule(
         if (THEMATIC_BREAK_RE.test(body)) return body
 
         return body.replace(
-          /^( {0,3})([-+*])\s*(\[[ xX]\])?\s*(\S.*)$/u,
+          /^( {0,3})([-+])\s*(\[[ xX]\])?\s*(\S.*)$/u,
           (_, indent, marker, taskMarker, content) =>
             `${indent}${marker} ${taskMarker ? `${taskMarker} ` : ''}${content.trimStart()}`,
         )
@@ -477,6 +477,37 @@ const getVisibleBoundary = (node) => {
 const isInlineCode = (node) => node?.type === 'inlineCode'
 const isTextLike = (value) => Boolean(value && TEXT_LIKE_RE.test(value))
 
+const getEditableBoundaryRange = (
+  source,
+  leftNode,
+  rightNode,
+  leftStart,
+  leftEnd,
+  rightStart,
+  rightEnd,
+) => {
+  let start = leftEnd
+  let end = rightStart
+
+  if (leftNode.type === 'text') {
+    const trailingWhitespace = source.slice(leftStart, leftEnd).match(/[ \t]+$/u)?.[0].length ?? 0
+    start = leftEnd - trailingWhitespace
+  }
+
+  if (rightNode.type === 'text') {
+    const leadingWhitespace = source.slice(rightStart, rightEnd).match(/^[ \t]+/u)?.[0].length ?? 0
+    end = rightStart + leadingWhitespace
+  }
+
+  const content = source.slice(start, end)
+
+  if (!/^[ \t]*$/u.test(content)) {
+    return null
+  }
+
+  return { start, end, content }
+}
+
 /**
  * 规则：行内节点边界在半角标点后补充必要空格。
  * 场景：`说明:**重点**`、`API:[文档](...)`。
@@ -543,14 +574,14 @@ const inlineCodeBoundaryRule = createRule(
   },
 )
 
-const BOUNDARY_RULES = [
+const BOUNDARY_SPACE_RULES = [
   inlinePunctuationBoundaryRule,
   inlineCjkLatinBoundaryRule,
   inlineCodeBoundaryRule,
 ]
 
-const getBoundaryInsertions = (source) => {
-  const insertions = []
+const getBoundaryEdits = (source) => {
+  const edits = []
   const tree = parseMarkdown(source)
 
   visit(tree, (node) => {
@@ -581,26 +612,31 @@ const getBoundaryInsertions = (source) => {
 
       const left = getVisibleBoundary(leftNode)
       const right = getVisibleBoundary(rightNode)
-
       if (!left?.last || !right?.first) continue
 
-      const gap = source.slice(leftEnd, rightStart)
-      const leftSlice = source.slice(leftStart, leftEnd)
-      const rightSlice = source.slice(rightStart, rightEnd)
+      const editableRange = getEditableBoundaryRange(
+        source,
+        leftNode,
+        rightNode,
+        leftStart,
+        leftEnd,
+        rightStart,
+        rightEnd,
+      )
 
-      if (/\s$/u.test(leftSlice) || /^\s/u.test(rightSlice) || /\s/u.test(gap)) continue
+      if (!editableRange) continue
 
-      const shouldInsertSpace = BOUNDARY_RULES.some((rule) =>
+      const shouldInsertSpace = BOUNDARY_SPACE_RULES.some((rule) =>
         rule.apply({ left, right, leftNode, rightNode }),
       )
 
-      if (shouldInsertSpace) {
-        insertions.push({ start: rightStart, end: rightStart, value: ' ' })
+      if (shouldInsertSpace && editableRange.content !== ' ') {
+        edits.push({ start: editableRange.start, end: editableRange.end, value: ' ' })
       }
     }
   })
 
-  return uniqueReplacements(insertions)
+  return uniqueReplacements(edits)
 }
 
 const normalizeMarkdownArticle = (source) => {
@@ -613,7 +649,7 @@ const normalizeMarkdownArticle = (source) => {
     getTextReplacements(normalizedSource),
   )
 
-  return applyReplacements(withNormalizedText, getBoundaryInsertions(withNormalizedText))
+  return applyReplacements(withNormalizedText, getBoundaryEdits(withNormalizedText))
 }
 
 const walkMarkdownFiles = async (entryPath, files) => {

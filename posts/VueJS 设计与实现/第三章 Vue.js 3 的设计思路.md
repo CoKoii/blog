@@ -31,6 +31,32 @@ Vue.js 3 是一个声明式的 UI 框架，意思是说用户在使用 Vue.js 3 
 Vue.js 3 如何声明式地描述上述内容呢？
 
 - 使用与 HTML 标签一致的方式来描述 DOM 元素，例如描述一个 div 标签时可以使用 `<div></div>`
-- 使用与 HTML 标签一致的方式来描述属性，例如 `<div : id="app"></div>`
-- 使用: 或 v-bind 来描述动态绑定的属性，例如 `<div : id="dynamicId"></div>`
+- 使用与 HTML 标签一致的方式来描述属性，例如 `<div id="app"></div>`
+- 使用 `:` 或 `v-bind` 来描述动态绑定的属性，例如 `<div :id="dynamicId"></div>`
 - 使用 @ 或 v-on 来描述事件，例如 `<button @click="handleClick">Click me</button>`
+- 使用与 HTML 标签一致的方式来描述层级结构,例如一个具有 span 子节点的 div 标签可以这样描述 `<div><span>Child</span></div>`
+
+可以看到,在 Vue.js 中,哪怕是事件,都有与之对应的描述方式,这就是所谓的声明式地描述 UI
+
+我们还可以使用 JavaScript 对象来描述,例如
+
+```js
+const title = {
+  // 标签名称
+  tag: 'h1',
+  // 标签属性
+  props: {
+    onClick: handler,
+  },
+  // 子节点
+  children: [{ tag: 'span' }],
+}
+```
+
+对应到 Vue.js 模版,其实就是:
+
+```vue
+<h1 @click="handler">
+  <span></span>
+</h1>
+```

@@ -6,10 +6,46 @@ const queryAll = <T extends Element>(selector: string) =>
   Array.from(document.querySelectorAll<T>(selector))
 
 const DEFAULT_IMAGE_RATIO = '16 / 10'
+const WORDISH_RE = /[\p{Script=Han}\p{L}\p{N}]/u
+const INLINE_SPACE_RE = /[\s\u200B\u200C\u200D\uFEFF]/u
 
 const toRatio = (width: number, height: number) => `${width} / ${height}`
 
 const isPositive = (value: number) => Number.isFinite(value) && value > 0
+
+const getBoundaryState = (text: string, direction: 'before' | 'after') => {
+  const chars = Array.from(text)
+  const orderedChars = direction === 'before' ? chars.reverse() : chars
+
+  for (const char of orderedChars) {
+    if (INLINE_SPACE_RE.test(char)) {
+      return { char: '', hasSpace: true }
+    }
+
+    return { char, hasSpace: false }
+  }
+
+  return { char: '', hasSpace: false }
+}
+
+const getAdjacentInlineState = (node: ChildNode | null, direction: 'before' | 'after') => {
+  let current = node
+
+  while (current) {
+    if (current.nodeType === Node.TEXT_NODE || current.nodeType === Node.ELEMENT_NODE) {
+      const text = current.textContent ?? ''
+      const state = getBoundaryState(text, direction)
+
+      if (state.char || state.hasSpace) {
+        return state
+      }
+    }
+
+    current = direction === 'before' ? current.previousSibling : current.nextSibling
+  }
+
+  return { char: '', hasSpace: false }
+}
 
 const getRatioFromAttributes = (img: HTMLImageElement) => {
   const width = Number.parseFloat(img.getAttribute('width') || '')
@@ -126,7 +162,20 @@ const enhanceLinks = () => {
     })
 }
 
+const enhanceStrongSpacing = () => {
+  queryAll<HTMLElement>('.markdown-content strong').forEach((strong) => {
+    const before = getAdjacentInlineState(strong.previousSibling, 'before')
+    const after = getAdjacentInlineState(strong.nextSibling, 'after')
+    const needsGapBefore = !before.hasSpace && WORDISH_RE.test(before.char)
+    const needsGapAfter = !after.hasSpace && WORDISH_RE.test(after.char)
+
+    strong.toggleAttribute('data-md-gap-before', needsGapBefore)
+    strong.toggleAttribute('data-md-gap-after', needsGapAfter)
+  })
+}
+
 export const refreshArticleDecorations = () => {
+  enhanceStrongSpacing()
   enhanceLinks()
   enhanceImages()
   enhanceCode()
