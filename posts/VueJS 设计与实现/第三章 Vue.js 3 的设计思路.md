@@ -127,3 +127,89 @@ function render(vnode, container) {
 const container = document.getElementById('app')
 render(vnode, container)
 ```
+
+## 组件的本质
+
+组件就是一组DOM元素的封装
+
+```js
+const MyComponent = function () {
+  return {
+    tag: 'div',
+    props: {
+      onClick: () => alert('hello'),
+    },
+    children: 'click me',
+  }
+}
+```
+
+可以看到,组件的返回值也是虚拟DOM,它代表组件要渲染的内容
+
+我们可以用虚拟DOM对象中的tag属性来存储组件函数
+
+```js
+const vnode = {
+  tag: MyComponent,
+}
+```
+
+当我们渲染这个虚拟DOM时,就会调用 MyComponent 函数来获取组件要渲染的内容
+
+```js
+function render(vnode, container) {
+  if (typeof vnode.tag === 'function') {
+    // 如果 vnode.tag 是一个函数,说明这是一个组件,需要调用这个函数来获取组件要渲染的内容
+    const componentVNode = vnode.tag()
+    render(componentVNode, container)
+  } else {
+    // 否则,说明 vnode.tag 是一个普通的 DOM 元素,按照之前的方式来渲染
+    const el = document.createElement(vnode.tag)
+    for (const key in vnode.props) {
+      const value = vnode.props[key]
+      if (key.startsWith('on')) {
+        el.addEventListener(key.slice(2).toLowerCase(), value)
+      } else {
+        el.setAttribute(key, value)
+      }
+    }
+    if (typeof vnode.children === 'string') {
+      el.textContent = vnode.children
+    } else {
+      vnode.children.forEach((child) => render(child, el))
+    }
+    container.appendChild(el)
+  }
+}
+```
+
+## 模版的工作原理
+
+以我们熟悉的`.vue`文件为例,一个`.vue`文件就是一个组件
+
+```vue
+<template>
+  <div @click="handler">click me</div>
+</template>
+<script>
+export default {
+  data() {},
+  methods: {
+    handler: () => {},
+  },
+}
+</script>
+```
+
+其中`<template>`标签中的内容就是模版内容,编译器会把模版内容编译成渲染函数并添加到`<script>`标签中的组件对象上,所以最终在浏览器里运行的代码是:
+
+```js
+export default {
+  data() {},
+  methods: {
+    handler: () => {},
+  },
+  render() {
+    return h('div', { onClick: this.handler }, 'click me')
+}
+```
