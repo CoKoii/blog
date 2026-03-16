@@ -130,7 +130,7 @@ render(vnode, container)
 
 ## 组件的本质
 
-组件就是一组DOM元素的封装
+组件就是一组 DOM 元素的封装
 
 ```js
 const MyComponent = function () {
@@ -144,9 +144,9 @@ const MyComponent = function () {
 }
 ```
 
-可以看到,组件的返回值也是虚拟DOM,它代表组件要渲染的内容
+可以看到,组件的返回值也是虚拟 DOM, 它代表组件要渲染的内容
 
-我们可以用虚拟DOM对象中的tag属性来存储组件函数
+我们可以用虚拟 DOM 对象中的 tag 属性来存储组件函数
 
 ```js
 const vnode = {
@@ -154,7 +154,7 @@ const vnode = {
 }
 ```
 
-当我们渲染这个虚拟DOM时,就会调用 MyComponent 函数来获取组件要渲染的内容
+当我们渲染这个虚拟 DOM 时,就会调用 MyComponent 函数来获取组件要渲染的内容
 
 ```js
 function render(vnode, container) {
@@ -185,7 +185,7 @@ function render(vnode, container) {
 
 ## 模版的工作原理
 
-以我们熟悉的`.vue`文件为例,一个`.vue`文件就是一个组件
+以我们熟悉的 `.vue` 文件为例,一个 `.vue` 文件就是一个组件
 
 ```vue
 <template>
@@ -201,7 +201,7 @@ export default {
 </script>
 ```
 
-其中`<template>`标签中的内容就是模版内容,编译器会把模版内容编译成渲染函数并添加到`<script>`标签中的组件对象上,所以最终在浏览器里运行的代码是:
+其中 `<template>` 标签中的内容就是模版内容,编译器会把模版内容编译成渲染函数并添加到 `<script>` 标签中的组件对象上,所以最终在浏览器里运行的代码是:
 
 ```js
 export default {
@@ -213,3 +213,7 @@ export default {
     return h('div', { onClick: this.handler }, 'click me')
 }
 ```
+
+## Vue.js 是各个模块组成的有机整体
+
+如前所诉,组件的实现依赖于**渲染器**,模版的编译依赖于**编译器**,并且编译后生成的代码是根据渲染器和虚拟 DOM 的设计决定的,因此 Vue.js 的各个模块之间是互相关联、互相制约的,共同构成一个有机整体
