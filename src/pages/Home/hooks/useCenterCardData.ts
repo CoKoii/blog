@@ -33,10 +33,9 @@ export const useCenterCardData = () => {
   const activeTab = ref(ALL_TAG_SLUG)
 
   const visiblePosts = computed(() =>
-    (
-      activeTab.value === ALL_TAG_SLUG
-        ? postsRef.value
-        : postsRef.value.filter((post) => post.categorySlug === activeTab.value)
+    (activeTab.value === ALL_TAG_SLUG
+      ? postsRef.value
+      : postsRef.value.filter((post) => post.categorySlug === activeTab.value)
     ).slice(0, HOME_LATEST_POSTS_LIMIT),
   )
 

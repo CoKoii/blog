@@ -363,7 +363,11 @@ const main = async () => {
   await mkdir(dirname(outputPath), { recursive: true })
   const hasWritten = await writeJsonIfChanged(outputPath, payload)
 
-  success(hasWritten ? `GitHub 数据写入完成：${outputPath}` : `GitHub 数据未变化，跳过写入：${outputPath}`)
+  success(
+    hasWritten
+      ? `GitHub 数据写入完成：${outputPath}`
+      : `GitHub 数据未变化，跳过写入：${outputPath}`,
+  )
   success(`总耗时：${Date.now() - startedAt}ms`)
 }
 

@@ -16,7 +16,11 @@ const previewComments = computed<GithubCommentDetail[]>(() =>
 const hasComments = computed(() => totalCount.value > 0)
 const isClosed = ref(false)
 const summaryText = computed(() =>
-  hasComments.value ? (totalCount.value <= 1 ? '最近有 1 条互动' : `最近有 ${totalCount.value} 条互动`) : '还没有评论，快来抢沙发',
+  hasComments.value
+    ? totalCount.value <= 1
+      ? '最近有 1 条互动'
+      : `最近有 ${totalCount.value} 条互动`
+    : '还没有评论，快来抢沙发',
 )
 
 watch(routePath, () => {
@@ -63,15 +67,20 @@ const toTimeText = (value: string) => {
 </script>
 
 <template>
-  <section v-if="!isClosed" class="CommentBubbles" :class="{ 'is-empty': !hasComments }" aria-label="评论摘要">
+  <section
+    v-if="!isClosed"
+    class="CommentBubbles"
+    :class="{ 'is-empty': !hasComments }"
+    aria-label="评论摘要"
+  >
     <header class="header">
       <p class="title">
         <Icon class="title-icon" icon="lucide:message-circle" />
         {{ summaryText }}
       </p>
-      <button class="jump-btn" type="button" @click="scrollToComments">{{
-        hasComments ? '查看评论区' : '去评论区'
-      }}</button>
+      <button class="jump-btn" type="button" @click="scrollToComments">
+        {{ hasComments ? '查看评论区' : '去评论区' }}
+      </button>
     </header>
     <button class="close-btn" type="button" aria-label="关闭评论浮层" @click="closeBubble">
       <Icon icon="lucide:x" />
@@ -90,7 +99,9 @@ const toTimeText = (value: string) => {
         <div class="comment-content">
           <p class="meta">
             <span class="author">{{ comment.author }}</span>
-            <time class="time" :datetime="comment.createdAt">{{ toTimeText(comment.createdAt) }}</time>
+            <time class="time" :datetime="comment.createdAt">{{
+              toTimeText(comment.createdAt)
+            }}</time>
           </p>
           <p class="text">{{ comment.body }}</p>
         </div>

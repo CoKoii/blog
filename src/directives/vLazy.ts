@@ -61,7 +61,9 @@ export const setupLazyImage = (el: HTMLImageElement, source: LazySource) => {
   if (
     lazy.complete &&
     lazy.naturalWidth > 0 &&
-    (lazy.currentSrc === source.src || lazy.src === source.src || (!!source.srcset && !!lazy.currentSrc))
+    (lazy.currentSrc === source.src ||
+      lazy.src === source.src ||
+      (!!source.srcset && !!lazy.currentSrc))
   ) {
     schedule(() => setLoaded(lazy))
     return () => {}
@@ -82,7 +84,8 @@ export const setupLazyImage = (el: HTMLImageElement, source: LazySource) => {
 }
 
 const getSource = (el: LazyEl, binding: { value: unknown }): LazySource | null => {
-  if (typeof binding.value === 'string' && binding.value.trim()) return { src: binding.value.trim() }
+  if (typeof binding.value === 'string' && binding.value.trim())
+    return { src: binding.value.trim() }
 
   if (
     binding.value &&

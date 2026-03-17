@@ -42,7 +42,9 @@ const tagStateRef = computed(() => {
   }
 
   const resolveSlug = (label: string): string =>
-    slugByCategory.get(label) ?? slugByNormalizedCategory.get(normalizeLabel(label)) ?? toSlug(label)
+    slugByCategory.get(label) ??
+    slugByNormalizedCategory.get(normalizeLabel(label)) ??
+    toSlug(label)
 
   const seenSlugs = new Set<string>()
   const entries = labels.reduce<TagEntry[]>((acc, label) => {

@@ -127,8 +127,12 @@ export const createResponsiveImageSource = (
 ): ImageSource => {
   const normalizedWidths = normalizePositiveInts(widths)
   const baseWidth = toPositiveInt(srcWidth) || normalizedWidths[0]
-  const baseSrc = baseWidth ? getSizedImageUrl(src, options, baseWidth) : getOptimizedImageUrl(src, options)
-  const srcset = normalizedWidths.length ? getOptimizedImageSrcSet(src, normalizedWidths, options) : ''
+  const baseSrc = baseWidth
+    ? getSizedImageUrl(src, options, baseWidth)
+    : getOptimizedImageUrl(src, options)
+  const srcset = normalizedWidths.length
+    ? getOptimizedImageSrcSet(src, normalizedWidths, options)
+    : ''
 
   return toImageSource(baseSrc, srcset, sizes)
 }
