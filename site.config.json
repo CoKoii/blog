@@ -64,6 +64,11 @@
         "封面": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
         "描述": "全站内容聚合区，集中展示前端、工程化、性能与日常实践的文章与记录，方便快速浏览与系统回顾。"
       },
+      "架构":{
+        "颜色": "#ae3ec9",
+        "封面": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/Architecture.webp",
+        "描述": "架构设计与实践记录，涵盖系统架构、微服务、分布式系统与高可用性设计等领域的知识沉淀。"
+      },
       "前端": {
         "颜色": "#f6ad55",
         "封面": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/FrontEnd.webp",
@@ -71,7 +76,7 @@
       },
       "后端": {
         "颜色": "#4380E7",
-        "封面": "",
+        "封面": "https://caokai-blog.oss-cn-hangzhou.aliyuncs.com/nestjs.webp",
         "描述": "后端技术与实践记录，涵盖服务端开发、数据库优化、系统架构与部署运维等领域的知识沉淀。"
       },
       "Prompt": {
